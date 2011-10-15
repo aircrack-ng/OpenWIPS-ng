@@ -161,7 +161,7 @@ int client_socket_handling_thread(void * object)
 
 		// Handle data received (for the first time
 		if (receive_first_time) {
-			if (params->client->upon_connection_receive) {
+			if (params->client && params->client->upon_connection_receive) {
 				if (ring_buffer_len > 0) {
 					switch ((*(params->client->upon_connection_receive))(&ringbuffer, &ring_buffer_len, params)) {
 						case UPON_CONNECTION_RECEIVE_SUCCESS:
@@ -292,6 +292,7 @@ struct socket_thread * init_new_socket_thread()
 	st->thread_type = THREAD_TYPE_NOT_SET;
 	st->userlist = NULL;
 	st->upon_connection = NULL;
+	st->upon_connection_receive = NULL;
 	st->user = NULL;
 
 	return st;
