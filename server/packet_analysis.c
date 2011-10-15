@@ -91,7 +91,7 @@ int packet_analysis_thread(void * data)
 	int time_frame_ms; // Might be dynamic
 	int is_our_mac, plugin_potential_attack_in_progress;
 	char * attack_details, is_attacked, do_attacked_check, plugin_check;
-	struct pcap_packet * cur, *last_packet_analyzed;
+	struct pcap_packet * cur;
 	struct packet_list * local_packet_list;
 	struct plugin_info * cur_plugin;
 	struct frame_plugin_functions * cur_frame_plugin_fct;
@@ -99,7 +99,6 @@ int packet_analysis_thread(void * data)
 	uint32_t fcs;
 
 	_packet_analysis_thread_stopped = 0;
-	last_packet_analyzed = NULL;
 	time_frame_ms = DEFAULT_TIME_FRAME_MS;
 	local_packet_list = init_new_packet_list();
 	plugin_check = 0;
@@ -124,25 +123,15 @@ int packet_analysis_thread(void * data)
 			continue;
 		}
 
-		// TODO: Is the 3s buffer necessary (and thus if it's not, then get rid of last_packet_analyzed
-		// Make sure we have a packet
-		if (last_packet_analyzed == NULL) {
-			last_packet_analyzed = local_packet_list->packets;
-			cur = local_packet_list->packets;
-		} else {
-			cur = last_packet_analyzed->next;
-		}
-
 		// TODO: Currently assuming packets have radiotap headers - Change it and check headers type
 		//printf("Analyzing packets\n");
-		for (; cur != NULL; cur = cur->next) {
+		for (cur = local_packet_list->packets; cur != NULL; cur = cur->next) {
 			//printf("Analyzing packet %p\n", cur);
 			// TODO: Think how to handle fragmentated packet (I mean reassembly)
 
 			// TODO: Add a message telling we got invalid packet
 			if (cur->header.cap_len < MIN_PACKET_SIZE + FCS_SIZE) {
 				fprintf(stderr, "Received invalid packet - frame too short to be analyzed. Expected %d bytes, received %u.\n", MIN_PACKET_SIZE + FCS_SIZE, cur->header.cap_len);
-				last_packet_analyzed = cur; // Update last packet analyzed
 				continue;
 			}
 
@@ -171,9 +160,6 @@ int packet_analysis_thread(void * data)
 			if (cur->info->protocol > 0) { // TODO: Move that check into a plugin
 				fprintf(stderr, "ANOMALY - Invalid protocol version <%u> for frame (SN: %u): it should always be 0.\n", cur->info->protocol, cur->info->sequence_number);
 				// Don't process that frame
-
-				// Update last packet analyzed
-				last_packet_analyzed = cur;
 
 				continue;
 			}
@@ -320,17 +306,13 @@ int packet_analysis_thread(void * data)
 					}
 				}
 			}
-
-			// Update last packet analyzed
-			last_packet_analyzed = cur;
 		}
 
 		// Have at least a 3 second window for checking for attacks so remove packets older than that
 		//printf("Removing packets older than %d ms from the last packet\n", time_frame_ms);
-		remove_packet_older_than(last_packet_analyzed, time_frame_ms, &local_packet_list, 0);
-		if (local_packet_list->nb_packet == 0) {
-			last_packet_analyzed = NULL;
-		}
+		free_pcap_packet(&(local_packet_list->packets), 1);
+		local_packet_list->packets = NULL;
+		local_packet_list->nb_packet = 0;
 
 		// Make sure the CPU won't get overloaded
 		usleep(10);
