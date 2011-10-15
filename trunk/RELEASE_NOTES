@@ -1,0 +1,29 @@
+This is an alpha release of OpenWIPS-ng (sensor and server).
+
+Please do not offer this code for download, this is an alpha release.
+But if you have any question, feel free to ask them in the IRC channel #openwips-ng or to tdotreppe@aircrack-ng.org
+Although I ask not to offer it for download, this is going to be opensource, so if you
+have any question about it, don't hesitate to mention some code/configuration/output 
+if that can help solving a problem or understanding a question
+
+Limitations
+- It doesn't go into the background yet
+- Limited to one sensor connection
+- Sensor and server CPU architecture must be the same (Should be fixed this week)
+- The sensor doesn't send frames when it reconnects to the server (will be fixed this week)
+- The sensor/server doesn't answer to threats (will be developped this week)
+- There is a limited number of plugins. More will come.
+- Recommended to use with a mac80211 driver (will be fixed this week)
+
+Others things:
+- It is recommended to compile it with 'make DEBUG=normal'. It will record all the frames 
+   to a capture files and display more information on the screen. These informations are
+   really useful when a bug happen and helps reproduce the bug and fix it.
+- Attacks logging: you will have a lot of output on the screen when an attack happens,
+  this is normal (will be fixed this week). It is because we can detect an attack very quickly
+  with just a few frames (note that a single deauth from aireplay-ng sends in reality 128 or 256 frames)
+- If you want to develop a plugin, there is a parameter that can check if the plugin is valid: -p
+- The configuration file can be validated using -c
+
+Thanks a lot for testing this release. 
+There will be bug fixes and improvements during the following week and you will receive updates (svn should be available soon).
