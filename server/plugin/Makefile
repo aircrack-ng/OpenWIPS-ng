@@ -1,5 +1,5 @@
 CC				?= gcc
-CFLAGS			?= -Wall -fPIC -g
+CFLAGS			?= -Wall -fPIC -O0 -g3 
 
 PROTO_CHECK_C	= protocol_check.c ../common/pcap.c
 PROTO_CHECK_O	= protocol_check.o pcap.o
