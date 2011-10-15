@@ -124,7 +124,6 @@ int packet_analysis_thread(void * data)
 		}
 
 		// TODO: Currently assuming packets have radiotap headers - Change it and check headers type
-		//printf("Analyzing packets\n");
 		for (cur = local_packet_list->packets; cur != NULL; cur = cur->next) {
 			//printf("Analyzing packet %p\n", cur);
 			// TODO: Think how to handle fragmentated packet (I mean reassembly)
@@ -156,7 +155,6 @@ int packet_analysis_thread(void * data)
 
 			// This is where the data will be analyzed and passed to plugins
 			// Do basic analysis of the values
-			//printf("Do basic checks on packet %p\n", cur);
 			if (cur->info->protocol > 0) { // TODO: Move that check into a plugin
 				fprintf(stderr, "ANOMALY - Invalid protocol version <%u> for frame (SN: %u): it should always be 0.\n", cur->info->protocol, cur->info->sequence_number);
 				// Don't process that frame
@@ -308,8 +306,7 @@ int packet_analysis_thread(void * data)
 			}
 		}
 
-		// Have at least a 3 second window for checking for attacks so remove packets older than that
-		//printf("Removing packets older than %d ms from the last packet\n", time_frame_ms);
+		// Cleanup list
 		free_pcap_packet(&(local_packet_list->packets), 1);
 		local_packet_list->packets = NULL;
 		local_packet_list->nb_packet = 0;
