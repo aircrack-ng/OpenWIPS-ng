@@ -134,7 +134,6 @@ int packet_analysis_thread(void * data)
 			cur->info = parse_packet_basic_info(cur);
 
 			if (cur->info == NULL) {
-				//fprintf(stderr, "Error parsing frame (%p) starting in structure at %p.\n", cur->data, cur);
 				continue;
 			}
 
