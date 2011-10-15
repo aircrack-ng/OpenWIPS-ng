@@ -58,3 +58,6 @@ Q: The sensor cannot connect to the server but the user is valid: Login failed
 A: You are using the wrong user. There are 2 different lines in the configuration: one for the users
    connecting to the server (not yet implemented) and one for the sensor (called 'sensor').
    You have to use the 'sensor' users.
+   
+Q: Why do I get "ERROR on binding (port 9477)." and "Failed to start server on port 9477, exiting."
+A: The socket needs to be closed by the OS to be reused. The OS can take a few seconds to a minute to do it, so just wait a little bit and retry. 
