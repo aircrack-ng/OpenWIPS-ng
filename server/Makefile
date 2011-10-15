@@ -1,5 +1,5 @@
 CC				?= gcc
-CFLAGS			?= -g -pthread -Wall -Werror
+CFLAGS			?= -O0 -g3 -pthread -Wall -Werror
 LIBS			= -lpcap -lssl -lz
 
 prefix			= /usr/local
