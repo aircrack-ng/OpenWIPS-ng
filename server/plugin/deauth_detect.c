@@ -161,7 +161,7 @@ int time_ms_before_analyzing(void * config)
 	if (config != NULL) {
 		das = (struct deauth_attack_struct *) config;
 		if (das->is_attacked || das->is_broadcast) {
-			return 1;
+			return 0;
 		}
 	}
 
