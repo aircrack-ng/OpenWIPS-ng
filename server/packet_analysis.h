@@ -28,8 +28,6 @@
 
 #define FRAME_TYPE_TO_STRING(i) ((i) == 0) ? "Management" : ((i) == 1) ? "Control" : ((i) == 2) ? "Data" : "Invalid"
 
-#define DEFAULT_TIME_FRAME_MS 3000;
-
 // TODO: Create struct and add time of the message and a thread to manage alerts and logging stuff
 // Idea: struct message { time; message; data (if any); type (Log, ALERT, ANOMALY, ...); NEXT; }
 // Store it in a SQLite database (simple design).

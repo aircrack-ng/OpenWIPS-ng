@@ -88,7 +88,6 @@ int is_one_of_our_mac(unsigned char * mac)
 
 int packet_analysis_thread(void * data)
 {
-	int time_frame_ms; // Might be dynamic
 	int is_our_mac, plugin_potential_attack_in_progress;
 	char * attack_details, is_attacked, do_attacked_check, plugin_check;
 	struct pcap_packet * cur;
@@ -99,7 +98,6 @@ int packet_analysis_thread(void * data)
 	uint32_t fcs;
 
 	_packet_analysis_thread_stopped = 0;
-	time_frame_ms = DEFAULT_TIME_FRAME_MS;
 	local_packet_list = init_new_packet_list();
 	plugin_check = 0;
 
