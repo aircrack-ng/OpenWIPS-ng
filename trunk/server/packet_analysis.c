@@ -121,7 +121,6 @@ int packet_analysis_thread(void * data)
 			continue;
 		}
 
-		// TODO: Currently assuming packets have radiotap headers - Change it and check headers type
 		for (cur = local_packet_list->packets; cur != NULL; cur = cur->next) {
 			// TODO: Think how to handle fragmentated packet (I mean reassembly)
 
