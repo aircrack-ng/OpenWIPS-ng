@@ -111,26 +111,20 @@ int can_use_frame(struct pcap_packet * packet, void * config)
 
 int analyze(struct pcap_packet * packet, void * config)
 {
-	struct pcap_packet * pc;
 	struct deauth_attack_struct * das = NULL;
 
 	if (packet == NULL) {
 		return 1;
 	}
 
-	pc = copy_packets(packet, 0, 1);
+
 	if (config != NULL) {
 		das = (struct deauth_attack_struct *) config;
-		if (das->last_packet != NULL) {
-			free_pcap_packet(&(das->last_packet), 0);
-		}
-		das->last_packet = pc;
-		das->is_attacked = 0;
-		das->is_broadcast = 0;
-		das->is_attacked = 0;
-		if (is_mac_broadcast(pc->info->address1) ||
-			is_mac_broadcast(pc->info->address2) ||
-			is_mac_broadcast(pc->info->address3)) {
+		clear_attack(config);
+		das->last_packet = copy_packets(packet, 0, 1);
+		if (is_mac_broadcast(das->last_packet->info->address1) ||
+			is_mac_broadcast(das->last_packet->info->address2) ||
+			is_mac_broadcast(das->last_packet->info->address3)) {
 			das->is_broadcast = 1;
 			das->is_attacked = 1;
 		}
@@ -193,6 +187,7 @@ int is_attacked(struct pcap_packet * packet_list, void * config)
 		das->is_attacked = 0;
 		das->is_broadcast = 0;
 		free_pcap_packet(&(das->last_packet), 0);
+		das->last_packet = NULL;
 
 		return 0;
 	}
@@ -356,5 +351,8 @@ void clear_attack(void * config)
 
 	das->is_attacked = 0;
 	das->is_broadcast = 0;
-	free_pcap_packet(&(das->last_packet), 0);
+	if (das->last_packet != NULL) {
+		free_pcap_packet(&(das->last_packet), 0);
+		das->last_packet = NULL;
+	}
 }
