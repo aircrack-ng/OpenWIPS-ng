@@ -10,17 +10,23 @@ DS_BITS_CHECK_O	= ds_bits_check.o pcap.o
 DEAUTH_DETECT_C	= deauth_detect.c ../common/pcap.c ../common/utils.c
 DEAUTH_DETECT_O	= deauth_detect.o pcap.o utils.o
 
+REPLAY_DETECT_C = replay_detect.c ../common/pcap.c
+REPLAY_DETECT_O = deauth_detect.o pcap.o 
+
 IE_C			= IEs.c ../common/pcap.c
 IE_O			= IEs.o pcap.o
 
 default: all
 
-all: clean protocol_check ds_bits_check deauth_detect ie
+all: clean protocol_check ds_bits_check deauth_detect ie replay_detect
 
 ie:
 	$(CC) $(CFLAGS) -c $(IE_C)
 	$(CC) -shared -Wl,-soname,ie.so.1 -o ie.so.1.0   $(IE_O)
 
+replay_detect:
+	$(CC) $(CFLAGS) -c $(REPLAY_DETECT_C)
+	$(CC) -shared -Wl,-soname,replay_detect.so.1 -o replay_detect.so.1.0   $(REPLAY_DETECT_O)
 
 deauth_detect:
 	$(CC) $(CFLAGS) -c $(DEAUTH_DETECT_C)
