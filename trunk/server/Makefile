@@ -31,7 +31,10 @@ endif
 
 default: all
 
-all: openwips-ng-server
+all: openwips-ng-server plugins
+
+plugins:
+	make -C plugin
 
 openwips-ng-server:
 	$(CC) $(CFLAGS) $(LIBS) -o $(BIN_FILE) $(C_FILES)
