@@ -18,7 +18,7 @@ IE_O			= IEs.o pcap.o
 
 default: all
 
-all: clean protocol_check ds_bits_check deauth_detect ie replay_detect
+all: clean protocol_check ds_bits_check deauth_detect ie
 
 ie:
 	$(CC) $(CFLAGS) -c $(IE_C)
