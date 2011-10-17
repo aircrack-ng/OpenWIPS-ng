@@ -52,7 +52,7 @@ void free_memory_and_unload(void * data)
 
 char plugin_type(void)
 {
-	return 'F';
+	return PLUGIN_TYPE_FRAME;
 }
 
 int min_supported_version()
@@ -62,7 +62,7 @@ int min_supported_version()
 
 int max_supported_version()
 {
-	return 0;
+	return NO_MAX_SUPPORTED_VERSION;
 }
 
 char * init_text(void * config)
@@ -155,7 +155,7 @@ int time_ms_before_analyzing(void * config)
 	if (config != NULL) {
 		das = (struct deauth_attack_struct *) config;
 		if (das->is_attacked || das->is_broadcast) {
-			return 0;
+			return NO_TIME_CONSTRAINT;
 		}
 	}
 
