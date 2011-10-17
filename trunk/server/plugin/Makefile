@@ -19,9 +19,16 @@ IE_O			= IEs.o pcap.o
 FRAG_DETECT_C	= frag_detection.c ../common/pcap.c
 FRAG_DETECT_O	= frag_detection.o pcap.o
 
+SUBTYPE_CHECK_C	= frame_subtype_check.c ../common/pcap.c
+SUBTYPE_CHECK_O	= frame_subtype_check.o pcap.o
+
 default: all
 
 all: clean protocol_check ds_bits_check deauth_detect ie
+
+frame_subtype_check:
+	$(CC) $(CFLAGS) -c $(SUBTYPE_CHECK_C)
+	$(CC) -shared -Wl,-soname,frame_subtype_check.so.1 -o frame_subtype_check.so.1.0   $(SUBTYPE_CHECK_O)
 
 frag_detect:
 	$(CC) $(CFLAGS) -c $(FRAG_DETECT_C)
