@@ -50,7 +50,7 @@ void free_memory_and_unload(void * data)
 
 char plugin_type(void)
 {
-	return 'F';
+	return PLUGIN_TYPE_FRAME;
 }
 
 int min_supported_version()
@@ -60,7 +60,7 @@ int min_supported_version()
 
 int max_supported_version()
 {
-	return 0;
+	return NO_MAX_SUPPORTED_VERSION;
 }
 
 char * init_text(void * config)
@@ -82,7 +82,7 @@ int static_frame_type()
 int static_frame_subtype()
 {
 	// Multiple subtypes
-	return -1;
+	return ANALYZES_ALL_FRAMES;
 }
 
 int need_all_frames()
@@ -128,7 +128,7 @@ int nb_frames_before_analyzing(void * config)
 int time_ms_before_analyzing(void * config)
 {
 	if (config) { }
-	return 0;
+	return NO_TIME_CONSTRAINT;
 }
 
 int is_attacked(struct pcap_packet * packet_list, void * config)
