@@ -17,6 +17,17 @@ extern "C" {
 											(dest)[(counter) + 1] = (unsigned char *)malloc(sizeof(unsigned char *) * MAC_LEN); \
 											memcpy((dest)[(counter)++], (source), sizeof(unsigned char) * MAC_LEN); \
 										}
+#define COPY_MAC_TO_ARRAY(src, dest) dest[0] = src[0]; dest[1] = src[1]; dest[2] = src[2]; dest[3] = src[3]; dest[4] = src[4]; dest[5] = src[5]
+#define NULLIFY_MAC_ARRAY(array) (array)[0] = (array)[1] = (array)[2] = (array)[3] = (array)[4] = (array)[5] = 0
+#define FRAME_TYPE_TO_STRING(type)	((type) == 0) ? "Management" : ((type) == 1) ? "Control" : ((type) == 2) ? "Data" : "Invalid"
+
+#define NO_MAX_SUPPORTED_VERSION	0
+
+#define PLUGIN_TYPE_FRAME		'F'
+
+#define ANALYZES_ALL_FRAMES		-1
+
+#define NO_TIME_CONSTRAINT		-1
 
 #define FRAME_TYPE_MANAGEMENT	0
 #define FRAME_TYPE_CONTROL		1
