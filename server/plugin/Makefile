@@ -16,9 +16,16 @@ REPLAY_DETECT_O = deauth_detect.o pcap.o
 IE_C			= IEs.c ../common/pcap.c
 IE_O			= IEs.o pcap.o
 
+FRAG_DETECT_C	= frag_detection.c ../common/pcap.c
+FRAG_DETECT_O	= frag_detection.o pcap.o
+
 default: all
 
 all: clean protocol_check ds_bits_check deauth_detect ie
+
+frag_detect:
+	$(CC) $(CFLAGS) -c $(FRAG_DETECT_C)
+	$(CC) -shared -Wl,-soname,frag_detect.so.1 -o frag_detect.so.1.0   $(FRAG_DETECT_O)
 
 ie:
 	$(CC) $(CFLAGS) -c $(IE_C)
