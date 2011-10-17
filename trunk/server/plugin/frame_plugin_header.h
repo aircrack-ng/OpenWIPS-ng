@@ -11,6 +11,7 @@ extern "C" {
 #endif
 
 #include "../common/pcap.h"
+#include "generic_plugin_header.h"
 
 #define MAC_LEN 6
 #define COPY_MAC(source, dest, counter)	if (source) { \
@@ -19,11 +20,9 @@ extern "C" {
 										}
 #define COPY_MAC_TO_ARRAY(src, dest) dest[0] = src[0]; dest[1] = src[1]; dest[2] = src[2]; dest[3] = src[3]; dest[4] = src[4]; dest[5] = src[5]
 #define NULLIFY_MAC_ARRAY(array) (array)[0] = (array)[1] = (array)[2] = (array)[3] = (array)[4] = (array)[5] = 0
-#define FRAME_TYPE_TO_STRING(type)	((type) == 0) ? "Management" : ((type) == 1) ? "Control" : ((type) == 2) ? "Data" : "Invalid"
+#define FRAME_TYPE_TO_STRING(type)	((type) == FRAME_TYPE_MANAGEMENT) ? "Management" : ((type) == FRAME_TYPE_CONTROL) ? "Control" : ((type) == FRAME_TYPE_DATA) ? "Data" : "Invalid"
 
 #define NO_MAX_SUPPORTED_VERSION	0
-
-#define PLUGIN_TYPE_FRAME		'F'
 
 #define ANALYZES_ALL_FRAMES		-1
 
@@ -32,13 +31,6 @@ extern "C" {
 #define FRAME_TYPE_MANAGEMENT	0
 #define FRAME_TYPE_CONTROL		1
 #define FRAME_TYPE_DATA			2
-
-void * init_plugin(char * config_line, int version);
-void free_memory_and_unload(void * data);
-char plugin_type(void);
-int min_supported_version();
-int max_supported_version();
-char * init_text(void * config);
 
 int static_frame_type();
 int static_frame_subtype();
