@@ -24,7 +24,7 @@ SUBTYPE_CHECK_O	= frame_subtype_check.o pcap.o
 
 default: all
 
-all: clean protocol_check ds_bits_check deauth_detect ie
+all: clean protocol_check ds_bits_check deauth_detect ie frame_subtype_check
 
 frame_subtype_check:
 	$(CC) $(CFLAGS) -c $(SUBTYPE_CHECK_C)
