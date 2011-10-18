@@ -128,7 +128,7 @@ int nb_frames_before_analyzing(void * config)
 int time_ms_before_analyzing(void * config)
 {
 	if (config) { }
-	return -1;
+	return NO_TIME_CONSTRAINT;
 }
 
 int is_attacked(struct pcap_packet * packet_list, void * config)
