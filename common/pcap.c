@@ -123,6 +123,8 @@ struct packet_info * copy_packet_info(struct pcap_packet * src, struct pcap_pack
 	ret->frequency = src->info->frequency;
 	ret->channel = src->info->channel;
 	ret->frame_payload = (src->info->frame_payload) ? dst->data + (src->info->frame_payload - src->data) : NULL;
+	ret->more_frag = src->info->more_frag;
+	ret->fragment_nr = src->info->fragment_nr;
 
 	return ret;
 }
@@ -157,6 +159,8 @@ struct packet_info * init_new_packet_info()
 	ret->frequency = 0;
 	ret->channel = 0;
 	ret->frame_payload = NULL;
+	ret->more_frag = 0;
+	ret->fragment_nr = 0;
 
 	return ret;
 }
@@ -282,6 +286,7 @@ struct packet_info * parse_packet_basic_info(struct pcap_packet * packet)
 	ret->toDS = to_from_ds % 2 == 1;
 	ret->retry = (*(ret->frame_start + 1) & 8) == 8;
 	ret->QoS = ((((*(ret->frame_start)) & 0xf0 ) >> 4 ) << 4) == 0x80; // TODO: Make sure this is correct
+	ret->more_frag = (unsigned char)(*(ret->frame_start + 1) & 4) == 4;
 
 	// TODO: Check if FCS is present before taking it automatically
 	if (ret->fcs_present) {
@@ -296,13 +301,14 @@ struct packet_info * parse_packet_basic_info(struct pcap_packet * packet)
 		if (packet->header.cap_len < ret->packet_header_len + 23 + (ret->fcs_present) ? FCS_SIZE : 0) {
 			// Packet not long enough for a sequence number
 #ifdef EXTRA_DEBUG
-			fprintf(stderr, "parse_packet_basic_info(): Error - Frame <%d-%d> too short to get SN (FCS: 0x%x).\n",
+			fprintf(stderr, "parse_packet_basic_info(): Error - Frame <%d-%d> too short to get SN and fragment # (FCS: 0x%x).\n",
 					ret->frame_type,
 					ret->frame_subtype,
 					ret->fcs);
 #endif
 		} else {
 			ret->sequence_number = (unsigned short)(((*(ret->frame_start + 22))>>4)+((*(ret->frame_start + 23))<<4));
+			ret->fragment_nr = (*(ret->frame_start + 23)) & 0xF;
 		}
 
 		ret->frame_payload = ret->frame_start + 24 + ((ret->QoS) ? 2 : 0); // There are 2 bytes of QoS
@@ -374,6 +380,7 @@ int print_pcap_packet_info(struct packet_info * pi)
 	printf("\nSignal/Noise: %d/%d\n", pi->signal, pi->noise);
 	printf("Rate: %.1fM\n", pi->rate);
 	printf("Frequency: %u (channel %u)\n", pi->frequency, pi->channel);
+	printf("More fragments: %s (Fragment #: %d)\n", (pi->more_frag) ? "Yes" : "No", pi->fragment_nr);
 
 	if (pi->frame_type == 1) {
 		printf("Addresses (1): %02x:%02x:%02x:%02x:%02x:%02x\n", *(pi->address1), *(pi->address1 + 1), *(pi->address1 + 2), *(pi->address1 + 3), *(pi->address1 + 4), *(pi->address1 + 5));
