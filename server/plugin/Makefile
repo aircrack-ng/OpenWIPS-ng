@@ -32,7 +32,7 @@ frame_subtype_check:
 
 frag_detect:
 	$(CC) $(CFLAGS) -c $(FRAG_DETECT_C)
-	$(CC) -shared -Wl,-soname,frag_detect.so.1 -o frag_detect.so.1.0   $(FRAG_DETECT_O)
+	$(CC) -shared -Wl,-soname,frag_detection.so.1 -o frag_detection.so.1.0   $(FRAG_DETECT_O)
 
 ie:
 	$(CC) $(CFLAGS) -c $(IE_C)
