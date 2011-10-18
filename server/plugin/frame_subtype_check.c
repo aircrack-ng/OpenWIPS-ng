@@ -127,10 +127,11 @@ int time_ms_before_analyzing(void * config)
 int is_attacked(struct pcap_packet * packet_list, void * config)
 {
 	struct attack_details * ad;
+
 	const static unsigned int is_attacked_array[3][16] = {
-			{ 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1 },	// Management
-			{ 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },	// Control frames
-			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 }	// Data frames
+			{ 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1 },	// Management: wlan.fc.type == 0 && (wlan.fc.subtype == 7 || wlan.fc.subtype == 15)
+			{ 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },	// Control frames: wlan.fc.type == 1 && wlan.fc.subtype < 7
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 }	// Data frames: wlan.fc.type == 2 && wlan.fc.subtype == 13
 	};
 
 	if (packet_list == NULL) {
@@ -184,7 +185,10 @@ char * attack_details(void * config)
 
 unsigned char ** get_attacker_macs(void * config, int * nb_mac, int * deauth)
 {
+	int counter;
 	struct attack_details * ad;
+	unsigned char ** macs = NULL;
+
 	if (config == NULL) {
 		return NULL;
 	}
@@ -192,6 +196,23 @@ unsigned char ** get_attacker_macs(void * config, int * nb_mac, int * deauth)
 	ad = (struct attack_details *)config;
 	if (nb_mac) {
 		*nb_mac = ad->nb_addr;
+
+		if (ad->nb_addr) {
+			// Copy macs
+			macs = (unsigned char **)malloc(sizeof(unsigned char *) * (ad->nb_addr));
+			counter = 0;
+
+			COPY_MAC(ad->address1, macs, counter)
+			if (ad->nb_addr > 1) {
+				COPY_MAC(ad->address2, macs, counter)
+			}
+			if (ad->nb_addr > 2) {
+				COPY_MAC(ad->address3, macs, counter)
+			}
+			if (ad->nb_addr > 3) {
+				COPY_MAC(ad->address4, macs, counter)
+			}
+		}
 	}
 
 	if (ad->nb_addr == 0) {
@@ -202,10 +223,7 @@ unsigned char ** get_attacker_macs(void * config, int * nb_mac, int * deauth)
 		*deauth = 1;
 	}
 
-
-
-	// TODO: Copy MACs and return them
-	return NULL;
+	return macs;
 }
 
 void clear_attack(void * config)
