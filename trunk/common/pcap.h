@@ -90,8 +90,10 @@ struct packet_info {
 	char signal, noise;
 	unsigned short channel;
 	uint32_t fcs, frequency;
-	double rate;
 	unsigned char fcs_present;
+	unsigned char more_frag;
+	unsigned char fragment_nr;
+	double rate;
 };
 
 struct packet_info * copy_packet_info(struct pcap_packet * src, struct pcap_packet * dst);
