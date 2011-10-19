@@ -33,10 +33,8 @@ void * init_plugin(char * config_line, int version)
 
 	config = (struct deauth_attack_struct *)malloc(sizeof(struct deauth_attack_struct));
 	config->is_attacked = 0;
-	config->source_mac[0] = config->source_mac[1] = config->source_mac[2] =
-			config->source_mac[3] = config->source_mac[4] = config->source_mac[5] = 0;
-	config->dest_mac[0] = config->dest_mac[1] = config->dest_mac[2] =
-			config->dest_mac[3] = config->dest_mac[4] = config->dest_mac[5] = 0;
+	NULLIFY_MAC_ARRAY(config->source_mac);
+	NULLIFY_MAC_ARRAY(config->dest_mac);
 
 	config->last_packet = NULL;
 
