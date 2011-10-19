@@ -24,13 +24,13 @@ SUBTYPE_CHECK_O	= frame_subtype_check.o pcap.o
 
 default: all
 
-all: clean protocol_check ds_bits_check deauth_detect ie frame_subtype_check
+all: clean protocol_check ds_bits_check deauth_detect ie frame_subtype_check frag_detection
 
 frame_subtype_check:
 	$(CC) $(CFLAGS) -c $(SUBTYPE_CHECK_C)
 	$(CC) -shared -Wl,-soname,frame_subtype_check.so.1 -o frame_subtype_check.so.1.0   $(SUBTYPE_CHECK_O)
 
-frag_detect:
+frag_detection:
 	$(CC) $(CFLAGS) -c $(FRAG_DETECT_C)
 	$(CC) -shared -Wl,-soname,frag_detection.so.1 -o frag_detection.so.1.0   $(FRAG_DETECT_O)
 
