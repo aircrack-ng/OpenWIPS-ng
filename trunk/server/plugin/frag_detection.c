@@ -214,7 +214,7 @@ char * attack_details(void * config)
 	}
 
 	fa = (struct frag_attack *)config;
-	ret = (char *)calloc(1, 50 + (fa->nb_mac * 3 * MAC_LEN));
+	ret = (char *)calloc(1, 100 + (fa->nb_mac * 3 * MAC_LEN));
 
 	strcpy(ret, "ALERT - Fragmentation attack in progress");
 	if (fa->nb_mac) {
