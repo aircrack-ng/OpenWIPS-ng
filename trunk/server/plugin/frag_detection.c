@@ -207,7 +207,7 @@ char * attack_details(void * config)
 {
 	int i;
 	struct frag_attack * fa;
-	char * ret = NULL;
+	char * ret;
 
 	if (config == NULL) {
 		return NULL;
