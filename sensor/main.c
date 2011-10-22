@@ -66,6 +66,11 @@ int main (int argc, char * argv[])
 		help();
 	}
 
+	if (getuid() != 0) {
+		fprintf( stderr, "This program requires root privileges.\n" );
+		exit(EXIT_FAILURE);
+	}
+
 	// Check if interface exist
 	if (!interface_exist(argv[1])) {
 		fprintf(stderr, "Interface <%s> does not exist.\n", argv[1]);
