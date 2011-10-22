@@ -308,7 +308,7 @@ struct packet_info * parse_packet_basic_info(struct pcap_packet * packet)
 #endif
 		} else {
 			ret->sequence_number = (unsigned short)(((*(ret->frame_start + 22))>>4)+((*(ret->frame_start + 23))<<4));
-			ret->fragment_nr = (*(ret->frame_start + 23)) & 0xF;
+			ret->fragment_nr = (*(ret->frame_start + 22)) & 0xF;
 		}
 
 		ret->frame_payload = ret->frame_start + 24 + ((ret->QoS) ? 2 : 0); // There are 2 bytes of QoS
