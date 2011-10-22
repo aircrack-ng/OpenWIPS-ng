@@ -288,7 +288,6 @@ struct packet_info * parse_packet_basic_info(struct pcap_packet * packet)
 	ret->QoS = ((((*(ret->frame_start)) & 0xf0 ) >> 4 ) << 4) == 0x80; // TODO: Make sure this is correct
 	ret->more_frag = (unsigned char)(*(ret->frame_start + 1) & 4) == 4;
 
-	// TODO: Check if FCS is present before taking it automatically
 	if (ret->fcs_present) {
 		memcpy(&(ret->fcs), (packet->data + packet->header.cap_len - FCS_SIZE), FCS_SIZE);
 	}
