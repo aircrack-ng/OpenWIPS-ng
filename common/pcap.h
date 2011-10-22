@@ -93,6 +93,7 @@ struct packet_info {
 	unsigned char fcs_present;
 	unsigned char more_frag;
 	unsigned char fragment_nr;
+	unsigned char more_data, protected, order, power_management;
 	double rate;
 };
 

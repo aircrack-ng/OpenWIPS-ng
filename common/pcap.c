@@ -125,6 +125,10 @@ struct packet_info * copy_packet_info(struct pcap_packet * src, struct pcap_pack
 	ret->frame_payload = (src->info->frame_payload) ? dst->data + (src->info->frame_payload - src->data) : NULL;
 	ret->more_frag = src->info->more_frag;
 	ret->fragment_nr = src->info->fragment_nr;
+	ret->more_data = src->info->more_data;
+	ret->protected = src->info->protected;
+	ret->order = src->info->order;
+	ret->power_management = src->info->power_management;
 
 	return ret;
 }
@@ -161,6 +165,10 @@ struct packet_info * init_new_packet_info()
 	ret->frame_payload = NULL;
 	ret->more_frag = 0;
 	ret->fragment_nr = 0;
+	ret->more_data = 0;
+	ret->protected = 0;
+	ret->order = 0;
+	ret->power_management = 0;
 
 	return ret;
 }
@@ -287,6 +295,10 @@ struct packet_info * parse_packet_basic_info(struct pcap_packet * packet)
 	ret->retry = (*(ret->frame_start + 1) & 8) == 8;
 	ret->QoS = ((((*(ret->frame_start)) & 0xf0 ) >> 4 ) << 4) == 0x80; // TODO: Make sure this is correct
 	ret->more_frag = (unsigned char)(*(ret->frame_start + 1) & 4) == 4;
+	ret->order = (unsigned char)(*(ret->frame_start + 1) & 0x80) == 0x80;
+	ret->protected = (unsigned char)(*(ret->frame_start + 1) & 0x40) == 0x40;
+	ret->more_data = (unsigned char)(*(ret->frame_start + 1) & 0x20) == 0x20;
+	ret->power_management = (unsigned char)(*(ret->frame_start + 1) & 0x10) == 0x10;
 
 	if (ret->fcs_present) {
 		memcpy(&(ret->fcs), (packet->data + packet->header.cap_len - FCS_SIZE), FCS_SIZE);
@@ -380,6 +392,10 @@ int print_pcap_packet_info(struct packet_info * pi)
 	printf("Rate: %.1fM\n", pi->rate);
 	printf("Frequency: %u (channel %u)\n", pi->frequency, pi->channel);
 	printf("More fragments: %s (Fragment #: %d)\n", (pi->more_frag) ? "Yes" : "No", pi->fragment_nr);
+	printf("More data bit: %s\n", (pi->more_data) ? "Yes" : "No");
+	printf("Protected bit: %s\n", (pi->protected) ? "Yes" : "No");
+	printf("Order bit: %s\n", (pi->order) ? "Yes" : "No");
+	printf("Power management bit: %s\n", (pi->power_management) ? "Yes" : "No");
 
 	if (pi->frame_type == 1) {
 		printf("Addresses (1): %02x:%02x:%02x:%02x:%02x:%02x\n", *(pi->address1), *(pi->address1 + 1), *(pi->address1 + 2), *(pi->address1 + 3), *(pi->address1 + 4), *(pi->address1 + 5));
