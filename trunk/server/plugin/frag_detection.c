@@ -124,8 +124,8 @@ int need_all_frames()
 
 int is_single_frame_attack()
 {
-	// No because it depends on the config
-	return 0;
+	// No because it depends on the config but currently it is
+	return 1;
 }
 
 int require_packet_parsed()
