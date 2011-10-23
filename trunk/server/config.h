@@ -23,6 +23,7 @@
 #define CONFIG_H_
 
 #include "users.h"
+#include "common/config.h"
 
 #define IS_TEXT_TRUE(text)	(strcasecmp((text), "y") == 0 || \
 							strcasecmp((text), "yes") == 0 || \
@@ -37,12 +38,6 @@ extern int free_userpass(struct userpass ** ptr); // in user.c
 
 extern int is_ip_valid(char * ip); // in common/sockets.c
 
-struct key_value {
-	char * key;
-	char * value;
-	struct key_value * next;
-};
-
 int _disable_encryption; // Disable encryption between sensor and server?
 int _port;
 // struct userpass * _userlist, * _sensorlist; // See users.h
@@ -55,8 +50,6 @@ int _nb_macs;
 // TODO: Add function to return a specific set of keys and use it: struct key_value * get_keys(char * key_name)
 
 int parse_plugins_options(); // Parse plugin options and load them
-char * read_text_file_content(char * path); // Read the content of the file and return it
-int parse_keyvalues(char * config_content); // Parse key/value pairs
 int read_conf_file(char * path); // Main function to read the config file
 int parse_our_mac_addresses(); // Parse list of protected mac addreses
 int parse_simple_options(); // Parse other simple options

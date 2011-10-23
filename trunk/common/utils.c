@@ -158,3 +158,58 @@ int interface_exist(char * interface_name)
 
 	return 1;
 }
+
+char * read_text_file_content(char * path, int replace_null_by_space)
+{
+	FILE * f;
+	long int file_length, i;
+	long int items_read;
+	char * ret = NULL;
+
+	if (path == NULL) {
+		fprintf(stderr, "No path to the configuration file given.\n");
+		return ret;
+	}
+
+	// Check if file exist
+	f = fopen(path, "r");
+	if (f == NULL) {
+		fprintf(stderr, "Configuration file does not exist.\n");
+		return ret;
+	}
+
+	// Get length of the file then allocate the char * storing it
+	fseek(f, 0, SEEK_END);
+	file_length = ftell(f);
+
+	if (file_length == 0) {
+		fprintf(stderr, "Failed to read configuration file: file is empty.\n");
+		fclose(f);
+		return EXIT_SUCCESS;
+	}
+
+	fseek(f, 0, SEEK_SET);
+	ret = (char *)calloc(1, (file_length + 2)* sizeof (char));
+	items_read = fread(ret, file_length, 1, f);
+	fclose(f);
+	if (items_read != 1) {
+		fprintf(stderr, "Failed to read configuration file.\n");
+		free(ret);
+		return EXIT_SUCCESS;
+	}
+
+	if (replace_null_by_space) {
+		// Replace any occurence of NULL in the config file by a space.
+		for (i = 0; i <= file_length; i++) {
+			if (ret[i] == '\0') {
+				ret[i] = ' ';
+			}
+		}
+	}
+
+#ifdef DEBUG
+	printf("Configuration file content:\n%s\n-----------------------\n", ret);
+#endif
+
+	return ret;
+}

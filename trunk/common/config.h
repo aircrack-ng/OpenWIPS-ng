@@ -19,17 +19,17 @@
  *      Author: Thomas d'Otreppe de Bouvette
  */
 
-#ifndef COMMON_UTILS_H_
-#define COMMON_UTILS_H_
+#ifndef COMMON_CONFIG_H_
+#define COMMON_CONFIG_H_
 
-#include "pcap.h"
+struct key_value {
+	char * key;
+	char * value;
+	struct key_value * next;
+};
 
-int is_mac_broadcast(unsigned char * mac);
-int interface_exist(char * interface_name);
-struct timeval * get_time_difference_between_packet(struct pcap_packet * packet1, struct pcap_packet * packet2);
-int is_mac_equal(unsigned char *  from_packet, char * printed_mac);
-unsigned char * parse_mac_from_string(char * mac);
-int get_hex_value(char c);
-char * read_text_file_content(char * path, int replace_null_by_space); // Read the content of the file and return it
+extern struct key_value * _config; // in config.h
 
-#endif /* COMMON_UTILS_H_ */
+int parse_keyvalues(char * config_content); // Parse key/value pairs
+
+#endif /* COMMON_CONFIG_H_ */
