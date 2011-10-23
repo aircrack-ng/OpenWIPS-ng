@@ -58,6 +58,7 @@ void free_global_memory_message()
 int add_message_to_queue(int message_type, unsigned char * data, unsigned char force_log, char * message)
 {
 	struct message_details * msg, * cur;
+	int ret = EXIT_SUCCESS;
 
 	if (STRING_IS_NULL_OR_EMPTY(message)) {
 		return EXIT_FAILURE;
@@ -68,8 +69,8 @@ int add_message_to_queue(int message_type, unsigned char * data, unsigned char f
 	msg->data = data;
 	msg->message_type = message_type;
 	msg->next = NULL;
-	msg->displayed = 0;
 	msg->force_log = force_log;
+	msg->logged = 0;
 	msg->id = 0; // Not used yet
 	time(&(msg->time));
 
@@ -79,13 +80,17 @@ int add_message_to_queue(int message_type, unsigned char * data, unsigned char f
 	if (_message_list == NULL) {
 		_message_list = msg;
 	} else {
-		for (cur = _message_list; cur->next != NULL; cur = cur->next);
-		cur->next = msg;
+		if (msg->force_log || !has_message_been_displayed_already(msg)) {
+			for (cur = _message_list; cur->next != NULL; cur = cur->next);
+			cur->next = msg;
+		} else {
+			ret = EXIT_FAILURE;
+		}
 	}
 
 	pthread_mutex_unlock(&_message_list_mutex);
 
-	return EXIT_SUCCESS;
+	return ret;
 }
 
 int start_message_thread()
@@ -108,16 +113,12 @@ int start_message_thread()
 int has_message_been_displayed_already(struct message_details * msg)
 {
 	struct message_details * cur;
-	if (msg == NULL) {
+	if (msg == NULL || _message_list == NULL) {
 		return 0;
 	}
 
-	if (msg->displayed) {
-		return 1;
-	}
-
 	for (cur = _message_list; cur != NULL && cur != msg; cur = cur->next) {
-		if (cur->displayed && strcmp(msg->message, cur->message) == 0) {
+		if (strcmp(msg->message, cur->message) == 0) {
 			return 1;
 		}
 	}
@@ -127,13 +128,14 @@ int has_message_been_displayed_already(struct message_details * msg)
 
 int message_thread(void * data)
 {
-	struct message_details * last, * cur, * to_keep, * prev, *next;
+	struct message_details * last, * cur, * to_keep, * prev;
 	time_t cur_time;
 	char * time_str;
 	FILE * f;
 	int priority;
 
 	last = NULL;
+	to_keep = NULL;
 
 	if (_log_facility == LOG_FACILITY_SYSLOG) {
 		openlog("openwips-ng-server", LOG_CONS | LOG_PID, LOG_USER);
@@ -141,7 +143,6 @@ int message_thread(void * data)
 
 	while (!_stop_threads) {
 		time(&cur_time);
-		to_keep = NULL;
 
 		if (last == NULL) {
 			last = _message_list;
@@ -149,90 +150,97 @@ int message_thread(void * data)
 
 		if (last) {
 			pthread_mutex_lock(&_message_list_mutex);
+
 			// Check for new messages and display them (make sure it hasn't been displayed in the last X seconds).
 			for (cur = last; cur != NULL; cur = cur->next) {
 
-				// Check if that message has been displayed (or must be displayed)
-				if (cur->force_log || has_message_been_displayed_already(cur) == 0) {
+				if (cur->logged) {
+					continue;
+				}
 
-					// Display this message
-					if (!_deamonize || _log_facility == LOG_FACILITY_FILE) {
-						time_str = ctime(&(cur->time));
-					}
-					if (!_deamonize) {
+				if (!_deamonize || _log_facility == LOG_FACILITY_FILE) {
+					time_str = ctime(&(cur->time));
+					time_str[strlen(time_str) - 1] = '\0';
+				}
+
+				// Display this message if not deamonized.
+				if (!_deamonize) {
+					if (cur->message_type != MESSAGE_TYPE_REG_LOG) {
 						fprintf(stderr, "%s - %8s - %s\n", time_str,
 															MESSAGE_TYPE_TO_STRING(cur->message_type),
 															cur->message);
+					} else {
+						fprintf(stderr, "%s - %s\n", time_str, cur->message);
 					}
-
-					switch (_log_facility) {
-						case LOG_FACILITY_NONE:
-							break;
-
-						case LOG_FACILITY_FILE:
-							// Write it to a file
-							f = fopen(_log_file, "a");
-							if (f == NULL) {
-								break;
-							}
-							fprintf(f, "%s - %8s - %s\n", time_str,
-														MESSAGE_TYPE_TO_STRING(cur->message_type),
-														cur->message);
-							fflush(f);
-							fclose(f);
-							break;
-						case LOG_FACILITY_SYSLOG:
-							priority = LOG_USER;
-							switch (cur->message_type) {
-								case MESSAGE_TYPE_ALERT:
-									priority |= LOG_ALERT;
-									break;
-								case MESSAGE_TYPE_ANOMALY:
-									priority |= LOG_WARNING;
-									break;
-								case MESSAGE_TYPE_REG_LOG:
-								case MESSAGE_TYPE_NOT_SET:
-									priority |= LOG_NOTICE;
-									break;
-								case MESSAGE_TYPE_DEBUG:
-									priority |= LOG_DEBUG;
-									break;
-								case MESSAGE_TYPE_CRITICAL:
-									priority |= LOG_EMERG;
-									break;
-								default:
-									priority |= LOG_NOTICE;
-									break;
-							}
-
-							syslog(priority, "%s", cur->message);
-
-							break;
-						default:
-							fprintf(stderr, "Invalid log facility. Cannot log message.\n");
-							break;
-					}
-					if (!_deamonize || _log_facility == LOG_FACILITY_FILE) {
-						free(time_str);
-					}
-
-					// And update its status
-					cur->displayed = 1;
-
-					last = cur;
 				}
+
+				switch (_log_facility) {
+					case LOG_FACILITY_NONE:
+						break;
+
+					case LOG_FACILITY_FILE:
+						// Write it to a file
+						f = fopen(_log_file, "a");
+						if (f == NULL) {
+							break;
+						}
+						fprintf(f, "%s - %8s - %s\n", time_str,
+													MESSAGE_TYPE_TO_STRING(cur->message_type),
+													cur->message);
+						fflush(f);
+						fclose(f);
+						break;
+					case LOG_FACILITY_SYSLOG:
+						priority = LOG_USER;
+						switch (cur->message_type) {
+							case MESSAGE_TYPE_ALERT:
+								priority |= LOG_ALERT;
+								break;
+							case MESSAGE_TYPE_ANOMALY:
+								priority |= LOG_WARNING;
+								break;
+							case MESSAGE_TYPE_REG_LOG:
+							case MESSAGE_TYPE_NOT_SET:
+								priority |= LOG_NOTICE;
+								break;
+							case MESSAGE_TYPE_DEBUG:
+								priority |= LOG_DEBUG;
+								break;
+							case MESSAGE_TYPE_CRITICAL:
+								priority |= LOG_EMERG;
+								break;
+							default:
+								priority |= LOG_NOTICE;
+								break;
+						}
+
+						syslog(priority, "%s", cur->message);
+
+						break;
+					default:
+						fprintf(stderr, "Invalid log facility. Cannot log message.\n");
+						break;
+				}
+				if (!_deamonize || _log_facility == LOG_FACILITY_FILE) {
+					free(time_str);
+				}
+
+				cur->logged = 1;
+
+				last = cur;
 			}
 
 			// Clear messages older than X seconds
-			for (cur = _message_list; cur != NULL; cur = cur->next) {
-				if (difftime(cur_time, cur->time) < TIME_IN_SEC_BEFORE_MESSAGE_REDISPLAY) {
+			for (cur = _message_list; cur != NULL;) {
+				if (difftime(cur_time, cur->time) <= TIME_IN_SEC_BEFORE_MESSAGE_REDISPLAY) {
 					to_keep = cur;
 					break;
 				}
-			}
 
-			// Clear messages
-			for (cur = _message_list; cur != NULL && to_keep != cur;) {
+				if (last == cur) {
+					last = NULL;
+				}
+
 				prev = cur;
 				cur = cur->next;
 				FREE_AND_NULLIFY(prev->data);
@@ -241,29 +249,9 @@ int message_thread(void * data)
 			}
 			_message_list = to_keep;
 
-			// Clear all undisplayed messages
-			prev = NULL;
-			next = NULL;
-			for (cur = _message_list; cur != NULL;) {
-				next = cur->next;
-				if (cur->displayed == 0) {
-					if (prev == NULL) {
-						_message_list = next;
-					} else {
-						prev->next = next;
-					}
-
-					FREE_AND_NULLIFY(cur->data);
-					FREE_AND_NULLIFY(cur->message);
-					free(cur);
-				} else {
-					prev = cur;
-				}
-				cur = next;
-			}
-
 			pthread_mutex_unlock(&_message_list_mutex);
 
+			to_keep = NULL;
 		}
 
 		// Sleep a little
