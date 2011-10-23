@@ -49,7 +49,7 @@ struct message_details {
 	char * message; // Message itself
 	unsigned char * data; // Any data (if useful)
 	char message_type; // Message type (LOG, ALERT, ANOMALY, ...)
-	unsigned char displayed; // Has the message been displayed
+	int logged; // Has the message been logged?
 	unsigned char force_log; // Does that message needs to be logged even if it has been already shown/logged?
 	struct message_details * next; // NEXT message
 };
