@@ -121,7 +121,7 @@ int packet_analysis_thread(void * data)
 			if (cur->header.cap_len < MIN_PACKET_SIZE + FCS_SIZE) {
 				temp_str = (char *)calloc(1, 200 * sizeof(char));
 				sprintf(temp_str, "Received invalid packet - frame too short to be analyzed. Expected %d bytes, received %u.", MIN_PACKET_SIZE + FCS_SIZE, cur->header.cap_len);
-				add_message_to_queue(MESSAGE_TYPE_ANOMALY, NULL, 1, temp_str);
+				add_message_to_queue(MESSAGE_TYPE_ANOMALY, NULL, 1, temp_str, 0);
 				continue;
 			}
 
@@ -150,7 +150,7 @@ int packet_analysis_thread(void * data)
 
 				temp_str = (char *)calloc(1, 200 * sizeof(char));
 				sprintf(temp_str, "Invalid protocol version <%u> for frame (SN: %u): it should always be 0.\n", cur->info->protocol, cur->info->sequence_number);
-				add_message_to_queue(MESSAGE_TYPE_ANOMALY, NULL, 1, temp_str);
+				add_message_to_queue(MESSAGE_TYPE_ANOMALY, NULL, 1, temp_str, 0);
 
 				// Don't process that frame
 
@@ -303,7 +303,8 @@ int packet_analysis_thread(void * data)
 												(message_type == MESSAGE_TYPE_NOT_SET) ? MESSAGE_TYPE_ALERT : message_type,
 														NULL,
 														0,
-														temp_str);
+														temp_str,
+														0);
 							// No need to free temp_str since the pointer is copied (and not the string)
 
 							FREE_AND_NULLIFY(attack_details);
