@@ -27,6 +27,7 @@
 #include "config.h"
 #include "plugins.h"
 #include "common/deamonize.h"
+#include "messages.h"
 
 // TODO: Handle signal to clean stuff up (especially the socket)
 
@@ -215,6 +216,8 @@ int main(int nbarg, char * argv[])
 		free_global_memory();
 		return EXIT_FAILURE;
 	}
+
+	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "OpenWIPS-ng server starting");
 
 	if (start_packet_assembly_thread() == EXIT_FAILURE) {
 		fprintf(stderr, "Failed to start packet reassembly and analysis thread, exiting.\n");
