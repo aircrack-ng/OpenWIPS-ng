@@ -130,7 +130,8 @@ int parse_args(int nbarg, char * argv[])
 				return( 1 );
 
 			case 'd' :
-				_deamonize = 1;
+				//_deamonize = 1;
+				fprintf(stderr, "Deamonize is not implemented yet.\n");
 				break;
 
 			case '?' :
