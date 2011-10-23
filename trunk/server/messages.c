@@ -169,13 +169,9 @@ int message_thread(void * data)
 
 				// Display this message if not deamonized.
 				if (!_deamonize) {
-					if (cur->message_type != MESSAGE_TYPE_REG_LOG) {
-						fprintf(stderr, "%s - %8s - %s\n", time_str,
-															MESSAGE_TYPE_TO_STRING(cur->message_type),
-															cur->message);
-					} else {
-						fprintf(stderr, "%s - %s\n", time_str, cur->message);
-					}
+					fprintf(stderr, "%s - %8s - %s\n", time_str,
+									MESSAGE_TYPE_TO_STRING(cur->message_type),
+									cur->message);
 				}
 
 				switch (_log_facility) {
