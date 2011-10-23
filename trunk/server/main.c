@@ -26,10 +26,9 @@
 #include "main.h"
 #include "config.h"
 #include "plugins.h"
+#include "common/deamonize.h"
 
 // TODO: Handle signal to clean stuff up (especially the socket)
-
-
 
 void help()
 {
@@ -76,6 +75,7 @@ void init()
 	//init_sensors_users_list();
 	_stop_threads = 0;
 	_config_file_location = CONFIG_FILE_LOCATION;
+	_deamonize = 0;
 	init_packet_assembly();
 	init_sensor();
 	init_packet_analysis();
@@ -104,6 +104,7 @@ int parse_args(int nbarg, char * argv[])
 		{"check-config",	1, 0, 'c'},
 		{"hash-password",	1, 0, 'i'},
 		{"version",			0, 0, 'v'},
+		{"deamonize",		0, 0, 'd'},
 		{0,             	0, 0,  0 }
 	};
 
@@ -112,7 +113,7 @@ int parse_args(int nbarg, char * argv[])
 		option_index = 0;
 
 		option = getopt_long( nbarg, argv,
-						"hp:vc:i:",
+						"hp:vc:i:d",
 						long_options, &option_index );
 
 		if( option < 0 ) break;
@@ -127,6 +128,10 @@ int parse_args(int nbarg, char * argv[])
 
 				printf("\"%s --help\" for help.\n", argv[0]);
 				return( 1 );
+
+			case 'd' :
+				_deamonize = 1;
+				break;
 
 			case '?' :
 			case 'h' :
@@ -191,14 +196,18 @@ int main(int nbarg, char * argv[])
 		_config_file_location = argv[1];
 	}
 
+	if (_deamonize) {
+		daemonize();
+	}
+
 	// Read configuration file
-	printf("[*] Reading configuration file <%s>.\n", _config_file_location);
+	fprintf(stderr, "[*] Reading configuration file <%s>.\n", _config_file_location);
 	if (read_conf_file(_config_file_location) == EXIT_FAILURE) {
 		fprintf(stderr, "[*] Failed to read configuration, exiting.\n");
 		free_global_memory();
 		return EXIT_FAILURE;
 	}
-	printf("[*] Successfully read configuration.\n");
+	fprintf(stderr, "[*] Successfully read configuration.\n");
 
 	if (start_message_thread() == EXIT_FAILURE) {
 		fprintf(stderr, "Failed to start message thread, exiting.\n");
@@ -229,7 +238,7 @@ int main(int nbarg, char * argv[])
 		return EXIT_FAILURE;
 	}
 
-	printf("[*] Listening for sensors on port %d.\n", _port);
+	fprintf(stderr, "[*] Listening for sensors on port %d.\n", _port);
 
 	// Serve
 	while(1) {

@@ -27,6 +27,7 @@
 // Local variables
 volatile int _stop_threads;
 char * _config_file_location;
+int _deamonize;
 
 // Local function
 void help();
