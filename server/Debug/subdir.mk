@@ -6,6 +6,7 @@
 C_SRCS += \
 ../config.c \
 ../main.c \
+../messages.c \
 ../packet_analysis.c \
 ../plugins.c \
 ../users.c 
@@ -13,6 +14,7 @@ C_SRCS += \
 OBJS += \
 ./config.o \
 ./main.o \
+./messages.o \
 ./packet_analysis.o \
 ./plugins.o \
 ./users.o 
@@ -20,6 +22,7 @@ OBJS += \
 C_DEPS += \
 ./config.d \
 ./main.d \
+./messages.d \
 ./packet_analysis.d \
 ./plugins.d \
 ./users.d 

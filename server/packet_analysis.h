@@ -28,30 +28,6 @@
 
 #define FRAME_TYPE_TO_STRING(i) ((i) == 0) ? "Management" : ((i) == 1) ? "Control" : ((i) == 2) ? "Data" : "Invalid"
 
-// TODO: Create struct and add time of the message and a thread to manage alerts and logging stuff
-// Idea: struct message { time; message; data (if any); type (Log, ALERT, ANOMALY, ...); NEXT; }
-// Store it in a SQLite database (simple design).
-// Also have a function to know if a message has been displayed in the last X seconds (to avoid thousand of messages)
-// TODO: Also clear pcap list when an attack has been detected.
-char ** _message_list;
-int _nb_messages;
-
-struct message_details {
-	uint32_t id; // Message ID
-	time_t time; // Time of the message
-	char * message; // Message itself
-	unsigned char * data; // Any data (if useful)
-	int message_type; // Message type (LOG, ALERT, ANOMALY, ...)
-	struct message_details * next; // NEXT message
-};
-
-// TODO: Create software to create initialization, free, add, remove, remove_x_begin, ... because it is always the same operations.
-
-#define MESSAGE_TYPE_NOT_SET	-1
-#define MESSAGE_TYPE_REG_LOG	0
-#define MESSAGE_TYPE_ALERT		1
-#define MESSAGE_TYPE_ANOMALY	2
-
 extern unsigned char ** _our_macs; // config.h
 extern int _nb_macs; // config.h
 

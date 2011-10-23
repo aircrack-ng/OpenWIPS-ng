@@ -29,23 +29,15 @@
 #include "common/defines.h"
 #include "common/utils.h"
 #include "plugins.h"
+#include "messages.h"
 
 void init_packet_analysis()
 {
 	_packet_analysis_thread = PTHREAD_NULL;
-	_message_list = NULL;
-	_nb_messages = 0;
 }
 
 void free_global_memory_packet_analysis()
 {
-	int i;
-	if (_message_list != NULL) {
-		for (i = 0; i < _nb_messages; i++) {
-			free(_message_list+i);
-		}
-		FREE_AND_NULLIFY(_message_list);
-	}
 }
 
 int start_packet_analysis_thread()
@@ -89,13 +81,14 @@ int is_one_of_our_mac(unsigned char * mac)
 int packet_analysis_thread(void * data)
 {
 	int is_our_mac, plugin_potential_attack_in_progress;
-	char * attack_details, is_attacked, do_attacked_check, plugin_check;
+	char * attack_details, is_attacked, do_attacked_check, plugin_check, * temp_str, * new_details;
 	struct pcap_packet * cur;
 	struct packet_list * local_packet_list;
 	struct plugin_info * cur_plugin;
 	struct frame_plugin_functions * cur_frame_plugin_fct;
 	struct timeval * timediff;
 	uint32_t fcs;
+	unsigned char message_type;
 
 	_packet_analysis_thread_stopped = 0;
 	local_packet_list = init_new_packet_list();
@@ -126,7 +119,9 @@ int packet_analysis_thread(void * data)
 
 			// TODO: Add a message telling we got invalid packet
 			if (cur->header.cap_len < MIN_PACKET_SIZE + FCS_SIZE) {
-				fprintf(stderr, "Received invalid packet - frame too short to be analyzed. Expected %d bytes, received %u.\n", MIN_PACKET_SIZE + FCS_SIZE, cur->header.cap_len);
+				temp_str = (char *)calloc(1, 200 * sizeof(char));
+				sprintf(temp_str, "Received invalid packet - frame too short to be analyzed. Expected %d bytes, received %u.", MIN_PACKET_SIZE + FCS_SIZE, cur->header.cap_len);
+				add_message_to_queue(MESSAGE_TYPE_ANOMALY, NULL, 1, temp_str);
 				continue;
 			}
 
@@ -144,6 +139,7 @@ int packet_analysis_thread(void * data)
 #ifdef EXTRA_DEBUG
 					fprintf(stderr, "Invalid FCS: Got 0x%x, expected 0x%x. Ignoring frame.\n", cur->info->fcs, fcs);
 #endif
+
 					continue;
 				}
 			}
@@ -151,7 +147,11 @@ int packet_analysis_thread(void * data)
 			// This is where the data will be analyzed and passed to plugins
 			// Do basic analysis of the values
 			if (cur->info->protocol > 0) { // TODO: Move that check into a plugin
-				fprintf(stderr, "ANOMALY - Invalid protocol version <%u> for frame (SN: %u): it should always be 0.\n", cur->info->protocol, cur->info->sequence_number);
+
+				temp_str = (char *)calloc(1, 200 * sizeof(char));
+				sprintf(temp_str, "Invalid protocol version <%u> for frame (SN: %u): it should always be 0.\n", cur->info->protocol, cur->info->sequence_number);
+				add_message_to_queue(MESSAGE_TYPE_ANOMALY, NULL, 1, temp_str);
+
 				// Don't process that frame
 
 				continue;
@@ -279,11 +279,32 @@ int packet_analysis_thread(void * data)
 						is_attacked = cur_frame_plugin_fct->is_attacked(cur_frame_plugin_fct->frame_list->packets, cur_plugin->plugin_data);
 						if (is_attacked) {
 							attack_details = cur_frame_plugin_fct->attack_details(cur_plugin->plugin_data);
+							message_type = MESSAGE_TYPE_NOT_SET;
 							if (!STRING_IS_NULL_OR_EMPTY(attack_details)) {
-								fprintf(stderr, "%s - %s\n", cur_plugin->name, attack_details);
+								temp_str = (char *)calloc(1, (strlen(cur_plugin->name) + strlen(attack_details) + 4) * sizeof(char));
+								new_details = attack_details;
+								if (strstr(attack_details, "ALERT - ") == attack_details) {
+									new_details += 8;
+									message_type = MESSAGE_TYPE_ALERT;
+								} else if (strstr(attack_details, "ANOMALY - ") == attack_details) {
+									new_details += 10;
+									message_type = MESSAGE_TYPE_ANOMALY;
+								}
+								sprintf(temp_str, "%s - %s\n", cur_plugin->name, new_details);
+
+
 							} else {
-								fprintf(stderr, "%s - Currently attacked. Plugin did not provide details.\n", cur_plugin->name);
+								temp_str = (char *)calloc(1, strlen(cur_plugin->name) + 57);
+								sprintf(temp_str, "%s - Currently attacked. Plugin did not provide details.", cur_plugin->name);
 							}
+
+							// Add message to the list (by default alert if type not set)
+							add_message_to_queue(
+												(message_type == MESSAGE_TYPE_NOT_SET) ? MESSAGE_TYPE_ALERT : message_type,
+														NULL,
+														0,
+														temp_str);
+							// No need to free temp_str since the pointer is copied (and not the string)
 
 							FREE_AND_NULLIFY(attack_details);
 						}
