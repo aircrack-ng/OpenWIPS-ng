@@ -427,9 +427,9 @@ int parse_simple_options()
 			}
 			rpcap_add_ports(port_min, port_max);
 		} else if (strcmp(cur_key_value->key, "log_facility") == 0) {
-			if (strcmp(cur_key_value->value, "syslog") == 0) {
+			if (strcasecmp(cur_key_value->value, "syslog") == 0) {
 				_log_facility = LOG_FACILITY_SYSLOG;
-			} else if (strcmp(cur_key_value->value, "none") == 0 || strcmp(cur_key_value->value, "/dev/null") == 0) {
+			} else if (strcasecmp(cur_key_value->value, "none") == 0 || strcmp(cur_key_value->value, "/dev/null") == 0) {
 				_log_facility = LOG_FACILITY_NONE;
 			} else {
 				// It must be a path
