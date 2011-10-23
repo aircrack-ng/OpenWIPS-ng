@@ -66,6 +66,7 @@ void free_global_memory()
 	free_global_memory_rpcap_server();
 	free_global_memory_packet_assembly();
 	free_global_memory_packet_analysis();
+	free_global_memory_message();
 
 	// Free the rest of memory allocated by main.
 }
@@ -78,6 +79,7 @@ void init()
 	init_packet_assembly();
 	init_sensor();
 	init_packet_analysis();
+	init_message_thread();
 }
 
 void stop_threads()
@@ -197,6 +199,12 @@ int main(int nbarg, char * argv[])
 		return EXIT_FAILURE;
 	}
 	printf("[*] Successfully read configuration.\n");
+
+	if (start_message_thread() == EXIT_FAILURE) {
+		fprintf(stderr, "Failed to start message thread, exiting.\n");
+		free_global_memory();
+		return EXIT_FAILURE;
+	}
 
 	if (start_packet_assembly_thread() == EXIT_FAILURE) {
 		fprintf(stderr, "Failed to start packet reassembly and analysis thread, exiting.\n");
