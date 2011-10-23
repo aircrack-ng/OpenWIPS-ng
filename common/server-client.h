@@ -19,8 +19,8 @@
  *      Author: Thomas d'Otreppe de Bouvette
  */
 
-#ifndef SERVER_CLIENT_H_
-#define SERVER_CLIENT_H_
+#ifndef COMMON_SERVER_CLIENT_H_
+#define COMMON_SERVER_CLIENT_H_
 #include <netinet/in.h>
 #include "pcap.h"
 
@@ -121,4 +121,4 @@ int client_socket_handling_thread(void * object);
 void cleanup_custom_data_client_socket_params(void * client_socket_params_struct, unsigned long int length);
 int remove_bytes_from_buffer(unsigned char ** data, int * data_length, int nb_bytes_to_remove, int memset0);
 
-#endif /* SERVER_CLIENT_H_ */
+#endif /* COMMON_SERVER_CLIENT_H_ */

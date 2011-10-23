@@ -19,8 +19,8 @@
  *      Author: Thomas d'Otreppe de Bouvette
  */
 
-#ifndef RPCAP_H_
-#define RPCAP_H_
+#ifndef COMMON_RPCAP_H_
+#define COMMON_RPCAP_H_
 #include "server-client.h"
 
 #define MAX_NB_PACKET_TO_SEND_AT_ONCE 50
@@ -31,4 +31,4 @@ int handle_rpcap_data(unsigned char ** data, int * data_length, struct client_pa
 // Sends data
 int send_rpcap_data(unsigned char ** data, int * data_length, struct client_params * params);
 
-#endif /* RPCAP_H_ */
+#endif /* COMMON_RPCAP_H_ */
