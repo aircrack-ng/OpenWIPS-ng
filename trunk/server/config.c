@@ -125,7 +125,7 @@ int parse_plugins_config()
 				fprintf(stderr, "[*] Loading plugin <%s> named <%s> with those parameters: <%s>.\n", path, name, param);
 			}
 #endif
-			// TODO: Load plugin parameters
+			// Load plugin with its parameters
 			pi = load_plugin(name, path, param, 0);
 			if (pi == NULL) {
 				return EXIT_FAILURE;
