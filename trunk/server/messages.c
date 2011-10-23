@@ -221,9 +221,6 @@ int message_thread(void * data)
 						fprintf(stderr, "Invalid log facility. Cannot log message.\n");
 						break;
 				}
-				if (!_deamonize || _log_facility == LOG_FACILITY_FILE) {
-					free(time_str);
-				}
 
 				cur->logged = 1;
 
