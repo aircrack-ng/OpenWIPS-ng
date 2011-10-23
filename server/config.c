@@ -119,7 +119,11 @@ int parse_plugins_config()
 
 			// Load it
 #ifdef DEBUG
-			fprintf(stderr, "[*] Loading plugin <%s> named <%s> with those parameters: <%s>.\n", path, name, SHOW_TEXT_OR_NULL(param));
+			if (param == NULL) {
+				fprintf(stderr, "[*] Loading plugin <%s> named <%s> without parameters.\n", path, name);
+			} else {
+				fprintf(stderr, "[*] Loading plugin <%s> named <%s> with those parameters: <%s>.\n", path, name, param);
+			}
 #endif
 			// TODO: Load plugin parameters
 			pi = load_plugin(name, path, param, 0);
