@@ -200,7 +200,7 @@ char * read_text_file_content(char * path, int replace_null_by_space)
 
 	if (replace_null_by_space) {
 		// Replace any occurence of NULL in the config file by a space.
-		for (i = 0; i <= file_length; i++) {
+		for (i = 0; i < file_length; i++) {
 			if (ret[i] == '\0') {
 				ret[i] = ' ';
 			}
