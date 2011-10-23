@@ -143,7 +143,7 @@ int message_thread(void * data)
 				if (cur->force_display || has_message_been_displayed_already(cur) == 0) {
 
 					// Display this message
-					time_str = ctime(cur->time);
+					time_str = ctime(&(cur->time));
 					fprintf(stderr, "%s - %7s - %s\n", time_str,
 														MESSAGE_TYPE_TO_STRING(cur->message_type),
 														cur->message);
