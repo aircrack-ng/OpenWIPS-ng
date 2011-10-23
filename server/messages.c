@@ -31,6 +31,9 @@ void init_message_thread()
 	_message_thread = PTHREAD_NULL;
 	pthread_mutex_init(&_message_list_mutex, NULL);
 	_message_list = NULL;
+
+	_log_facility = LOG_FACILITY_NONE;
+	_log_file = NULL;
 }
 
 void free_global_memory_message()

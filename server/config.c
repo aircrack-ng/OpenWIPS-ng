@@ -25,6 +25,7 @@
 #include "common/defines.h"
 #include "common/utils.h"
 #include "plugins.h"
+#include "messages.h"
 
 // TODO: Use the whole config (not only those 2 keys
 int parse_our_mac_addresses()
@@ -425,6 +426,16 @@ int parse_simple_options()
 				port_max = atoi(pos + 1);
 			}
 			rpcap_add_ports(port_min, port_max);
+		} else if (strcmp(cur_key_value->key, "log_facility") == 0) {
+			if (strcmp(cur_key_value->value, "syslog") == 0) {
+				_log_facility = LOG_FACILITY_SYSLOG;
+			} else if (strcmp(cur_key_value->value, "none") == 0 || strcmp(cur_key_value->value, "/dev/null") == 0) {
+				_log_facility = LOG_FACILITY_NONE;
+			} else {
+				// It must be a path
+				_log_facility = LOG_FACILITY_FILE;
+				ALLOC_COPY_STRING(cur_key_value->value, _log_file);
+			}
 		}
 	}
 
@@ -433,6 +444,9 @@ int parse_simple_options()
 	printf("Port: %d\n", _port);
 	printf("Disable encryption (sensor-server): %s\n", (_disable_encryption) ? "yes" : "no");
 	printf("RPCAP port range: %d to %d\n", _rpcap_port_min, _rpcap_port_max);
+	printf("Logging facility: %s\n", (_log_facility == LOG_FACILITY_SYSLOG) ? "syslog" :
+									(_log_facility == LOG_FACILITY_NONE) ? "none" :
+									(_log_facility == LOG_FACILITY_FILE) ? _log_file : "Not set");
 	printf("-----------------------\n");
 #endif
 
