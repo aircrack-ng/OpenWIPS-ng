@@ -32,10 +32,15 @@
 #define MESSAGE_TYPE_REG_LOG	0
 #define MESSAGE_TYPE_ALERT		1
 #define MESSAGE_TYPE_ANOMALY	2
+#define MESSAGE_TYPE_DEBUG		3
+#define MESSAGE_TYPE_CRITICAL	4
 
 #define MESSAGE_TYPE_TO_STRING(t) ((t) == MESSAGE_TYPE_REG_LOG) ? "LOG" : \
 									((t) == MESSAGE_TYPE_ALERT) ? "ALERT" : \
-									((t) == MESSAGE_TYPE_ANOMALY) ? "ANOMALY" : "UNKNOWN"
+									((t) == MESSAGE_TYPE_ANOMALY) ? "ANOMALY" : \
+									((t) == MESSAGE_TYPE_ALERT) ? "ALERT" : \
+									((t) == MESSAGE_TYPE_DEBUG) ? "DEBUG" : \
+									((t) == MESSAGE_TYPE_CRITICAL) ? "CRITICAL" : "NOT_SET"
 
 // TODO: Store it in a SQLite database (simple design).
 struct message_details {
@@ -60,8 +65,6 @@ int add_message_to_queue(int message_type, unsigned char * data, unsigned char f
 int start_message_thread();
 int has_message_been_displayed_already(struct message_details * msg);
 int message_thread(void * data);
-
-extern int _stop_threads;
 
 // NONE does not log it
 #define LOG_FACILITY_NONE 			-1
