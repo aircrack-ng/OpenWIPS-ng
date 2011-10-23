@@ -19,8 +19,8 @@
  *      Author: Thomas d'Otreppe de Bouvette
  */
 
-#ifndef SOCKETS_H_
-#define SOCKETS_H_
+#ifndef COMMON_SOCKETS_H_
+#define COMMON_SOCKETS_H_
 
 #include <netdb.h>
 
@@ -46,4 +46,4 @@ inline struct hostent * get_host_by_name(char * name);
 inline int socket_connect(int sock, struct sockaddr_in * serv_addr);
 int can_send_to_socket(int sock);
 
-#endif /* SOCKETS_H_ */
+#endif /* COMMON_SOCKETS_H_ */

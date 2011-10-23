@@ -19,8 +19,8 @@
  *      Author: Thomas d'Otreppe de Bouvette
  */
 
-#ifndef CLIENT_H_
-#define CLIENT_H_
+#ifndef COMMON_CLIENT_H_
+#define COMMON_CLIENT_H_
 
 #include "server-client.h"
 
@@ -35,4 +35,4 @@ int * _client_global_stop_thread;
 
 extern int client_socket_handling_thread(void * object);
 
-#endif /* CLIENT_H_ */
+#endif /* COMMON_CLIENT_H_ */

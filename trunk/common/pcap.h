@@ -21,8 +21,8 @@
  * Note: pcap_record_header, pcap_packet and packet_info structures are dual licensed: GPLv2/BSD
  */
 
-#ifndef PCAP_H_
-#define PCAP_H_
+#ifndef COMMON_PCAP_H_
+#define COMMON_PCAP_H_
 
 #include <pcap.h>
 #include <pthread.h>
@@ -124,4 +124,4 @@ int createPcapFile_with_header(const char * filename, struct pcap_file_header * 
 int append_packet_tofile(const char * filename, const struct pcap_pkthdr * packet_header, const u_char * packet);
 int append_pcap_packet_tofile(const char * filename, struct pcap_packet * packet);
 
-#endif /* PCAP_H_ */
+#endif /* COMMON_PCAP_H_ */

@@ -19,8 +19,8 @@
  *      Author: Thomas d'Otreppe de Bouvette
  */
 
-#ifndef DEFINES_H_
-#define DEFINES_H_
+#ifndef COMMON_DEFINES_H_
+#define COMMON_DEFINES_H_
 
 #define FREE_AND_NULLIFY(item) if ((item) != NULL) free(item); (item) = NULL
 #define PTHREAD_NULL 0
@@ -42,4 +42,4 @@
 
 #define CHECK_SOCKET_PORT(port) ((port) > 0 && (port) < 65536)
 
-#endif /* DEFINES_H_ */
+#endif /* COMMON_DEFINES_H_ */

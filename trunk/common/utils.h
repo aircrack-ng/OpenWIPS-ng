@@ -19,8 +19,8 @@
  *      Author: Thomas d'Otreppe de Bouvette
  */
 
-#ifndef UTILS_H_
-#define UTILS_H_
+#ifndef COMMON_UTILS_H_
+#define COMMON_UTILS_H_
 
 #include "pcap.h"
 
@@ -31,4 +31,4 @@ int is_mac_equal(unsigned char *  from_packet, char * printed_mac);
 unsigned char * parse_mac_from_string(char * mac);
 int get_hex_value(char c);
 
-#endif /* UTILS_H_ */
+#endif /* COMMON_UTILS_H_ */
