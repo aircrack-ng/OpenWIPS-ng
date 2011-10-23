@@ -49,7 +49,7 @@ int _nb_macs;
 
 // TODO: Add function to return a specific set of keys and use it: struct key_value * get_keys(char * key_name)
 
-int parse_plugins_options(); // Parse plugin options and load them
+int parse_plugins_config(); // Parse plugin options and load them
 int read_conf_file(char * path); // Main function to read the config file
 int parse_our_mac_addresses(); // Parse list of protected mac addreses
 int parse_simple_options(); // Parse other simple options

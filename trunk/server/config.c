@@ -79,7 +79,7 @@ int parse_our_mac_addresses()
 	return EXIT_SUCCESS;
 }
 
-int parse_plugins_options()
+int parse_plugins_config()
 {
 	// Based on the config load all plugins
 	char * pch, *name, *path, *param, *init_text;
@@ -230,11 +230,6 @@ int read_conf_file(char * path)
 	}
 
 	if (parse_simple_options() == EXIT_FAILURE) {
-		return EXIT_FAILURE;
-	}
-
-	// Parse plugin options and load them
-	if (parse_plugins_options() == EXIT_FAILURE) {
 		return EXIT_FAILURE;
 	}
 

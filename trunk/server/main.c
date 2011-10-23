@@ -219,6 +219,14 @@ int main(int nbarg, char * argv[])
 
 	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "OpenWIPS-ng server starting", 1);
 
+	if (parse_plugins_config() == EXIT_FAILURE) {
+		fprintf(stderr, "Failed to load plugins, exiting.\n");
+		free_global_memory();
+		return EXIT_FAILURE;
+	}
+
+	fprintf(stderr, "[*] Successfully loaded plugins.\n");
+
 	if (start_packet_assembly_thread() == EXIT_FAILURE) {
 		fprintf(stderr, "Failed to start packet reassembly and analysis thread, exiting.\n");
 		free_global_memory();
