@@ -184,6 +184,8 @@ int parse_args(int nbarg, char * argv[])
 
 int main(int nbarg, char * argv[])
 {
+	char * temp;
+
 	// Parse arguments
 	parse_args(nbarg, argv);
 
@@ -220,37 +222,45 @@ int main(int nbarg, char * argv[])
 	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "OpenWIPS-ng server starting", 1);
 
 	if (parse_plugins_config() == EXIT_FAILURE) {
-		fprintf(stderr, "Failed to load plugins, exiting.\n");
+		add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "Failed to load plugins, exiting", 1);
+		sleep(1); // Make sure the message is processed
 		free_global_memory();
 		return EXIT_FAILURE;
 	}
 
-	fprintf(stderr, "[*] Successfully loaded plugins.\n");
+	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "Successfully loaded plugins", 1);
 
 	if (start_packet_assembly_thread() == EXIT_FAILURE) {
-		fprintf(stderr, "Failed to start packet reassembly and analysis thread, exiting.\n");
+		add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "Failed to start packet reassembly and analysis thread, exiting", 1);
+		sleep(1); // Make sure the message is processed
 		free_global_memory();
 		return EXIT_FAILURE;
 	}
 
-	printf("[*] Successfully started packet reassembly thread.\n");
+	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "Successfully started packet reassembly thread", 1);
 
 	if (start_packet_analysis_thread() == EXIT_FAILURE) {
-		fprintf(stderr, "Failed to start packet analysis and analysis thread, exiting.\n");
+		add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "Failed to start packet analysis and analysis thread, exiting", 1);
+		sleep(1); // Make sure the message is processed
 		free_global_memory();
 		return EXIT_FAILURE;
 	}
 
-	printf("[*] Successfully started packet analysis thread.\n");
+	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "Successfully started frame analysis thread", 1);
 
 	// Start sensor socket
 	if (start_sensor_socket() == EXIT_FAILURE) {
-		fprintf(stderr, "Failed to start server on port %d, exiting.\n", _port);
+		temp = (char *)calloc(1, 100);
+		sprintf(temp, "Failed to start server on port %d, exiting", _port);
+		add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, temp, 1); // No need to free temp, the thread is going to do
+		sleep(1); // Make sure the message is processed
 		free_global_memory();
 		return EXIT_FAILURE;
 	}
 
-	fprintf(stderr, "[*] Listening for sensors on port %d.\n", _port);
+	temp = (char *)calloc(1, 100);
+	sprintf(temp, "Listening for sensors on port %d", _port);
+	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, temp, 1); // No need to free temp, the thread is going to do it.
 
 	// Serve
 	while(1) {
