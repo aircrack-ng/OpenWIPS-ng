@@ -23,8 +23,12 @@
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <syslog.h>
 #include "messages.h"
 #include "common/defines.h"
+
+extern int _stop_threads;
+extern int _deamonize;
 
 void init_message_thread()
 {
@@ -126,8 +130,14 @@ int message_thread(void * data)
 	struct message_details * last, * cur, * to_keep, * prev, *next;
 	time_t cur_time;
 	char * time_str;
+	FILE * f;
+	int priority;
 
 	last = NULL;
+
+	if (_log_facility == LOG_FACILITY_SYSLOG) {
+		openlog("openwips-ng-server", LOG_CONS | LOG_PID, LOG_USER);
+	}
 
 	while (!_stop_threads) {
 		time(&cur_time);
@@ -146,11 +156,65 @@ int message_thread(void * data)
 				if (cur->force_display || has_message_been_displayed_already(cur) == 0) {
 
 					// Display this message
-					time_str = ctime(&(cur->time));
-					fprintf(stderr, "%s - %7s - %s\n", time_str,
+					if (!_deamonize || _log_facility == LOG_FACILITY_FILE) {
+						time_str = ctime(&(cur->time));
+					}
+					if (!_deamonize) {
+						fprintf(stderr, "%s - %8s - %s\n", time_str,
+															MESSAGE_TYPE_TO_STRING(cur->message_type),
+															cur->message);
+					}
+
+					switch (_log_facility) {
+						case LOG_FACILITY_NONE:
+							break;
+
+						case LOG_FACILITY_FILE:
+							// Write it to a file
+							f = fopen(_log_file, "a");
+							if (f == NULL) {
+								break;
+							}
+							fprintf(f, "%s - %8s - %s\n", time_str,
 														MESSAGE_TYPE_TO_STRING(cur->message_type),
 														cur->message);
-					free(time_str);
+							fflush(f);
+							fclose(f);
+							break;
+						case LOG_FACILITY_SYSLOG:
+							priority = LOG_USER;
+							switch (cur->message_type) {
+								case MESSAGE_TYPE_ALERT:
+									priority |= LOG_ALERT;
+									break;
+								case MESSAGE_TYPE_ANOMALY:
+									priority |= LOG_WARNING;
+									break;
+								case MESSAGE_TYPE_REG_LOG:
+								case MESSAGE_TYPE_NOT_SET:
+									priority |= LOG_NOTICE;
+									break;
+								case MESSAGE_TYPE_DEBUG:
+									priority |= LOG_DEBUG;
+									break;
+								case MESSAGE_TYPE_CRITICAL:
+									priority |= LOG_EMERG;
+									break;
+								default:
+									priority |= LOG_NOTICE;
+									break;
+							}
+
+							syslog(priority, "%s", cur->message);
+
+							break;
+						default:
+							fprintf(stderr, "Invalid log facility. Cannot log message.\n");
+							break;
+					}
+					if (!_deamonize || _log_facility == LOG_FACILITY_FILE) {
+						free(time_str);
+					}
 
 					// And update its status
 					cur->displayed = 1;
@@ -204,6 +268,10 @@ int message_thread(void * data)
 
 		// Sleep a little
 		usleep(100000);
+	}
+
+	if (_log_facility == LOG_FACILITY_SYSLOG) {
+		closelog();
 	}
 
 	return EXIT_SUCCESS;
