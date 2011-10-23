@@ -97,7 +97,7 @@ char * init_text(void * config)
 	char * ret = (char *)calloc(1, 80 * sizeof(char));
 	if (config) {
 		fa = (struct frag_attack *)config;
-		sprintf(ret, "Fragmentation attack detection (with %u frames) v1.0", fa->nb_frames);
+		sprintf(ret, "Fragmentation attack detection (with %u frame%s) v1.0", fa->nb_frames, (fa->nb_frames > 1) ? "s" : "");
 	} else {
 		strcpy(ret, "Fragmentation attack detection v1.0");
 	}
