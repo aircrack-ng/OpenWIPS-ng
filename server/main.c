@@ -252,7 +252,7 @@ int main(int nbarg, char * argv[])
 	if (start_sensor_socket() == EXIT_FAILURE) {
 		temp = (char *)calloc(1, 100);
 		sprintf(temp, "Failed to start server on port %d, exiting", _port);
-		add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, temp, 1); // No need to free temp, the thread is going to do
+		add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, temp, 0); // No need to free temp, the thread is going to do
 		sleep(1); // Make sure the message is processed
 		free_global_memory();
 		return EXIT_FAILURE;
@@ -260,7 +260,7 @@ int main(int nbarg, char * argv[])
 
 	temp = (char *)calloc(1, 100);
 	sprintf(temp, "Listening for sensors on port %d", _port);
-	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, temp, 1); // No need to free temp, the thread is going to do it.
+	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, temp, 0); // No need to free temp, the thread is going to do it.
 
 	// Serve
 	while(1) {
