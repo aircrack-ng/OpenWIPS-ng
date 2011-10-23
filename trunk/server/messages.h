@@ -61,7 +61,7 @@ pthread_t _message_thread;
 void init_message_thread();
 void free_global_memory_message();
 
-int add_message_to_queue(int message_type, unsigned char * data, unsigned char force_log, char * message);
+int add_message_to_queue(int message_type, unsigned char * data, unsigned char force_log, char * message, int copy);
 int start_message_thread();
 int has_message_been_displayed_already(struct message_details * msg);
 int message_thread(void * data);

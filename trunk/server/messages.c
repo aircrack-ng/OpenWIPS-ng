@@ -55,7 +55,7 @@ void free_global_memory_message()
 	pthread_mutex_destroy(&_message_list_mutex);
 }
 
-int add_message_to_queue(int message_type, unsigned char * data, unsigned char force_log, char * message)
+int add_message_to_queue(int message_type, unsigned char * data, unsigned char force_log, char * message, int copy)
 {
 	struct message_details * msg, * cur;
 	int ret = EXIT_SUCCESS;
@@ -65,7 +65,11 @@ int add_message_to_queue(int message_type, unsigned char * data, unsigned char f
 	}
 
 	msg = (struct message_details *)malloc(sizeof(struct message_details));
-	msg->message = message;
+	if (copy) {
+		ALLOC_COPY_STRING(message, msg->message);
+	} else {
+		msg->message = message;
+	}
 	msg->data = data;
 	msg->message_type = message_type;
 	msg->next = NULL;

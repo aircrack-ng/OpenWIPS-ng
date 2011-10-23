@@ -217,7 +217,7 @@ int main(int nbarg, char * argv[])
 		return EXIT_FAILURE;
 	}
 
-	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "OpenWIPS-ng server starting");
+	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "OpenWIPS-ng server starting", 1);
 
 	if (start_packet_assembly_thread() == EXIT_FAILURE) {
 		fprintf(stderr, "Failed to start packet reassembly and analysis thread, exiting.\n");
