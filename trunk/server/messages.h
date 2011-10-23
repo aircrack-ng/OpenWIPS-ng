@@ -63,4 +63,15 @@ int message_thread(void * data);
 
 extern int _stop_threads;
 
+// NONE does not log it
+#define LOG_FACILITY_NONE 			-1
+#define LOG_FACILITY_SYSLOG 		0
+#define LOG_FACILITY_FILE			1
+//#define LOG_FACILITY_STDOUT_STDERR	2
+// Log to stdout/stderr is also done when not deamonizing
+
+int _log_facility;
+char * _log_file;
+
+
 #endif /* MESSAGES_H_ */
