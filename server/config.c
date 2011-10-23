@@ -453,11 +453,13 @@ int parse_all_userpass(const char * key, struct userpass ** upp)
 	}
 
 	// Check if there is at least one user
+#if 0
 	if (*upp == NULL)
 	{
 		fprintf(stderr, "Dude, you gonna need some users (key: %s) to make this thing work, edit the freakin' configuration file and add some :)\n", key);
 		return EXIT_FAILURE;
 	}
+#endif
 
 	// Check that each user has at least a password and an IP
 	cur_userpass = *upp;
