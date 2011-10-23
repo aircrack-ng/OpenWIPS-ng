@@ -54,7 +54,6 @@ int read_conf_file(char * path); // Main function to read the config file
 int parse_our_mac_addresses(); // Parse list of protected mac addreses
 int parse_simple_options(); // Parse other simple options
 int parse_all_userpass(const char * key, struct userpass ** upp); // Parse _config for users
-int validate_ip_address(char * ip); // Validate IP address
 void free_global_memory_config(); // Free memory allocated by config
 void free_global_memory_config_userpass(struct userpass ** upp); // Free memory allocated for structures userpass
 
