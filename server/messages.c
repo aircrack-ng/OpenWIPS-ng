@@ -55,7 +55,7 @@ void free_global_memory_message()
 	pthread_mutex_destroy(&_message_list_mutex);
 }
 
-int add_message_to_queue(int message_type, unsigned char * data, unsigned char force_display, char * message)
+int add_message_to_queue(int message_type, unsigned char * data, unsigned char force_log, char * message)
 {
 	struct message_details * msg, * cur;
 
@@ -69,7 +69,7 @@ int add_message_to_queue(int message_type, unsigned char * data, unsigned char f
 	msg->message_type = message_type;
 	msg->next = NULL;
 	msg->displayed = 0;
-	msg->force_display = force_display;
+	msg->force_log = force_log;
 	msg->id = 0; // Not used yet
 	time(&(msg->time));
 
@@ -153,7 +153,7 @@ int message_thread(void * data)
 			for (cur = last; cur != NULL; cur = cur->next) {
 
 				// Check if that message has been displayed (or must be displayed)
-				if (cur->force_display || has_message_been_displayed_already(cur) == 0) {
+				if (cur->force_log || has_message_been_displayed_already(cur) == 0) {
 
 					// Display this message
 					if (!_deamonize || _log_facility == LOG_FACILITY_FILE) {

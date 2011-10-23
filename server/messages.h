@@ -50,7 +50,7 @@ struct message_details {
 	unsigned char * data; // Any data (if useful)
 	char message_type; // Message type (LOG, ALERT, ANOMALY, ...)
 	unsigned char displayed; // Has the message been displayed
-	unsigned char force_display; // Force display that message no matter what?
+	unsigned char force_log; // Does that message needs to be logged even if it has been already shown/logged?
 	struct message_details * next; // NEXT message
 };
 
@@ -61,7 +61,7 @@ pthread_t _message_thread;
 void init_message_thread();
 void free_global_memory_message();
 
-int add_message_to_queue(int message_type, unsigned char * data, unsigned char force_display, char * message);
+int add_message_to_queue(int message_type, unsigned char * data, unsigned char force_log, char * message);
 int start_message_thread();
 int has_message_been_displayed_already(struct message_details * msg);
 int message_thread(void * data);
