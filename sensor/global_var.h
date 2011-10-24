@@ -22,6 +22,7 @@
 #ifndef GLOBAL_VAR_H_
 #define GLOBAL_VAR_H_
 #include <netdb.h>
+#include "common/config.h"
 
 volatile int _stop_threads;
 
@@ -45,6 +46,7 @@ struct packet_list * _received_packet_list;
 struct packet_list * _to_send_packet_list;
 
 struct pcap_file_header * _pcap_header;
+struct key_value * _config; // Unused yet
 
 void init_global_var();
 
