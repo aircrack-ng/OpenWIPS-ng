@@ -94,7 +94,7 @@ int packet_analysis_thread(void * data)
 	plugin_check = 0;
 
 #ifdef DEBUG
-	fprintf(stderr, "[*] Packet analysis thread started.\n");
+	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "Packet analysis thread started", 1);
 #endif
 
 	while (!_stop_threads && !_stop_packet_analysis_thread) {
@@ -136,7 +136,9 @@ int packet_analysis_thread(void * data)
 				fcs = crc32(0L, cur->info->frame_start, cur->header.cap_len - FCS_SIZE - cur->info->packet_header_len);
 				if (fcs != cur->info->fcs) {
 #ifdef EXTRA_DEBUG
-					fprintf(stderr, "Invalid FCS: Got 0x%x, expected 0x%x. Ignoring frame.\n", cur->info->fcs, fcs);
+					temp_str = (char *)calloc(1, 80);
+					fprintf(stderr, "Invalid FCS: Got 0x%x, expected 0x%x. Ignoring frame", cur->info->fcs, fcs);
+					add_message_to_queue(MESSAGE_TYPE_DEBUG, NULL, 1, temp_str, 0);
 #endif
 
 					continue;
