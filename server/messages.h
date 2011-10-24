@@ -35,7 +35,7 @@
 #define MESSAGE_TYPE_DEBUG		3
 #define MESSAGE_TYPE_CRITICAL	4
 
-#define MESSAGE_TYPE_TO_STRING(t) ((t) == MESSAGE_TYPE_REG_LOG) ? "LOG" : \
+#define MESSAGE_TYPE_TO_STRING(t) ((t) == MESSAGE_TYPE_REG_LOG) ? "INFO" : \
 									((t) == MESSAGE_TYPE_ALERT) ? "ALERT" : \
 									((t) == MESSAGE_TYPE_ANOMALY) ? "ANOMALY" : \
 									((t) == MESSAGE_TYPE_ALERT) ? "ALERT" : \
