@@ -24,6 +24,7 @@
 #include "packet_assembly.h"
 #include "../common/defines.h"
 #include "../common/server-client.h"
+#include "../messages.h"
 
 void init_packet_assembly()
 {
