@@ -216,6 +216,10 @@ int read_conf_file(char * path)
 		return EXIT_FAILURE;
 	}
 
+#ifdef EXTRA_DEBUG
+	printf("Configuration file content:\n%s\n-----------------------\n", config_content);
+#endif
+
 	// Parse key/values pair
 	if (parse_keyvalues(config_content) == EXIT_FAILURE) {
 		free(config_content);
