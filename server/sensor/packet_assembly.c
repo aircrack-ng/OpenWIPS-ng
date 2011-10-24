@@ -49,7 +49,6 @@ int start_packet_assembly_thread()
 {
 	int thread_created = pthread_create(&_packet_assembly_thread, NULL, (void*)&packet_assembly_thread, NULL);
 	if (thread_created != 0) {
-		fprintf(stderr,"ERROR, failed to create packet assembly thread.\n");
 		return EXIT_FAILURE;
 	}
 
