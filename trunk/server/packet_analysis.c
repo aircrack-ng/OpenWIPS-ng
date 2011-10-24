@@ -44,7 +44,6 @@ int start_packet_analysis_thread()
 {
 	int thread_created = pthread_create(&_packet_analysis_thread, NULL, (void*)&packet_analysis_thread, NULL);
 	if (thread_created != 0) {
-		fprintf(stderr,"ERROR, failed to create packet analysis thread.\n");
 		return EXIT_FAILURE;
 	}
 
