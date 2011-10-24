@@ -24,6 +24,7 @@
 #include <ctype.h>
 #include "plugins.h"
 #include "common/defines.h"
+#include "messages.h"
 
 /* Plugins have a few common functions:
  * - void * init_plugin(char * config_line) -> ptr with whatever you want. Note that this thing will always be passed to any function.
@@ -71,7 +72,7 @@
  * 				Returns 1 if it can be a potential attack (based on the frame passed).
  *
  * 		- int nb_frames_before_analyzing()
- * 				Indicates how many frames it needs before starting the analysis (of the attack).
+ * 				Indicates how many frames it ne_DEBUGeds before starting the analysis (of the attack).
  * 				Return -1/0 if it is based on time, not frames (see next function)
  *
  * 		- int time_ms_before_analyzing()
@@ -157,32 +158,44 @@ int free_plugin_info(struct plugin_info ** plugin)
 
 int show_plugin_settings(struct plugin_info * plugin)
 {
+	char * temp;
 	struct frame_plugin_functions * fpf;
 	if (plugin == NULL) {
-		fprintf(stderr, "Can't give plugin details, plugin is NULL\n");
+		add_message_to_queue(MESSAGE_TYPE_DEBUG, NULL, 1, "Can't give plugin details, plugin is NULL", 1);
 		return EXIT_FAILURE;
 	}
 
+	temp = (char *)calloc(1, sizeof(char) * (200 + strlen(plugin->path)));
+
 	if (plugin->plugin_type == 'F') {
+
 		fpf = (struct frame_plugin_functions *)plugin->plugin_specific_fct;
-		fprintf(stderr, "Frame analysis plugin <%s> settings:\n", plugin->path);
-		fprintf(stderr, "- Does it need all frames (other than the ones from/to our macs): %s\n", (fpf->settings.need_all_frames) ? "Yes" : "No");
-		fprintf(stderr, "- Does it analyzes a specific wireless frame type? ");
+		sprintf(temp, "Frame analysis plugin <%s> settings:", plugin->path);
+		add_message_to_queue(MESSAGE_TYPE_DEBUG, NULL, 1, temp, 1);
+		sprintf(temp, "* Does it need all frames (other than the ones from/to our macs): %s", (fpf->settings.need_all_frames) ? "Yes" : "No");
+		add_message_to_queue(MESSAGE_TYPE_DEBUG, NULL, 1, temp, 1);
+		sprintf(temp, "* Does it analyzes a specific wireless frame type? ");
 		if (fpf->settings.static_frame_type == -1) {
-			fprintf(stderr, "No\n");
+			strcat(temp, "No");
 		} else {
-			fprintf(stderr, "Yes, type <%d>\n", fpf->settings.static_frame_type);
+			sprintf(temp + strlen(temp), "Yes, type <%d>", fpf->settings.static_frame_type);
 		}
-		fprintf(stderr, "- Does it analyzes a specific wireless frame subtype? ");
+		add_message_to_queue(MESSAGE_TYPE_DEBUG, NULL, 1, temp, 1);
+		sprintf(temp, "* Does it analyzes a specific wireless frame subtype? ");
 		if (fpf->settings.static_frame_subtype == -1) {
-			fprintf(stderr, "No\n");
+			strcat(temp, "No");
 		} else {
-			fprintf(stderr, "Yes, subtype <%d>\n", fpf->settings.static_frame_subtype);
+			sprintf(temp + strlen(temp), "Yes, subtype <%d>", fpf->settings.static_frame_subtype);
 		}
-		fprintf(stderr, "- Is it a single frame attack plugin: %s\n", (fpf->settings.is_single_frame_attack) ? "Yes" : "No");
+		add_message_to_queue(MESSAGE_TYPE_DEBUG, NULL, 1, temp, 1);
+		sprintf(temp, "* Is it a single frame attack plugin: %s", (fpf->settings.is_single_frame_attack) ? "Yes" : "No");
+		add_message_to_queue(MESSAGE_TYPE_DEBUG, NULL, 1, temp, 1);
 	} else {
-		fprintf(stderr, "Can't give details for <%s>, plugin type not supported yet.\n", plugin->path);
+		sprintf(temp, "Cannot give details for <%s>, plugin type not supported yet", plugin->path);
+		add_message_to_queue(MESSAGE_TYPE_DEBUG, NULL, 1, temp, 1);
 	}
+
+	free(temp);
 
 	return EXIT_SUCCESS;
 }
@@ -191,7 +204,7 @@ struct plugin_info * load_plugin(char * name, char * path, char * config_line, i
 {
 	struct frame_plugin_functions * fpf;
 	struct plugin_info * ret;
-	char * error, *init_text;
+	char * error, *init_text, *temp;
 	int version;
 	FILE * f;
 
@@ -206,7 +219,9 @@ struct plugin_info * load_plugin(char * name, char * path, char * config_line, i
 	// Check if plugin exist (if it's not readable, then we won't be able to use it).
 	f = fopen(path, "r");
 	if (!f) {
-		fprintf(stderr, "ERROR: Plugin <%s> does not exist.\n", path);
+		temp = (char *)calloc(1, sizeof(char) *(30 + strlen(path)));
+		sprintf(temp, "Plugin <%s> does not exist", path);
+		add_message_to_queue(MESSAGE_TYPE_CRITICAL, NULL, 1, temp, 0);
 		return NULL;
 	}
 	fclose(f);
@@ -230,7 +245,9 @@ struct plugin_info * load_plugin(char * name, char * path, char * config_line, i
 												return NULL
 #define LOAD_FCT_CHECK_ERROR(fctName, into)		(into) = dlsym(ret->lib_handle, fctName); \
 												if ((error = dlerror()) != NULL) { \
-													fprintf(stderr, "Error loading plugin <%s> function <%s> is missing: %s\n", ret->path, fctName, error); \
+													temp = (char *)calloc(1, sizeof(char) *(60 + strlen(ret->path) + strlen(fctName) + strlen(error))); \
+													sprintf(temp, "Error loading plugin <%s> function <%s> is missing: %s", ret->path, fctName, error); \
+													add_message_to_queue(MESSAGE_TYPE_CRITICAL, NULL, 1, temp, 0); \
 													CLOSE_LIB_RETURN_NULL; \
 												} \
 												ret->loaded = 1
@@ -281,7 +298,7 @@ struct plugin_info * load_plugin(char * name, char * path, char * config_line, i
 	if ((*(ret->common_fct.min_supported_version))() > OPENWIPS_NG_VERSION ||
 					((*(ret->common_fct.max_supported_version))() > 0 &&
 							(*(ret->common_fct.max_supported_version))() < OPENWIPS_NG_VERSION)) {
-		fprintf(stderr, "Plugin does not support this version of OpenWIPS-ng.\n");
+		add_message_to_queue(MESSAGE_TYPE_CRITICAL, NULL, 1, "Plugin does not support this version of OpenWIPS-ng", 1);
 		if (!check) {
 			CLOSE_LIB_RETURN_NULL;
 		}
@@ -298,7 +315,10 @@ struct plugin_info * load_plugin(char * name, char * path, char * config_line, i
 		case 'd':
 		case 'a':
 		case 'l':
-			fprintf(stderr, "Warning, plugin <%s> type should be uppercase.\n", path);
+			temp = (char *)calloc(1, sizeof(char) * (50 + strlen(path)));
+			sprintf(temp, "Warning, plugin <%s> type should be uppercase", path);
+			add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, temp, 0);
+
 			ret->plugin_type = (char)toupper(ret->plugin_type);
 			break;
 		default:
@@ -307,17 +327,21 @@ struct plugin_info * load_plugin(char * name, char * path, char * config_line, i
 
 	// If just checking for the plugin, display plugin type
 	if (check) {
-		fprintf(stderr, "Plugin type: %s\n", (ret->plugin_type == 'F') ? "Frame analysis" :
+		temp = (char *)calloc(1, sizeof(char) * 50);
+		sprintf(temp, "Plugin type: %s", (ret->plugin_type == 'F') ? "Frame analysis" :
 												(ret->plugin_type == 'D') ? "Database connection" :
 												(ret->plugin_type == 'A') ? "Alert" :
 												(ret->plugin_type == 'L') ? "Logging" : "Unknown");
+		add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, temp, 0);
 	}
 
 	// Load plugin type specific functions
 	switch (ret->plugin_type) {
 		case 'F':
 #ifdef DEBUG
-			fprintf(stderr, "Frame analysis plugin <%s>: loading functions.\n", ret->path);
+			temp = (char *)calloc(1, sizeof(char) * (50 + strlen(ret->path)));
+			sprintf(temp, "Frame analysis plugin <%s>: loading functions", ret->path);
+			add_message_to_queue(MESSAGE_TYPE_DEBUG, NULL, 1, temp, 0);
 #endif
 			fpf = init_new_frame_plugin_functions(); // Also don't forget to free that one if it fails
 			LOAD_FCT_CHECK_ERROR("attack_details", (fpf->attack_details));
@@ -345,7 +369,9 @@ struct plugin_info * load_plugin(char * name, char * path, char * config_line, i
 
 			ret->plugin_specific_fct = fpf;
 #ifdef DEBUG
-			fprintf(stderr, "Frame analysis plugin <%s>: functions loaded successfully.\n", ret->path);
+			temp = (char *)calloc(1, sizeof(char) * (60 + strlen(ret->path)));
+			sprintf(temp, "Frame analysis plugin <%s>: functions loaded successfully", ret->path);
+			add_message_to_queue(MESSAGE_TYPE_DEBUG, NULL, 1, temp, 0);
 			show_plugin_settings(ret);
 #else
 			if (check) {
@@ -355,27 +381,29 @@ struct plugin_info * load_plugin(char * name, char * path, char * config_line, i
 			break;
 
 		case 'D':
-			fprintf(stderr, "Database connection plugin system not implemented yet, unloading.\n");
+			add_message_to_queue(MESSAGE_TYPE_CRITICAL, NULL, 1, "Database connection plugin system not implemented yet, unloading", 1);
 			CLOSE_LIB_RETURN_NULL;
 			break;
 
 		case 'A':
-			fprintf(stderr, "Alert plugin system not implemented yet, unloading.\n");
+			add_message_to_queue(MESSAGE_TYPE_CRITICAL, NULL, 1, "Alert plugin system not implemented yet, unloading", 1);
 			CLOSE_LIB_RETURN_NULL;
 			break;
 
 		case 'L':
-			fprintf(stderr, "Logging plugin system not implemented yet, unloading.\n");
+			add_message_to_queue(MESSAGE_TYPE_CRITICAL, NULL, 1, "Logging plugin system not implemented yet, unloading", 1);
 			CLOSE_LIB_RETURN_NULL;
 			break;
 
 		case ' ':
-			fprintf(stderr, "No plugin type specified, unloading.\n");
+			add_message_to_queue(MESSAGE_TYPE_CRITICAL, NULL, 1, "No plugin type specified, unloading", 1);
 			CLOSE_LIB_RETURN_NULL;
 			break;
 
 		default:
-			fprintf(stderr, "Unknown plugin type <%c>, unloading.\n", ret->plugin_type);
+			temp = (char *)calloc(1, sizeof(char) * 40);
+			sprintf(temp, "Unknown plugin type <%c>, unloading", ret->plugin_type);
+			add_message_to_queue(MESSAGE_TYPE_CRITICAL, NULL, 1, temp, 0);
 			CLOSE_LIB_RETURN_NULL;
 			break;
 	}
