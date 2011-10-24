@@ -75,7 +75,7 @@ int packet_assembly_thread(void * data)
 	local_list = NULL;
 
 #ifdef DEBUG
-	fprintf(stderr, "[*] Packet assembly thread started.\n");
+	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "Packet assembly thread started", 1);
 #endif
 
 	while (!_stop_threads && !_stop_packet_assembly_thread) {
