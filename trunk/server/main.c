@@ -202,10 +202,6 @@ int main(int nbarg, char * argv[])
 		_config_file_location = argv[1];
 	}
 
-	if (_deamonize) {
-		daemonize();
-	}
-
 	// Read configuration file
 	fprintf(stderr, "[*] Reading configuration file <%s>.\n", _config_file_location);
 	if (read_conf_file(_config_file_location) == EXIT_FAILURE) {
@@ -219,6 +215,11 @@ int main(int nbarg, char * argv[])
 		fprintf(stderr, "Failed to start message thread, exiting.\n");
 		free_global_memory();
 		return EXIT_FAILURE;
+	}
+
+	// Deamonize once the message thread is started.
+	if (_deamonize) {
+		daemonize();
 	}
 
 	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "OpenWIPS-ng server starting", 1);
