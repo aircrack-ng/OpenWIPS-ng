@@ -82,7 +82,7 @@ int parse_our_mac_addresses()
 int parse_plugins_config()
 {
 	// Based on the config load all plugins
-	char * pch, *name, *path, *param, *init_text;
+	char * pch, *name, *path, *param, *init_text, * temp;
 	int item;
 	struct plugin_info * pi, *plugin_list;
 	struct key_value * cur = _config;
@@ -107,7 +107,9 @@ int parse_plugins_config()
 			}
 
 			if (!name || !path) {
-				fprintf(stderr, "ERROR: Incomplete plugin definition <%s>, fix your config file.\n", cur->value);
+				temp = (char *)calloc(1, 100 + strlen(cur->value));
+				sprintf(temp, "Incomplete plugin definition <%s>, fix your config file", cur->value);
+				add_message_to_queue(MESSAGE_TYPE_CRITICAL, NULL, 1, temp, 0);
 				return EXIT_FAILURE;
 			}
 
@@ -119,11 +121,13 @@ int parse_plugins_config()
 
 			// Load it
 #ifdef DEBUG
+			temp = (char *)calloc(1, sizeof(char)* (100 + strlen(path) + strlen(name) + ((param) ? strlen(param) : 0)));
 			if (param == NULL) {
-				fprintf(stderr, "[*] Loading plugin <%s> named <%s> without parameters.\n", path, name);
+				sprintf(temp, "Loading plugin <%s> named <%s> without parameters", path, name);
 			} else {
-				fprintf(stderr, "[*] Loading plugin <%s> named <%s> with those parameters: <%s>.\n", path, name, param);
+				sprintf(temp, "Loading plugin <%s> named <%s> with those parameters: <%s>", path, name, param);
 			}
+			add_message_to_queue(MESSAGE_TYPE_DEBUG, NULL, 1, temp, 0);
 #endif
 			// Load plugin with its parameters
 			pi = load_plugin(name, path, param, 0);
@@ -134,7 +138,9 @@ int parse_plugins_config()
 			// Display line inserted into log
 			init_text =  pi->common_fct.init_text(pi->plugin_data);
 			if (init_text != NULL) {
-				fprintf(stderr, "[*] Plugin %s init: %s\n", name, init_text);
+				temp = (char *)calloc(1, sizeof(char) *(25 + strlen(name) + strlen(init_text)));
+				sprintf(temp, "Plugin <%s> init: %s", name, init_text);
+				add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, temp, 0);
 				FREE_AND_NULLIFY(init_text);
 			}
 
@@ -155,7 +161,9 @@ int parse_plugins_config()
 					plugin_list = _plugin_logging;
 					break;
 				default:
-					fprintf(stderr, "Unknown plugin type <%c>.\n", pi->plugin_type);
+					temp = (char *)calloc(1, sizeof(char) * 25);
+					sprintf(temp, "Unknown plugin type <%c>", pi->plugin_type);
+					add_message_to_queue(MESSAGE_TYPE_CRITICAL, NULL, 1, temp, 0);
 					unload_plugin(pi);
 					free_plugin_info(&pi);
 					return EXIT_FAILURE;
@@ -186,7 +194,9 @@ int parse_plugins_config()
 				}
 			}
 
-			fprintf(stderr, "[*] Loaded successfully plugin <%s>.\n", name);
+			temp = (char *)calloc(1, sizeof(char) * (30 + strlen(name)));
+			sprintf(temp, "Successfully loaded plugin <%s>", name);
+			add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, temp, 0);
 		}
 
 		cur = cur->next;
