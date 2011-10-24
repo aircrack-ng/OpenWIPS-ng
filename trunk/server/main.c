@@ -144,6 +144,7 @@ int parse_args(int nbarg, char * argv[])
 			case 'p' : // Check plugin
 #define DISPLAY_VERSION	temp = get_prog_name();printf("%s\n", temp);free(temp)
 				DISPLAY_VERSION;
+				_deamonize = 0;
 				load_plugin("Check Plugin", optarg, NULL, 1);
 				exit(EXIT_SUCCESS);
 				break;
@@ -155,6 +156,7 @@ int parse_args(int nbarg, char * argv[])
 
 			case 'c' : // Check configuration
 				DISPLAY_VERSION;
+				_deamonize = 0;
 				fprintf(stderr, "Checking configuration file <%s>\n", optarg);
 
 				if (read_conf_file(optarg) == EXIT_SUCCESS) {
