@@ -49,6 +49,7 @@ void help()
 	"      -c <config> : Check if a configuration file is\n"
 	"                    valid and exit\n"
 	"      -i <pass>   : Hash password and exit\n"
+	"      -d          : Deamonize\n"
 	"      -v          : Display version and exit\n"
 	"      -h          : Display help and exit\n"
 	"\n";
