@@ -207,9 +207,5 @@ char * read_text_file_content(char * path, int replace_null_by_space)
 		}
 	}
 
-#ifdef DEBUG
-	printf("Configuration file content:\n%s\n-----------------------\n", ret);
-#endif
-
 	return ret;
 }
