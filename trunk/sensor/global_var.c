@@ -38,4 +38,5 @@ void init_global_var()
 	_to_send_packet_list = NULL;
 	_pcap_thread = PTHREAD_NULL;
 	_pcap_header = NULL;
+	_config = NULL;
 }
