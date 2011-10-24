@@ -49,7 +49,7 @@ void help()
 	"      -c <config> : Check if a configuration file is\n"
 	"                    valid and exit\n"
 	"      -i <pass>   : Hash password and exit\n"
-	"      -d          : Deamonize\n"
+//	"      -d          : Deamonize\n"
 	"      -v          : Display version and exit\n"
 	"      -h          : Display help and exit\n"
 	"\n";
@@ -106,7 +106,7 @@ int parse_args(int nbarg, char * argv[])
 		{"check-config",	1, 0, 'c'},
 		{"hash-password",	1, 0, 'i'},
 		{"version",			0, 0, 'v'},
-		{"deamonize",		0, 0, 'd'},
+//		{"deamonize",		0, 0, 'd'},
 		{0,             	0, 0,  0 }
 	};
 
@@ -115,8 +115,9 @@ int parse_args(int nbarg, char * argv[])
 		option_index = 0;
 
 		option = getopt_long( nbarg, argv,
-						"hp:vc:i:d",
-						long_options, &option_index );
+//						"hp:vc:i:d",
+						"hp:vc:i:",
+				long_options, &option_index );
 
 		if( option < 0 ) break;
 
