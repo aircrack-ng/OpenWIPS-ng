@@ -39,7 +39,7 @@ void help()
 	"  %s - (C) 2011 Thomas d\'Otreppe\n"
 	"  http://www.openwips-ng.org\n"
 	"\n"
-	"  Usage: openwips-ng-server <config file_path>\n"
+	"  Usage: openwips-ng-server <config file_path> [-d]\n"
 	"         or\n"
 	"         openwips-ng-server [options]\n"
 	"\n"
@@ -132,7 +132,7 @@ int parse_args(int nbarg, char * argv[])
 				return( 1 );
 
 			case 'd' :
-				//_deamonize = 1;
+				_deamonize = 1;
 				fprintf(stderr, "Deamonize is not implemented yet.\n");
 				break;
 
@@ -195,11 +195,11 @@ int main(int nbarg, char * argv[])
 	// Initialize stuff
 	init();
 
-	if (nbarg > 2) {
+	if (nbarg > 2 && !_deamonize) {
 		help();
 	}
 
-	if (nbarg == 2) {
+	if (nbarg == 2 || nbarg == 3) {
 		_config_file_location = argv[1];
 	}
 
