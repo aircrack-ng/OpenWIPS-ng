@@ -5,6 +5,8 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../common/client.c \
+../common/config.c \
+../common/deamonize.c \
 ../common/pcap.c \
 ../common/rpcap.c \
 ../common/server-client.c \
@@ -14,6 +16,8 @@ C_SRCS += \
 
 OBJS += \
 ./common/client.o \
+./common/config.o \
+./common/deamonize.o \
 ./common/pcap.o \
 ./common/rpcap.o \
 ./common/server-client.o \
@@ -23,6 +27,8 @@ OBJS += \
 
 C_DEPS += \
 ./common/client.d \
+./common/config.d \
+./common/deamonize.d \
 ./common/pcap.d \
 ./common/rpcap.d \
 ./common/server-client.d \
