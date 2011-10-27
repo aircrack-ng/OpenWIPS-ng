@@ -1,16 +1,18 @@
 OpenWIPS-ng (www.OpenWIPS-ng.org)
 
-Changes:
-- First public (beta) release.
-- Contains the sensor and server
-- Attack detection plugins:
-  * Deauthentication detection
-  * Fragmentation detection
-  * Information Element check
-- Frame check plugins:
-  * FromDS and ToDS bit check
-  * Frame subtype check
-  * Protocol version check
+Changes
+- v0.1beta
+	- First public (beta) release.
+	- Contains the sensor and server
+	- Attack detection plugins:
+	  * Deauthentication detection
+	  * Fragmentation detection
+	  * Information Element check
+	- Frame check plugins:
+	  * FromDS and ToDS bit check
+	  * Frame subtype check
+	  * Protocol version check
+	- Logging to a file or to syslog
 
 Limitations
 - It doesn't go into the background yet (will be implemented for v1.0 final).
@@ -39,4 +41,5 @@ Bugs
   * If possible, run it with valgrind (default options are enough).
   * Don't forget to specify what revision if you are using. It is very important.
 - The more information you provide, the more chance I have to find the bug quickly and fix it.
+- If you can fix it, it's even better. I just need a patch done with 'diff -ur' or 'svn diff'. Don't forget to sign off the patch. 
 - A bug tracker will be available soon. In the meantime, please email me at tdotreppe@aircrack-ng.org or find me on IRC (Mister_X)
