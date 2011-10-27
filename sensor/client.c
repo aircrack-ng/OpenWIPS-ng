@@ -222,6 +222,7 @@ void createSocket()
 	}
 }
 
+// TODO: Update and use common/client.c connect_to_server (will reduce code)
 int connect_to_server_old(int argc, char * argv[])
 {
 	int thread_created, parsed_port;
