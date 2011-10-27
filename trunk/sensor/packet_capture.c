@@ -153,5 +153,9 @@ int monitor(void * data)
 	fprintf(stderr, "monitor() thread finished.\n");
 #endif
 
+	pcap_close(handle);
+	FREE_AND_NULLIFY(_pcap_header);
+	_pcap_thread = PTHREAD_NULL;
+
 	return EXIT_SUCCESS;
 }
