@@ -21,10 +21,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <strings.h>
 #include <unistd.h>
 #include <pthread.h>
-#include <netdb.h>
 #include "client.h"
 #include "state_machine.h"
 #include "common/defines.h"
