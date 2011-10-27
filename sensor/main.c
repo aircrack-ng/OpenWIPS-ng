@@ -90,8 +90,6 @@ int main (int argc, char * argv[])
 	while (1) {
 		sleep(1000);
 	}
-	// Capture frames
-	//monitor(argv[1]);
 
 	return EXIT_SUCCESS;
 }
