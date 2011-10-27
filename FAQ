@@ -1,5 +1,3 @@
-FAQ
-
 Q: Does it support more than 1 sensor?
 A: Not a this time. It is planned for v0.2. Note that multiple sensors can already connect to the server but since there's no frame reassembly (remove duplicate and put in the right order), the behavior is unknown.
 
@@ -14,6 +12,9 @@ A: Yes, it does.
 
 Q: Does it detect other attacks?
 A: Check out or svn for new plugins or plugins updates. You will just have to compile the plugin and add it in the configuration (no need to recompile the server).
+
+Q: Where is the subversion repository?
+A: http://svn.openwips-ng.org
 
 Q: Can I run the server on another machine?
 A: Yes, you can. Just give the sensor the new IP address and make sure firewalls allow communication between those 2 devices.
@@ -43,16 +44,13 @@ Q: Is traffic encrypted?
 A: Not yet but it is planned for v0.2.
 
 Q: How can I log or get alerted in case an attack happens?
-A: It is planned for v0.2.
-
-Q: Why do I get hundred of messages in case of an attack? Can you fix it?
-A: Because some attacks are very noisy on a wireless network and we don't need much frames to detect it. It is going to be fixed in v0.2.
+A: Check the configuration file. It can be saved to a log file or to syslog
 
 Q: I have a licensing issue that prevent me from creating/releasing a plugin. What can I do?
-A: Contact me, I'll try to address the issue so that you can create/release your plugin.
+A: Contact me (tdotreppe@aircrack-ng.org or Mister_X on IRC), I'll try to address the issue so that you can create/release your plugin.
 
 Q: I have a question not covered by the FAQ. What can I do?
-A: Contact me, I'll answer your question and add it to the FAQ.
+A: Contact me (tdotreppe@aircrack-ng.org or Mister_X on IRC), I'll answer your question and add it to the FAQ.
 
 Q: The sensor cannot connect to the server but the user is valid: Login failed
 A: You are using the wrong user. There are 2 different lines in the configuration: one for the users
@@ -60,4 +58,10 @@ A: You are using the wrong user. There are 2 different lines in the configuratio
    You have to use the 'sensor' users.
    
 Q: Why do I get "ERROR on binding (port 9477)." and "Failed to start server on port 9477, exiting."
-A: The socket needs to be closed by the OS to be reused. The OS can take a few seconds to a minute to do it, so just wait a little bit and retry. 
+A: The socket needs to be closed by the OS to be reused. The OS can take a few seconds to a minute to do it, so just wait a little bit and retry.
+
+Q: Why is it called OpenWIPS-ng?
+A: Open means it is open source. WIPS is Wireless Intrusion Prevention System. And 'ng' just sounds cool.
+
+Q: Where can I find the documentation
+A: In this file, FAQ and release note as well as the configuration file. Documentation is being written and will be available on the website soon.
