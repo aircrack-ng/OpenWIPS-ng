@@ -39,6 +39,7 @@ Bugs
   * Recompile with 'make DEBUG=normal'. It will record all the frames 
     to a capture files and display more information on the screen.
   * If possible, run it with valgrind (default options are enough).
+  * Include 'uname -a' output for both server and server (only once if they're on the same machine).
   * Don't forget to specify what revision if you are using. It is very important.
 - The more information you provide, the more chance I have to find the bug quickly and fix it.
 - If you can fix it, it's even better. I just need a patch done with 'diff -ur' or 'svn diff'. Don't forget to sign off the patch. 
