@@ -75,7 +75,7 @@ int monitor(void * data)
 	struct client_params * params;
 	struct pcap_file_header pfh;
 
-	FREE_AND_NULLIFY(_pcap_header);
+	_pcap_header = NULL;
 
 	params =  (struct client_params *)data;
 	if (data == NULL) {
@@ -154,7 +154,7 @@ int monitor(void * data)
 #endif
 
 	pcap_close(handle);
-	FREE_AND_NULLIFY(_pcap_header);
+	_pcap_header = NULL; // Don't free
 	_pcap_thread = PTHREAD_NULL;
 
 	return EXIT_SUCCESS;
