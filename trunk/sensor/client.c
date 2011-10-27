@@ -23,7 +23,6 @@
 #include <string.h>
 #include <strings.h>
 #include <unistd.h>
-#include <sys/socket.h>
 #include <pthread.h>
 #include <netdb.h>
 #include "client.h"
@@ -58,12 +57,9 @@ int connect_thread(void * data)
 	char * command, * answer;
 
 	// Socket stuff
-	fd_set sockets;
-	struct timeval  nowait;
 	int readsockets, data_length, err_send, disconnected, connect_err_shown;
 
-	// Set those 4 things to 0.
-	memset((char *)&nowait,0,sizeof(nowait));
+	// Set those 3 things to 0.
 	memset(buffer, 0, BUFFER_LENGTH);
 	memset(ringbuffer, 0, RING_BUFFER_LENGTH);
 	err_send = disconnected = connected = connect_err_shown = 0;
@@ -119,7 +115,7 @@ int connect_thread(void * data)
 
 				// We're connected, send supported version
 				answer = parse_command(NULL, &state_machine);
-				if (send(_clientSocket, answer, strlen(answer), 0) != strlen(answer)) {
+				if (send_data(_clientSocket, answer, strlen(answer)) != strlen(answer)) {
 					err_send = 1; // Don't forget to reset it
 					CLOSESOCKET();
 					free(answer);
@@ -130,9 +126,7 @@ int connect_thread(void * data)
 		}
 
 		// Check if there's any data to read
-		FD_ZERO(&sockets);
-		FD_SET(_clientSocket, &sockets);
-		readsockets = select(_clientSocket + 1, &sockets, NULL, NULL, &nowait);
+		readsockets = is_data_to_read(_clientSocket);
 
 		// Read buffer and parse command
 		if (readsockets < 0) {
