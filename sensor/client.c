@@ -226,13 +226,10 @@ void createSocket()
 		exit(EXIT_FAILURE);
 	}
 
-	// Set Keep-alive (see http://tldp.org/HOWTO/html_single/TCP-Keepalive-HOWTO/ )
+	// Set socket options: Keep-alive, etc.
 	if (set_socket_options(_clientSocket) == EXIT_FAILURE) {
 		perror("setsockopt()");
-		close(_clientSocket);
-		exit(EXIT_FAILURE);
 	}
-	// See also the following SOL_TCP options: TCP_KEEPCNT, TCP_KEEPIDLE and TCP_KEEPINTVL
 }
 
 int connect_to_server_old(int argc, char * argv[])
@@ -262,7 +259,7 @@ int connect_to_server_old(int argc, char * argv[])
 	fprintf(stderr, "Trying to connect to %s:%u\n",
 			(argc > 2) ?  argv[2] : DEFAULT_SERVER_ADDRESS,
 			server_port);
-	_server = gethostbyname(
+	_server = get_host_by_name(
 			(argc > 2) ?  argv[2] : DEFAULT_SERVER_ADDRESS);
 
 	if (_server == NULL) {
