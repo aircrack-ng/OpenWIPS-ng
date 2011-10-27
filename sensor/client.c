@@ -156,7 +156,7 @@ int connect_thread(void * data)
 		// Assume that the beginning of the ringbuffer is a new command
 
 #ifdef DEBUG
-		fprintf(stderr, "[*] Ring buffer <%s>.\n", ringbuffer);connect_to_server_old
+		fprintf(stderr, "[*] Ring buffer <%s>.\n", ringbuffer);
 #endif
 
 		// while the ring buffer has command, parse them (and answer them)
