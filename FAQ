@@ -19,6 +19,9 @@ A: http://svn.openwips-ng.org
 Q: Can I run the server on another machine?
 A: Yes, you can. Just give the sensor the new IP address and make sure firewalls allow communication between those 2 devices.
 
+Q: Does it support IPv6?
+A: Not yet.
+
 Q: What hardware do I need?
 A: A wireless card that supports monitor mode. A small list can be found on Aircrack-ng.org and a detailled list of drivers supporting monitor mode can be found on Linux Wireless website.
 

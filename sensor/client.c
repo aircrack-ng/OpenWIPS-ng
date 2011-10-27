@@ -29,6 +29,7 @@
 #include "client.h"
 #include "state_machine.h"
 #include "common/defines.h"
+#include "common/sockets.h"
 #include "global_var.h"
 
 // TODO: Convert this for something to common/client.c
@@ -141,7 +142,7 @@ int connect_thread(void * data)
 		}
 
 		if (readsockets == 0) {
-			// Sleep a little bit to avoid overloading the CPU.
+			// Sleep a little bit to avoid overloading the CPU.connect_to_server_old
 			usleep(200);
 			continue;
 		}
@@ -163,7 +164,7 @@ int connect_thread(void * data)
 		// Assume that the beginning of the ringbuffer is a new command
 
 #ifdef DEBUG
-		fprintf(stderr, "[*] Ring buffer <%s>.\n", ringbuffer);
+		fprintf(stderr, "[*] Ring buffer <%s>.\n", ringbuffer);connect_to_server_old
 #endif
 
 		// while the ring buffer has command, parse them (and answer them)
@@ -217,10 +218,8 @@ int connect_thread(void * data)
 
 void createSocket()
 {
-	int keep_alive, temp;
-
 	// Create socket
-	_clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+	_clientSocket = create_socket();
 
 	if (_clientSocket < 0) {
 		perror("ERROR opening socket");
@@ -228,9 +227,7 @@ void createSocket()
 	}
 
 	// Set Keep-alive (see http://tldp.org/HOWTO/html_single/TCP-Keepalive-HOWTO/ )
-	keep_alive = 1;
-	temp = setsockopt(_clientSocket, SOL_SOCKET, SO_KEEPALIVE, &keep_alive, sizeof(keep_alive));
-	if (temp < 0) {
+	if (set_socket_options(_clientSocket) == EXIT_FAILURE) {
 		perror("setsockopt()");
 		close(_clientSocket);
 		exit(EXIT_FAILURE);
