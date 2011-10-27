@@ -36,7 +36,6 @@
 							strlen(command) == 4 && \
 							strncmp((command), "NACK", 4) == 0)
 
-// TODO: Move to command_parse.c
 // TODO: Check for ';' with '\' before (and for double '\')
 // NULL: not enough data to determine length
 // other: command

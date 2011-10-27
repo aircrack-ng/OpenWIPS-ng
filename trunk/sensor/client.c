@@ -29,8 +29,6 @@
 #include "common/sockets.h"
 #include "global_var.h"
 
-// TODO: Convert this for something to common/client.c
-
 int connect_thread(void * data)
 {
 	// Buffer
