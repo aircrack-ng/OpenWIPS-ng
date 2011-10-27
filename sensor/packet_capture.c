@@ -149,5 +149,9 @@ int monitor(void * data)
 
 	}
 
+#ifdef DEBUG
+	fprintf(stderr, "monitor() thread finished.\n");
+#endif
+
 	return EXIT_SUCCESS;
 }
