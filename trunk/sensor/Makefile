@@ -1,9 +1,6 @@
-CC			?= gcc
-CFLAGS		?= -O0 -g3 -pthread -Wall -Werror
-LIBS		= -lpcap -lm -lpthread
+include		../common.mak
 
-prefix		= /usr/local
-sbindir		= $(prefix)/sbin
+LIBS		= -lpcap -lm -lpthread
 
 SBIN_FILE	= openwips-ng
 

@@ -1,10 +1,6 @@
-CC				?= gcc
-CFLAGS			?= -O0 -g3 -pthread -Wall -Werror
-LIBS			= -lpcap -lssl -lz
+include			../common.mak
 
-prefix			= /usr/local
-bindir			= $(prefix)/bin
-confdir			= $(prefix)/etc/openwips-ng/
+LIBS			= -lpcap -lssl -lz
 
 BIN_FILE		= openwips-ng-server
 CONF_FILE		= openwips-ng-server.conf
