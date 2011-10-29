@@ -1,19 +1,5 @@
 OpenWIPS-ng (www.OpenWIPS-ng.org)
 
-Changes
-- v0.1beta1
-	- First public (beta) release.
-	- Contains the sensor and server
-	- Attack detection plugins:
-	  * Deauthentication detection
-	  * Fragmentation detection
-	  * Information Element check
-	- Frame check plugins:
-	  * FromDS and ToDS bit check
-	  * Frame subtype check
-	  * Protocol version check
-	- Logging to a file or to syslog
-
 Limitations
 - It doesn't go into the background yet (will be implemented for v1.0 final).
 - Limited to one sensor connection (it will accept more but the result is unexpected)
