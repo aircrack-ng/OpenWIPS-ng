@@ -233,9 +233,10 @@ char * attack_details(void * config)
 unsigned char ** get_attacker_macs(void * config, int * nb_mac, int * deauth)
 {
 	int i;
-	int counter;
 	unsigned char ** macs;
 	struct frag_attack * fa;
+	int counter = 0;
+
 	if (config == NULL) {
 		return NULL;
 	}

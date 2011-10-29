@@ -140,6 +140,7 @@ int message_thread(void * data)
 
 	last = NULL;
 	to_keep = NULL;
+	time_str = NULL;
 
 	if (_log_facility == LOG_FACILITY_SYSLOG) {
 		openlog("openwips-ng-server", LOG_CONS | LOG_PID, LOG_USER);
