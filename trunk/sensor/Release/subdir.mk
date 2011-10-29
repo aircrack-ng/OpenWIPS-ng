@@ -6,6 +6,7 @@
 C_SRCS += \
 ../client.c \
 ../command_parse.c \
+../global_var.c \
 ../main.c \
 ../packet_capture.c \
 ../rpcap.c \
@@ -14,6 +15,7 @@ C_SRCS += \
 OBJS += \
 ./client.o \
 ./command_parse.o \
+./global_var.o \
 ./main.o \
 ./packet_capture.o \
 ./rpcap.o \
@@ -22,6 +24,7 @@ OBJS += \
 C_DEPS += \
 ./client.d \
 ./command_parse.d \
+./global_var.d \
 ./main.d \
 ./packet_capture.d \
 ./rpcap.d \
