@@ -1,7 +1,7 @@
 OpenWIPS-ng (www.OpenWIPS-ng.org)
 
 Changes
-- v0.1beta
+- v0.1beta1
 	- First public (beta) release.
 	- Contains the sensor and server
 	- Attack detection plugins:
