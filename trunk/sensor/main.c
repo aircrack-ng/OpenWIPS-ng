@@ -26,6 +26,7 @@
 #include "main.h"
 #include "common/defines.h"
 #include "common/utils.h"
+#include "common/version.h"
 #include "global_var.h"
 
 void stop_threads()
@@ -49,7 +50,8 @@ void free_memory()
 
 void help()
 {
-	printf("OpenWIPS-ng [interface] [server IP] [port] [login] [pass]\n");
+	printf("%s - %s\n\n", getVersion("OpenWIPS-ng", _MAJ, _MIN, _SUB_MIN, _REVISION, _BETA, _RC), WEBSITE);
+	printf("openwips-ng [interface] [server IP] [port] [login] [pass]\n");
 	exit(-1);
 }
 
