@@ -92,6 +92,7 @@ int packet_analysis_thread(void * data)
 	_packet_analysis_thread_stopped = 0;
 	local_packet_list = init_new_packet_list();
 	plugin_check = 0;
+	do_attacked_check = 0;
 
 #ifdef DEBUG
 	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "Packet analysis thread started", 1);

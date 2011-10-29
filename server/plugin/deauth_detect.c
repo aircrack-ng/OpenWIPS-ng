@@ -315,6 +315,8 @@ unsigned char ** get_attacker_macs(void * config, int * nb_mac, int * deauth)
 		das = (struct deauth_attack_struct *) config;
 	}
 
+	macs = NULL;
+
 	if (das) {
 		if (nb_mac) {
 			*nb_mac = (das->is_broadcast) ? 1 : 2;
@@ -342,7 +344,7 @@ unsigned char ** get_attacker_macs(void * config, int * nb_mac, int * deauth)
 
 void clear_attack(void * config)
 {
-	struct deauth_attack_struct * das;
+	struct deauth_attack_struct * das = NULL;
 	if (config) {
 		das = (struct deauth_attack_struct *)config;
 	}
