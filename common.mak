@@ -5,3 +5,6 @@ prefix		= /usr/local
 sbindir		= $(prefix)/sbin
 bindir		= $(prefix)/bin
 confdir		= $(prefix)/etc/openwips-ng/
+
+REVISION	= $(shell ../evalrev)
+REV_DEFINE	= -D_REVISION=$(REVISION)
