@@ -26,7 +26,7 @@
 
 // Local variables
 volatile int _stop_threads;
-char * _config_file_location;
+char * _config_file_location, *_version;
 int _deamonize;
 
 // Local function
@@ -34,7 +34,6 @@ void help();
 void free_global_memory();
 void stop_threads();
 void init();
-char * get_prog_name();
 int parse_args(int nbarg, char * argv[]);
 
 // Free memory

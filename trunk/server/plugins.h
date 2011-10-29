@@ -23,9 +23,10 @@
 #define PLUGINS_H_
 
 #include "common/pcap.h"
+#include "common/version.h"
 
 // Version of OpenWIPS-ng
-#define OPENWIPS_NG_VERSION 100
+#define OPENWIPS_NG_VERSION ((_MAJ * 1000) + (_MIN * 100) + (_SUB_MIN * 10))
 
 // This thing avoid to call plugin fct all the time (save CPU cycles)
 struct frame_plugin_settings {
