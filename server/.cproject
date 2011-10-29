@@ -52,27 +52,6 @@
 						</toolChain>
 					</folderInfo>
 					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.2137836802.918369185" name="openwips-ng-server.conf" rcbsApplicability="disable" resourcePath="openwips-ng-server.conf" toolsToInvoke=""/>
-					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.2137836802.1881548886" name="/" resourcePath="plugin">
-						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.2042169027" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.debug" unusedChildren="">
-							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1829302864" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.386588123"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.687847962" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.444742900"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1998392413" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1929011444">
-								<option id="gnu.c.compiler.option.include.paths.2012724015" superClass="gnu.c.compiler.option.include.paths" valueType="includePath"/>
-								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1872498577" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
-							</tool>
-							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1392577240" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug.244754148"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.678152322" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.801594432"/>
-							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1860879816" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug.968683207">
-								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1306480633" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
-							</tool>
-						</toolChain>
-					</folderInfo>
-					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.2137836802.314399857" name="ds_bits_check.c" rcbsApplicability="disable" resourcePath="plugin/ds_bits_check.c" toolsToInvoke="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1929011444.32045000">
-						<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1929011444.32045000" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1929011444">
-							<option id="gnu.c.compiler.option.include.paths.1830379007" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath"/>
-							<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1430092628" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
-						</tool>
-					</fileInfo>
 					<sourceEntries>
 						<entry excluding="plugin|openwips-ng-server.conf" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>

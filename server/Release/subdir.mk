@@ -4,27 +4,27 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../command_parse.c \
 ../config.c \
 ../main.c \
-../rpcap_server.c \
-../sensor.c \
+../messages.c \
+../packet_analysis.c \
+../plugins.c \
 ../users.c 
 
 OBJS += \
-./command_parse.o \
 ./config.o \
 ./main.o \
-./rpcap_server.o \
-./sensor.o \
+./messages.o \
+./packet_analysis.o \
+./plugins.o \
 ./users.o 
 
 C_DEPS += \
-./command_parse.d \
 ./config.d \
 ./main.d \
-./rpcap_server.d \
-./sensor.d \
+./messages.d \
+./packet_analysis.d \
+./plugins.d \
 ./users.d 
 
 
