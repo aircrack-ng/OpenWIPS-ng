@@ -22,6 +22,9 @@ FRAG_DETECT_O	= frag_detection.o pcap.o
 SUBTYPE_CHECK_C	= frame_subtype_check.c ../common/pcap.c
 SUBTYPE_CHECK_O	= frame_subtype_check.o pcap.o
 
+prefix			= /usr/local
+plugin_dir		= $(prefix)/sbin/openwips-ng-plugins
+
 default: all
 
 all: clean protocol_check ds_bits_check deauth_detect ie frame_subtype_check frag_detection
@@ -57,3 +60,10 @@ protocol_check:
 clean:
 	rm -f *.o *.so.*
 	
+install:
+	install -d $(plugin_dir)
+	install -m 755 *.so* $(plugin_dir)
+
+uninstall:
+	rm $(plugin_dir)/*.so*
+	rmdir $(plugin_dir)
