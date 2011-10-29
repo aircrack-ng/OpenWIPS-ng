@@ -4,13 +4,22 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../sensor/packet_assembly.c 
+../sensor/command_parse.c \
+../sensor/packet_assembly.c \
+../sensor/rpcap_server.c \
+../sensor/sensor.c 
 
 OBJS += \
-./sensor/packet_assembly.o 
+./sensor/command_parse.o \
+./sensor/packet_assembly.o \
+./sensor/rpcap_server.o \
+./sensor/sensor.o 
 
 C_DEPS += \
-./sensor/packet_assembly.d 
+./sensor/command_parse.d \
+./sensor/packet_assembly.d \
+./sensor/rpcap_server.d \
+./sensor/sensor.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

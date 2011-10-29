@@ -12,7 +12,8 @@ C_SRCS += \
 ../common/server-client.c \
 ../common/server.c \
 ../common/sockets.c \
-../common/utils.c 
+../common/utils.c \
+../common/version.c 
 
 OBJS += \
 ./common/client.o \
@@ -23,7 +24,8 @@ OBJS += \
 ./common/server-client.o \
 ./common/server.o \
 ./common/sockets.o \
-./common/utils.o 
+./common/utils.o \
+./common/version.o 
 
 C_DEPS += \
 ./common/client.d \
@@ -34,7 +36,8 @@ C_DEPS += \
 ./common/server-client.d \
 ./common/server.d \
 ./common/sockets.d \
-./common/utils.d 
+./common/utils.d \
+./common/version.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
