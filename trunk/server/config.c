@@ -494,7 +494,7 @@ int parse_all_userpass(const char * key, struct userpass ** upp)
 	printf("User list (key: %s):\n", key);
 	while (cur_userpass != NULL) {
 		printf("Username: %s\n", cur_userpass->user);
-		printf("Password: %s\n", cur_userpass->pass);
+		printf("Password hash: %s\n", cur_userpass->pass);
 		printf("Allowed IP (%d):", cur_userpass->nb_allowed_ips);
 		for (i = 0; i < cur_userpass->nb_allowed_ips; i++) {
 			printf(" %s", cur_userpass->allowed_ips[i]);
