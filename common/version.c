@@ -28,37 +28,39 @@
 /* Return the version number */
 char * getVersion(char * progname, int maj, int min, int submin, int svnrev, int beta, int rc)
 {
+#define PROVIS_LEN 20
 	int len;
 	char * temp;
-	char * provis = calloc(1,20);
-	len = strlen(progname) + 200;
-	temp = (char *) calloc(1,len);
+	char * provis = calloc(1, PROVIS_LEN * sizeof(char));
+	len = strlen(progname) + 201;
+	temp = (char *) calloc(1,len * sizeof(char));
 
-	snprintf(temp, len, "%s %d.%d", progname, maj, min);
+	snprintf(temp, len, "%s v%d.%d", progname, maj, min);
 
 	if (submin > 0) {
-		snprintf(provis, 20,".%d",submin);
+		snprintf(provis, PROVIS_LEN,".%d",submin);
 		strncat(temp, provis, len - strlen(temp));
-		memset(provis,0,20);
+		memset(provis,0,PROVIS_LEN);
 	}
 
 	if (rc > 0) {
-		snprintf(provis, 20, " rc%d", rc);
+		snprintf(provis, PROVIS_LEN, " rc%d", rc);
 		strncat(temp, provis, len - strlen(temp));
-		memset(provis, 0, 20);
+		memset(provis, 0, PROVIS_LEN);
 	} else if (beta > 0) {
-		snprintf(provis, 20, " beta%d", beta);
+		snprintf(provis, PROVIS_LEN, " beta%d", beta);
 		strncat(temp, provis, len - strlen(temp));
-		memset(provis, 0, 20);
+		memset(provis, 0, PROVIS_LEN);
 	}
 
 	if (svnrev > 0) {
-		snprintf(provis, 20," r%d",svnrev);
+		snprintf(provis, PROVIS_LEN," r%d",svnrev);
 		strncat(temp, provis, len - strlen(temp));
-		memset(provis, 0, 20);
+		memset(provis, 0, PROVIS_LEN);
 	}
 
 	free(provis);
 	temp = realloc(temp, strlen(temp)+1);
 	return temp;
+#undef PROVIS_LEN
 }

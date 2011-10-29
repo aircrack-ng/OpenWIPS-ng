@@ -27,17 +27,17 @@
 #include "config.h"
 #include "plugins.h"
 #include "common/deamonize.h"
+#include "common/version.h"
 #include "messages.h"
 
 // TODO: Handle signal to clean stuff up (especially the socket)
 
 void help()
 {
-	char * temp;
 	char usage[] =
 	"\n"
 	"  %s - (C) 2011 Thomas d\'Otreppe\n"
-	"  http://www.openwips-ng.org\n"
+	"  %s\n"
 	"\n"
 	"  Usage: openwips-ng-server <config file_path> [-d]\n"
 	"         or\n"
@@ -54,9 +54,7 @@ void help()
 	"      -h          : Display help and exit\n"
 	"\n";
 
-	temp = get_prog_name();
-	printf(usage, temp);
-	free(temp);
+	printf(usage, _version, WEBSITE);
 	exit(-1);
 }
 
@@ -70,6 +68,7 @@ void free_global_memory()
 	free_global_memory_message();
 
 	// Free the rest of memory allocated by main.
+	free(_version);
 }
 
 void init()
@@ -78,6 +77,7 @@ void init()
 	_stop_threads = 0;
 	_config_file_location = CONFIG_FILE_LOCATION;
 	_deamonize = 0;
+	_version = getVersion("OpenWIPS-ng server", _MAJ, _MIN, _SUB_MIN, _REVISION, _BETA, _RC);
 	init_packet_assembly();
 	init_sensor();
 	init_packet_analysis();
@@ -87,13 +87,6 @@ void init()
 void stop_threads()
 {
 	_stop_threads = 1;
-}
-
-char * get_prog_name()
-{
-	char * name = (char *)malloc(28*sizeof(char));
-	sprintf(name, "OpenWIPS-ng server v%d.%d.%d.%d", OPENWIPS_NG_VERSION / 1000, (OPENWIPS_NG_VERSION / 100) % 10, (OPENWIPS_NG_VERSION /10) % 10, OPENWIPS_NG_VERSION %10);
-	return name;
 }
 
 int parse_args(int nbarg, char * argv[])
@@ -144,8 +137,7 @@ int parse_args(int nbarg, char * argv[])
 				break;
 
 			case 'p' : // Check plugin
-#define DISPLAY_VERSION	temp = get_prog_name();printf("%s\n", temp);free(temp)
-				DISPLAY_VERSION;
+				printf("%s\n", _version);
 				_deamonize = 0;
 				load_plugin("Check Plugin", optarg, NULL, 1);
 				exit(EXIT_SUCCESS);
@@ -153,11 +145,11 @@ int parse_args(int nbarg, char * argv[])
 
 			case 'v' :
 				// Display version and exit
-				DISPLAY_VERSION;
+				printf("%s\n", _version);
 				exit(EXIT_SUCCESS);
 
 			case 'c' : // Check configuration
-				DISPLAY_VERSION;
+				printf("%s\n", _version);
 				_deamonize = 0;
 				fprintf(stderr, "Checking configuration file <%s>\n", optarg);
 
@@ -176,7 +168,6 @@ int parse_args(int nbarg, char * argv[])
 				exit(EXIT_SUCCESS);
 				break;
 
-#undef DISPLAY_VERSION
 			default:
 				help();
 				break;
@@ -190,11 +181,11 @@ int main(int nbarg, char * argv[])
 {
 	char * temp;
 
-	// Parse arguments
-	parse_args(nbarg, argv);
-
 	// Initialize stuff
 	init();
+
+	// Parse arguments
+	parse_args(nbarg, argv);
 
 	if (nbarg > 2 && !_deamonize) {
 		help();
@@ -224,7 +215,9 @@ int main(int nbarg, char * argv[])
 		daemonize();
 	}
 
-	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "OpenWIPS-ng server starting", 1);
+	temp = (char *)calloc(1, 100);
+	sprintf(temp, "%s starting", _version);
+	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, temp, 0);
 
 	if (parse_plugins_config() == EXIT_FAILURE) {
 		add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "Failed to load plugins, exiting", 1);
