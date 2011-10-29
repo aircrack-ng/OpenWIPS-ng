@@ -51,4 +51,5 @@ uninstall:
 	rmdir $(confdir)
 
 clean:
+	$(MAKE) -C plugin $(@)
 	-rm -f *.o common/*.o sensor/*.o $(BIN_FILE)
