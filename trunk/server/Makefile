@@ -38,13 +38,17 @@ openwips-ng-server:
 strip:
 	strip $(BIN_FILE)
 
-install: openwips-ng
+install: openwips-ng-server
+	$(MAKE) -C plugin $(@)
 	install -m 755 $(BIN_FILE) $(bindir)
+	install -d $(confdir)
 	install -m 755 $(CONF_FILE) $(confdir)
 
 uninstall:
+	$(MAKE) -C plugin $(@)
 	rm $(bindir)/$(BIN_FILE)
 	rm $(confdir)/$(CONF_FILE)
+	rmdir $(confdir)
 
 clean:
 	-rm -f *.o common/*.o sensor/*.o $(BIN_FILE)
