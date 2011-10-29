@@ -1,0 +1,16 @@
+#!/bin/sh
+
+if [ ! -d ".svn/" ]
+then
+	echo "0"
+	exit ;
+fi
+
+REV="`svn info 2> /dev/null | grep -i revision | awk -F\  '{ print $2}'`"
+
+if [ x$REV = "x" ]
+then
+	REV=0
+fi
+
+echo $REV
