@@ -20,9 +20,8 @@ Requirements
 Compilation
 -----------
 
-cd sensor && make && make install
-cd server && make && make install
-cd server/plugin && make
+make
+sudo make install
 
 Configuration
 -------------
