@@ -66,6 +66,9 @@ A: You are using the wrong user. There are 2 different lines in the configuratio
 Q: Why do I get "ERROR on binding (port 9477)." and "Failed to start server on port 9477, exiting."
 A: The socket needs to be closed by the OS to be reused. The OS can take a few seconds to a minute to do it, so just wait a little bit and retry.
 
+Q: Why do I get "Timeout occurred while reading the packet"?
+A: There is absolutely nothing wrong with that. Technical explanation: When asking the interface for frames, the sensor optimizes request to make sure it doesn't block, so it ask the interface if it has a frame right now. In this case, the interface doesn't have any. 
+
 Q: Why is it called OpenWIPS-ng?
 A: Open means it is open source. WIPS is Wireless Intrusion Prevention System. And 'ng' just sounds cool.
 
