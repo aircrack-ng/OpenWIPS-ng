@@ -1,0 +1,34 @@
+Requirements
+------------
+
+	Hardware
+	- A wireless capable of monitor mode
+
+	Operating system
+	- Linux
+
+	Development software (build-essential package on Debian/Ubuntu based distro):
+	- gcc
+	- make
+	
+	Libraries
+	- Openssl development package
+	- libpcap
+	- libz
+	- m
+
+Compilation
+-----------
+
+make
+sudo make install
+
+Configuration
+-------------
+
+Edit the configuration file /usr/local/etc/openwips-ng/openwips-ng-server.conf
+
+Usage
+-----
+openwips-ng MONITOR_MODE_INTERFACE SERVER_IP SERVER_PORT LOGIN PASS
+openwips-ng-server PATH_TO_CONFIGURATION_FILE
