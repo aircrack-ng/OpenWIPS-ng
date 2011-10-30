@@ -69,6 +69,9 @@ A: The socket needs to be closed by the OS to be reused. The OS can take a few s
 Q: Why do I get "Timeout occurred while reading the packet"?
 A: There is absolutely nothing wrong with that. Technical explanation: When asking the interface for frames, the sensor optimizes request to make sure it doesn't block, so it ask the interface if it has a frame right now. In this case, the interface doesn't have any. 
 
+Q: Why do I get "Client data handler for <0xAABBCCDD> returned failure"?
+A: This issue will be fixed in the next beta.
+
 Q: Why is it called OpenWIPS-ng?
 A: Open means it is open source. WIPS is Wireless Intrusion Prevention System. And 'ng' just sounds cool.
 
