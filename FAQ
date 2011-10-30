@@ -1,6 +1,9 @@
 Q: Does it support more than 1 sensor?
 A: Not a this time. It is planned for v0.2. Note that multiple sensors can already connect to the server but since there's no frame reassembly (remove duplicate and put in the right order), the behavior is unknown.
 
+Q: What is the default user and password for the sensor?
+A: It is written in the configuration file: 'sensor1' with the password 'sensor1' (without the quotes)
+
 Q: Is it able to decrypt the traffic to pass it to another program or IDS/IPS?
 A: Not at this time but that feature is planned.
 
