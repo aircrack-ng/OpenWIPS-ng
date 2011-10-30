@@ -1,6 +1,25 @@
 OpenWIPS-ng (www.OpenWIPS-ng.org)
+---------------------------------
+
+OpenWIPS-ng is an open source and modular 
+Wireless IPS (Intrusion Prevention System). 
+
+It is composed of three parts:
+ * Sensor(s): 
+    "Dumb" devices who capture the wireless traffic 
+    and send it to the server for analysis.
+    Also responds to attacks.
+ * Server:
+    Aggregates the data from all sensors, analyze it
+    and respond to attacks. It also logs and alert in
+    case of an attack.
+ * Interface:
+    GUI to manage the server and display informations
+    about the threats on your wireless network(s).
+
 
 Limitations
+- The interface is not available yet.
 - It doesn't go into the background yet (will be implemented for v1.0 final).
 - Limited to one sensor connection (it will accept more but the result is unexpected)
 - Sensor and server CPU architecture must be the same (will be fixed for v1.0 final).
