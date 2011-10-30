@@ -1,3 +1,5 @@
+$(shell chmod 755 evalrev)
+
 default: all
 
 all:
