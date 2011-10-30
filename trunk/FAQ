@@ -68,3 +68,6 @@ A: Open means it is open source. WIPS is Wireless Intrusion Prevention System. A
 
 Q: Where can I find the documentation
 A: In this file, FAQ and release note as well as the configuration file. Documentation is being written and will be available on the website soon.
+
+Q: I have an idea or feature request for OpenWIPS-ng, where do I submit it?
+A: Contact me (tdotreppe@aircrack-ng.org or Mister_X on IRC). Make sure to use a meaningful subject in the email.
