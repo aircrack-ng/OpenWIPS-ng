@@ -26,7 +26,7 @@ Q: Does it support IPv6?
 A: Not yet.
 
 Q: What hardware do I need?
-A: A wireless card that supports monitor mode. A small list can be found on Aircrack-ng.org and a detailled list of drivers supporting monitor mode can be found on Linux Wireless website.
+A: A wireless card that supports monitor mode. A small list can be found on Aircrack-ng.org and a detailed list of drivers supporting monitor mode can be found on Linux Wireless website.
 
 Q: Does OpenWIPS-ng work on iPhone/iPad/iPod/Android/BlackBerry?
 A: No, because the wireless drivers of these devices doesn't support monitor mode. The only phone supporting it is the Nokia N900 with the 'power kernel'.
