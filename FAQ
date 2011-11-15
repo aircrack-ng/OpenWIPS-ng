@@ -14,7 +14,7 @@ Q: Does it detect aircrack-ng attacks?
 A: Yes, it does.
 
 Q: Does it detect other attacks?
-A: Check out or svn for new plugins or plugins updates. You will just have to compile the plugin and add it in the configuration (no need to recompile the server).
+A: Check out svn for new plugins or plugins updates. You will just have to compile the plugin and add it in the configuration (no need to recompile the server).
 
 Q: Where is the subversion repository?
 A: http://svn.openwips-ng.org
