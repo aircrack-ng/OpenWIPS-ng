@@ -129,6 +129,10 @@ struct packet_info * copy_packet_info(struct pcap_packet * src, struct pcap_pack
 	ret->protected = src->info->protected;
 	ret->order = src->info->order;
 	ret->power_management = src->info->power_management;
+	ret->channel_width = src->info->channel_width;
+	ret->guard_interval = src->info->guard_interval;
+	ret->mcs_index = src->info->mcs_index;
+	ret->nb_spatial_stream = src->info->nb_spatial_stream;
 
 	return ret;
 }
@@ -169,6 +173,10 @@ struct packet_info * init_new_packet_info()
 	ret->protected = 0;
 	ret->order = 0;
 	ret->power_management = 0;
+	ret->channel_width = 20; // Default: 20MHz
+	ret->guard_interval = -1;
+	ret->mcs_index = -1;
+	ret->nb_spatial_stream = 0;
 
 	return ret;
 }
@@ -180,7 +188,9 @@ struct packet_info * parse_packet_basic_info(struct pcap_packet * packet)
 	struct packet_info * ret;
 	int to_from_ds, i, pos;
 	uint32_t radiotap_flags;
-	static const int radiotap_item_length_bytes[] = { 8, 1, 1, 4, 2, 1, 1, 2, 2, 2, 1, 1, 1, 1, 2, 2, 1, 1 }; // Length of each radiotap field
+	static const int radiotap_item_length_bytes[] = { 8, 1, 1, 4, 2, 1, 1, 2, 2, 2, 1, 1, 1, 1, 2, 2, 1, 1, 8, 3 }; // Length of each radiotap field
+	static const int mcs_multiplier [] = { 1, 2, 3, 4, 6, 8, 9, 10 };
+	static const double rate_mcs_20MHz_400ns [] = { 7.2, 14.4, 21.7, 28.90, 43.30, 57.80, 65, 72.2, 14.40, 28.90, 43.30, 57.80, 86.70, 115.60, 130.0, 144.40, 21.7, 43.3, 65, 86.70, 130.70, 173.30, 195, 216.70, 28.80, 57.60, 86.80, 115.60, 173.20, 231.20, 260, 288.80 };
 
 	if (packet == NULL || packet->header.cap_len < MIN_PACKET_SIZE) {
 #ifdef EXTRA_DEBUG
@@ -244,6 +254,87 @@ struct packet_info * parse_packet_basic_info(struct pcap_packet * packet)
 					// TODO: 'value & 1' indicates if FCS failed, add that field.
 					//       That will avoid FCS calculation
 					// TODO: Make the sensor validate its frames to offload the server and report every X times the amount of broken frames.
+					break;
+				case 19: // HT information
+					if (ret->rate > 0) {
+						break;
+					}
+
+					// TODO: Check first byte to know what's available
+					if (((*((packet->data) + pos + 1)) & 3) != 0) {
+						ret->channel_width = 40;
+						// 40 Mhz
+					} // Default is 20Mhz
+
+					// MCS rate index
+					ret->mcs_index = *((packet->data) + pos + 2);
+
+					// Guard Interval
+					if (((*((packet->data) + pos + 1)) & 4) == 0) {
+						// Long GI
+						ret->guard_interval = 800; // 800 ns
+
+					} else {
+						// Short GI
+						ret->guard_interval = 400; // 400 ns
+					}
+
+					// See http://mcsindex.com
+					if (ret->mcs_index < 31) {
+						// Nb Spatial Stream:
+						ret->nb_spatial_stream = ( ret->mcs_index / 8 ) + 1;
+
+						if (ret->channel_width == 20 && ret->guard_interval == 400) {
+							ret->rate = rate_mcs_20MHz_400ns[ret->mcs_index];
+						} else {
+
+							if (ret->guard_interval == 800) {
+								if (ret->channel_width == 20) {
+									ret->rate = 6.5;
+								} else {
+									ret->rate = 13.5;
+								}
+							} else if (ret->guard_interval == 400) {
+								if (ret->channel_width == 40) {
+									ret->rate = 15;
+								//} else { // Special case
+								//	ret->rate = 7.2;
+								}
+							}
+
+							ret->rate = (ret->rate * ret->nb_spatial_stream) * mcs_multiplier[ret->mcs_index % 8];
+						}
+					} else {
+						if (ret->mcs_index == 32) {
+							// Only exist in 40Mhz
+							if (ret->channel_width == 20) {
+								// Error
+								break;
+							}
+
+							ret->nb_spatial_stream = 1;
+
+							ret->rate = (ret->guard_interval == 400) ? 6.7 : 6.0;
+
+						} else if (ret->mcs_index > 32 && ret->mcs_index < 39) {
+							ret->nb_spatial_stream = 2;
+						} else if (ret->mcs_index > 38 && ret->mcs_index < 53) {
+							ret->nb_spatial_stream = 3;
+						} else if (ret->mcs_index < 77) {
+							ret->nb_spatial_stream = 4;
+						} else {
+							// TODO:  Exit and make the user report such thing because I don't have any info to handle that
+							break;
+						}
+
+						// TODO: Find a formula or write an array with the rates (an array for all rates is probably more efficient; it could be partialy calculated the first time we hit that field)
+						// XXX: An array is much easier and much faster (same for the number of streams.
+					}
+
+
+
+
+
 					break;
 				default:
 					break;

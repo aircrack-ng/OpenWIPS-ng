@@ -94,6 +94,13 @@ struct packet_info {
 	unsigned char more_frag;
 	unsigned char fragment_nr;
 	unsigned char more_data, protected, order, power_management;
+	unsigned char channel_width; // In MHz
+
+	// 802.11n stuff
+	short guard_interval; // GI, for 802.11n rates (HT)
+	unsigned char mcs_index;
+	unsigned char nb_spatial_stream;
+
 	double rate;
 };
 
