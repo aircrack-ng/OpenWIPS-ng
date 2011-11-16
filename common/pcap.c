@@ -459,6 +459,10 @@ int print_pcap_packet_info(struct packet_info * pi)
 	}
 	printf("\nSignal/Noise: %d/%d\n", pi->signal, pi->noise);
 	printf("Rate: %.1fM\n", pi->rate);
+	printf("HT Information:\n");
+	printf("- Guard Interval: %d ns\n", pi->guard_interval);
+	printf("- MCS Index: %u\n", pi->mcs_index);
+	printf("Channel Width: %u\n", pi->channel_width);
 	printf("Frequency: %u (channel %u)\n", pi->frequency, pi->channel);
 	printf("More fragments: %s (Fragment #: %d)\n", (pi->more_frag) ? "Yes" : "No", pi->fragment_nr);
 	printf("More data bit: %s\n", (pi->more_data) ? "Yes" : "No");
