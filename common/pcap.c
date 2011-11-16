@@ -305,13 +305,13 @@ struct packet_info * parse_packet_basic_info(struct pcap_packet * packet)
 
 					// Rate
 					if (ret->channel_width == 40) {
-						ret->rate = rate_mcs_40MHz[ret->guard_interval == 400][ret->mcs_index];
+						ret->rate = rate_mcs_40MHz[(int)(ret->guard_interval == 400)][(int)(ret->mcs_index)];
 					} else {
-						ret->rate = rate_mcs_20MHz[ret->guard_interval == 400][ret->mcs_index];
+						ret->rate = rate_mcs_20MHz[(int)(ret->guard_interval == 400)][(int)(ret->mcs_index)];
 					}
 
 					// Get # of spatial streams
-					ret->nb_spatial_stream = rate_mcs_nb_streams[ret->mcs_index];
+					ret->nb_spatial_stream = rate_mcs_nb_streams[(int)(ret->mcs_index)];
 
 					break;
 				default:
