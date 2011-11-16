@@ -100,7 +100,7 @@ struct packet_info {
 
 	// 802.11n stuff
 	short guard_interval; // GI, for 802.11n rates (HT)
-	unsigned char mcs_index;
+	char mcs_index;
 	unsigned char nb_spatial_stream;
 
 	double rate;
