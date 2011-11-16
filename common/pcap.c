@@ -189,8 +189,25 @@ struct packet_info * parse_packet_basic_info(struct pcap_packet * packet)
 	int to_from_ds, i, pos;
 	uint32_t radiotap_flags;
 	static const int radiotap_item_length_bytes[] = { 8, 1, 1, 4, 2, 1, 1, 2, 2, 2, 1, 1, 1, 1, 2, 2, 1, 1, 8, 3 }; // Length of each radiotap field
-	static const int mcs_multiplier [] = { 1, 2, 3, 4, 6, 8, 9, 10 };
-	static const double rate_mcs_20MHz_400ns [] = { 7.2, 14.4, 21.7, 28.90, 43.30, 57.80, 65, 72.2, 14.40, 28.90, 43.30, 57.80, 86.70, 115.60, 130.0, 144.40, 21.7, 43.3, 65, 86.70, 130.70, 173.30, 195, 216.70, 28.80, 57.60, 86.80, 115.60, 173.20, 231.20, 260, 288.80 };
+
+	// MCS information. See http://mcsindex.com
+	static const double rate_mcs_20MHz [2][MAX_MCS_INDEX + 1] =
+	{
+		// Long GI
+		{ 6.5, 13, 19.5, 26, 39, 52, 58.5, 65, 13, 26, 39, 52, 78, 104, 117, 130, 19.5, 39, 58.5, 78, 117, 156, 175.5, 195, 26, 52, 78, 104, 156, 208, 234, 260, -1, 39, 52, 65, 28.5, 78, 97.5, 52, 65, 65, 78, 91, 91, 104, 78, 97.5, 97.5, 117, 136.5, 136.5, 156, 65, 78, 91, 78, 91, 104, 117, 104, 117, 130, 130, 143, 97.5, 117, 136.5, 117, 136.5, 156, 175.5, 156, 175.5, 195, 195, 214.5 },
+		// Short GI
+		{ 7.2, 14.4, 21.7, 28.90, 43.30, 57.80, 65, 72.2, 14.40, 28.90, 43.30, 57.80, 86.70, 115.60, 130.0, 144.40, 21.7, 43.3, 65, 86.70, 130.70, 173.30, 195, 216.70, 28.80, 57.60, 86.80, 115.60, 173.20, 231.20, 260, 288.80, -1, 43.3, 57.8, 72.2, 65.0, 86.7, 108.3, 57.8, 72.2, 72.2, 86.7, 101.1, 101.1, 115.6, 86.7, 108.3, 108.3, 130, 151.7, 151.7, 173.3, 72.2, 86.7, 101.1, 86.7, 101.1, 115.6, 130, 115.6, 130, 144.4, 144.4, 158.9, 108.3, 130, 151.7, 130, 151.7, 173.3, 195, 173.3, 195, 216.7, 216.7, 238.3 }
+	};
+
+	static const double rate_mcs_40MHz [2][MAX_MCS_INDEX + 1] =
+	{
+		// Long GI
+		{ 13.5, 27.0, 40.5, 54, 81, 108, 121.5, 135, 27, 54, 81, 108, 162, 216, 243, 270, 40.5, 81, 121.5, 162, 243, 324, 364.5, 405.0, 54, 108, 162, 216, 324, 432, 486, 540, 6, 81, 108, 135, 121.5, 162, 202.5, 108, 135, 135, 162, 189, 189, 216, 162, 202.5, 205.5, 243, 283.5, 283.5, 324, 135, 162, 189, 162, 189, 216, 243, 216, 243, 270, 270, 297, 202.5, 243, 283.5, 243, 283.5, 324, 364.5, 324, 364.5, 405, 405, 445.5},
+		// Short GI
+		{ 15, 30, 45, 60, 90, 120, 135, 150, 30, 60, 90, 120, 180, 240, 270, 300, 45, 90, 135, 180, 270, 360, 405, 450, 60, 120, 180, 240, 360, 480, 540, 600, 6.7, 90, 120, 150, 135, 180, 225, 120, 150, 150, 180, 210, 210, 240, 180, 225, 225, 270, 315, 315, 360, 150, 180, 210, 180, 210, 240, 270, 240, 270, 300, 300, 330, 225, 270, 315, 270, 315, 360, 405, 360, 405, 450, 450, 495 }
+	};
+
+	static const unsigned char rate_mcs_nb_streams [MAX_MCS_INDEX + 1] = { 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 };
 
 	if (packet == NULL || packet->header.cap_len < MIN_PACKET_SIZE) {
 #ifdef EXTRA_DEBUG
@@ -279,61 +296,22 @@ struct packet_info * parse_packet_basic_info(struct pcap_packet * packet)
 						ret->guard_interval = 400; // 400 ns
 					}
 
-					// See http://mcsindex.com
-					if (ret->mcs_index < 31) {
-						// Nb Spatial Stream:
-						ret->nb_spatial_stream = ( ret->mcs_index / 8 ) + 1;
-
-						if (ret->channel_width == 20 && ret->guard_interval == 400) {
-							ret->rate = rate_mcs_20MHz_400ns[ret->mcs_index];
-						} else {
-
-							if (ret->guard_interval == 800) {
-								if (ret->channel_width == 20) {
-									ret->rate = 6.5;
-								} else {
-									ret->rate = 13.5;
-								}
-							} else if (ret->guard_interval == 400) {
-								if (ret->channel_width == 40) {
-									ret->rate = 15;
-								//} else { // Special case
-								//	ret->rate = 7.2;
-								}
-							}
-
-							ret->rate = (ret->rate * ret->nb_spatial_stream) * mcs_multiplier[ret->mcs_index % 8];
-						}
-					} else {
-						if (ret->mcs_index == 32) {
-							// Only exist in 40Mhz
-							if (ret->channel_width == 20) {
-								// Error
-								break;
-							}
-
-							ret->nb_spatial_stream = 1;
-
-							ret->rate = (ret->guard_interval == 400) ? 6.7 : 6.0;
-
-						} else if (ret->mcs_index > 32 && ret->mcs_index < 39) {
-							ret->nb_spatial_stream = 2;
-						} else if (ret->mcs_index > 38 && ret->mcs_index < 53) {
-							ret->nb_spatial_stream = 3;
-						} else if (ret->mcs_index < 77) {
-							ret->nb_spatial_stream = 4;
-						} else {
-							// TODO:  Exit and make the user report such thing because I don't have any info to handle that
-							break;
-						}
-
-						// TODO: Find a formula or write an array with the rates (an array for all rates is probably more efficient; it could be partialy calculated the first time we hit that field)
-						// XXX: An array is much easier and much faster (same for the number of streams.
+					if (ret->mcs_index > MAX_MCS_INDEX) {
+#ifdef DEBUG
+						fprintf(stderr, "Invalid MCS index for frame: %u (max value: %d).", ret->mcs_index, MAX_MCS_INDEX);
+#endif
+						break;
 					}
 
+					// Rate
+					if (ret->channel_width == 40) {
+						ret->rate = rate_mcs_40MHz[ret->guard_interval == 400][ret->mcs_index];
+					} else {
+						ret->rate = rate_mcs_20MHz[ret->guard_interval == 400][ret->mcs_index];
+					}
 
-
-
+					// Get # of spatial streams
+					ret->nb_spatial_stream = rate_mcs_nb_streams[ret->mcs_index];
 
 					break;
 				default:

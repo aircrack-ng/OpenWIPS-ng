@@ -80,6 +80,8 @@ struct packet_list {
 	struct pcap_file_header * pcap_header;
 };
 
+#define MAX_MCS_INDEX		76
+
 // !!! Do not free the fields inside since they are pointers to allocated data, not allocated data
 struct packet_info {
 	unsigned char * address1, *address2, *address3, * address4;
