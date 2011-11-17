@@ -181,12 +181,9 @@ struct packet_info * init_new_packet_info()
 	return ret;
 }
 
-struct packet_info * parse_packet_basic_info(struct pcap_packet * packet)
+int parse_packet_basic_info_radiotap(struct pcap_packet * packet, struct packet_info * info)
 {
-	// QoS frames - That indicates there will be 2 bytes right after the sequence number called 'QoS Control'
-	// TODO: Check frame length before getting each field and return NULL if it's not long enough
-	struct packet_info * ret;
-	int to_from_ds, i, pos;
+	int i, pos;
 	uint32_t radiotap_flags;
 	static const int radiotap_item_length_bytes[] = { 8, 1, 1, 4, 2, 1, 1, 2, 2, 2, 1, 1, 1, 1, 2, 2, 1, 1, 8, 3 }; // Length of each radiotap field
 
@@ -208,6 +205,107 @@ struct packet_info * parse_packet_basic_info(struct pcap_packet * packet)
 	};
 
 	static const unsigned char rate_mcs_nb_streams [MAX_MCS_INDEX + 1] = { 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 };
+
+	if (packet == NULL || info == NULL) {
+		return EXIT_FAILURE;
+	}
+
+	// Get radiotap information
+	memcpy(&radiotap_flags, (packet->data) + 4, 4);
+	pos = 8; // Start position of the items in the flags
+	for (i = 0; radiotap_flags != 0; i++) {
+		if (radiotap_flags % 2) {
+			switch (i) {
+			case 1: // Flags
+				info->fcs_present = ((*(packet->data + pos)) & 0x10) == 0x10;
+				break;
+			case 2: // Rate
+				info->rate = (*((packet->data) + pos)) / 2.0;
+				break;
+			case 3: // Channel
+				info->frequency = (*((packet->data) + pos + 1))* 256;
+				info->frequency += *((packet->data) + pos);
+				if (info->frequency >= 2407 && info->frequency <= 2472) {
+					info->channel = (info->frequency - 2407) / 5;
+				} else if (info->frequency == 2484) {
+					info->channel = 14;
+				} else if (info->frequency >= 5000 && info->frequency <= 6100) {
+					info->channel = (info->frequency - 5000) / 5;
+				}
+				break;
+			case 5: // DBM Antenna signal
+				info->signal = *((packet->data) + pos);
+				break;
+			case 6: // DBM Antenna noise
+				info->noise = *((packet->data) + pos);
+				break;
+			case 14: // RX Flags
+				// TODO: 'value & 1' indicates if FCS failed, add that field.
+				//       That will avoid FCS calculation
+				// TODO: Make the sensor validate its frames to offload the server and report every X times the amount of broken frames.
+				break;
+			case 19: // HT information
+				if (info->rate > 0) {
+					break;
+				}
+
+				// TODO: Check first byte to know what's available
+				if (((*((packet->data) + pos + 1)) & 3) != 0) {
+					info->channel_width = 40;
+					// 40 Mhz
+				} // Default is 20Mhz
+
+				// MCS rate index
+				info->mcs_index = *((packet->data) + pos + 2);
+
+				// Guard Interval
+				if (((*((packet->data) + pos + 1)) & 4) == 0) {
+					// Long GI
+					info->guard_interval = 800; // 800 ns
+
+				} else {
+					// Short GI
+					info->guard_interval = 400; // 400 ns
+				}
+
+				if (info->mcs_index > MAX_MCS_INDEX) {
+#ifdef DEBUG
+					fprintf(stderr, "Invalid MCS index for frame: %u (max value: %d).", info->mcs_index, MAX_MCS_INDEX);
+#endif
+					break;
+				}
+
+				// Rate
+				if (info->channel_width == 40) {
+					info->rate = rate_mcs_40MHz[(int)(info->guard_interval == 400)][(int)(info->mcs_index)];
+				} else {
+					info->rate = rate_mcs_20MHz[(int)(info->guard_interval == 400)][(int)(info->mcs_index)];
+				}
+
+				// Get # of spatial streams
+				info->nb_spatial_stream = rate_mcs_nb_streams[(int)(info->mcs_index)];
+
+				break;
+			default:
+				break;
+			}
+			// Go to the next field
+			if (i <= 17) {
+				pos += radiotap_item_length_bytes[i];
+			}
+		}
+		radiotap_flags /= 2;
+	}
+
+	return EXIT_SUCCESS;
+}
+
+struct packet_info * parse_packet_basic_info(struct pcap_packet * packet)
+{
+	// QoS frames - That indicates there will be 2 bytes right after the sequence number called 'QoS Control'
+	// TODO: Check frame length before getting each field and return NULL if it's not long enough
+	struct packet_info * ret;
+	int to_from_ds;
 
 	if (packet == NULL || packet->header.cap_len < MIN_PACKET_SIZE) {
 #ifdef EXTRA_DEBUG
@@ -237,93 +335,12 @@ struct packet_info * parse_packet_basic_info(struct pcap_packet * packet)
 			return NULL;
 		}
 
-
-		// Get radiotap information
-		memcpy(&radiotap_flags, (packet->data) + 4, 4);
-		pos = 8; // Start position of the items in the flags
-		for (i = 0; radiotap_flags != 0; i++) {
-			if (radiotap_flags % 2) {
-				switch (i) {
-				case 1: // Flags
-					ret->fcs_present = ((*(packet->data + pos)) & 0x10) == 0x10;
-					break;
-				case 2: // Rate
-					ret->rate = (*((packet->data) + pos)) / 2.0;
-					break;
-				case 3: // Channel
-					ret->frequency = (*((packet->data) + pos + 1))* 256;
-					ret->frequency += *((packet->data) + pos);
-					if (ret->frequency >= 2407 && ret->frequency <= 2472) {
-						ret->channel = (ret->frequency - 2407) / 5;
-					} else if (ret->frequency == 2484) {
-						ret->channel = 14;
-					} else if (ret->frequency >= 5000 && ret->frequency <= 6100) {
-						ret->channel = (ret->frequency - 5000) / 5;
-					}
-					break;
-				case 5: // DBM Antenna signal
-					ret->signal = *((packet->data) + pos);
-					break;
-				case 6: // DBM Antenna noise
-					ret->noise = *((packet->data) + pos);
-					break;
-				case 14: // RX Flags
-					// TODO: 'value & 1' indicates if FCS failed, add that field.
-					//       That will avoid FCS calculation
-					// TODO: Make the sensor validate its frames to offload the server and report every X times the amount of broken frames.
-					break;
-				case 19: // HT information
-					if (ret->rate > 0) {
-						break;
-					}
-
-					// TODO: Check first byte to know what's available
-					if (((*((packet->data) + pos + 1)) & 3) != 0) {
-						ret->channel_width = 40;
-						// 40 Mhz
-					} // Default is 20Mhz
-
-					// MCS rate index
-					ret->mcs_index = *((packet->data) + pos + 2);
-
-					// Guard Interval
-					if (((*((packet->data) + pos + 1)) & 4) == 0) {
-						// Long GI
-						ret->guard_interval = 800; // 800 ns
-
-					} else {
-						// Short GI
-						ret->guard_interval = 400; // 400 ns
-					}
-
-					if (ret->mcs_index > MAX_MCS_INDEX) {
-#ifdef DEBUG
-						fprintf(stderr, "Invalid MCS index for frame: %u (max value: %d).", ret->mcs_index, MAX_MCS_INDEX);
-#endif
-						break;
-					}
-
-					// Rate
-					if (ret->channel_width == 40) {
-						ret->rate = rate_mcs_40MHz[(int)(ret->guard_interval == 400)][(int)(ret->mcs_index)];
-					} else {
-						ret->rate = rate_mcs_20MHz[(int)(ret->guard_interval == 400)][(int)(ret->mcs_index)];
-					}
-
-					// Get # of spatial streams
-					ret->nb_spatial_stream = rate_mcs_nb_streams[(int)(ret->mcs_index)];
-
-					break;
-				default:
-					break;
-				}
-				// Go to the next field
-				if (i <= 17) {
-					pos += radiotap_item_length_bytes[i];
-				}
-			}
-			radiotap_flags /= 2;
+		// Parse radiotop header
+		if (parse_packet_basic_info_radiotap(packet, ret) == EXIT_FAILURE) {
+			free(ret);
+			return NULL;
 		}
+
 	} else if (packet->linktype == LINKTYPE_NOHEADERS) {
 		// OK, no headers
 		ret->packet_header_len = 0;
