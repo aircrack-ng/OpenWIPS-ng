@@ -108,6 +108,7 @@ struct packet_info {
 
 struct packet_info * copy_packet_info(struct pcap_packet * src, struct pcap_packet * dst);
 struct packet_info * init_new_packet_info();
+int parse_packet_basic_info_radiotap(struct pcap_packet * packet, struct packet_info * info);
 struct packet_info * parse_packet_basic_info(struct pcap_packet * packet);
 int print_pcap_packet_info(struct packet_info * pi);
 
