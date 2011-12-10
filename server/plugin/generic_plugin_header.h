@@ -22,6 +22,8 @@ char * init_text(void * config);
 #define PLUGIN_TYPE_ALERT					'A'
 #define PLUGIN_TYPE_LOGGING					'L'
 
+#define NO_MAX_SUPPORTED_VERSION			0
+
 #ifdef __cplusplus
 }
 #endif

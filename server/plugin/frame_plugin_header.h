@@ -22,8 +22,6 @@ extern "C" {
 #define NULLIFY_MAC_ARRAY(array) (array)[0] = (array)[1] = (array)[2] = (array)[3] = (array)[4] = (array)[5] = 0
 #define FRAME_TYPE_TO_STRING(type)	((type) == FRAME_TYPE_MANAGEMENT) ? "Management" : ((type) == FRAME_TYPE_CONTROL) ? "Control" : ((type) == FRAME_TYPE_DATA) ? "Data" : "Invalid"
 
-#define NO_MAX_SUPPORTED_VERSION	0
-
 #define ANALYZES_ALL_FRAMES		-1
 
 #define NO_TIME_CONSTRAINT		-1
