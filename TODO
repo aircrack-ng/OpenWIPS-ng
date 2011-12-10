@@ -1,0 +1,11 @@
+* Manpages
+* Deauth attackers
+* OpenWIPS-ng sensor: convert server connection to new system
+* Common: Move logging system to common and use that for logging everything
+* Write documentation
+* Allow user connection
+
+v0.2
+* Rewrite attack handling to handle better multiple attacks
+* Handle prism headers
+* Handle multiple sensor: frame reassembly
