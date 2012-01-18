@@ -48,4 +48,4 @@ Bugs
   * Don't forget to specify what revision if you are using. It is very important.
 - The more information you provide, the more chance I have to find the bug quickly and fix it.
 - If you can fix it, it's even better. I just need a patch done with 'diff -ur' or 'svn diff'. Don't forget to sign off the patch. 
-- A bug tracker will be available soon. In the meantime, please email me at tdotreppe@aircrack-ng.org or find me on IRC (Mister_X)
+- A bug tracker will be available soon. In the meantime, please email me at tdotreppe@openwips-ng.org or find me on IRC (Mister_X)
