@@ -10,10 +10,27 @@ v0.1:
 * Database for logging and management (or use the file system to do that)
 * Allow user connection to manage the WIPS
 * Replay detection attack
+* Build server on windows (cygwin at least)
 
 v0.1.1:
 * Rewrite attack handling (and plugins) to handle better multiple attacks
 * Handle prism headers
+* Handle PPI headers
 
 v0.2
 * Handle multiple sensor: frame reassembly
+* Channel hopping
+* Encrypt communications
+* Add plugins (frame analysis, alert and logging)
+
+v0.3
+* Real remote PCAP (compatible with Wireshark)
+* Database storage (more stuff)
+* More plugins (database, script wrapper)
+
+v1.0
+* Rewrite in C++
+
+v1.1
+* Improve performance
+* Improve stability
