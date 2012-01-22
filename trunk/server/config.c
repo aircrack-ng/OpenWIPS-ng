@@ -297,6 +297,12 @@ int parse_simple_options()
 				_log_facility = LOG_FACILITY_FILE;
 				ALLOC_COPY_STRING(cur_key_value->value, _log_file);
 			}
+		} else if (strcmp(cur_key_value->key, "ban_time") == 0) {
+			_ban_time_seconds = atoi(cur_key_value->value);
+			if (_ban_time_seconds < -1) {
+				fprintf(stderr, "Invalid ban time <%s> in configuration. It must be -1 or above.\n", cur_key_value->value);
+				return EXIT_FAILURE;
+			}
 		}
 	}
 
@@ -305,6 +311,7 @@ int parse_simple_options()
 	printf("Port: %d\n", _port);
 	printf("Disable encryption (sensor-server): %s\n", (_disable_encryption) ? "yes" : "no");
 	printf("RPCAP port range: %d to %d\n", _rpcap_port_min, _rpcap_port_max);
+	printf("Ban time (in seconds): %d\n", _ban_time_seconds);
 	printf("Logging facility: %s\n", (_log_facility == LOG_FACILITY_SYSLOG) ? "syslog" :
 									(_log_facility == LOG_FACILITY_NONE) ? "none" :
 									(_log_facility == LOG_FACILITY_FILE) ? _log_file : "Not set");
