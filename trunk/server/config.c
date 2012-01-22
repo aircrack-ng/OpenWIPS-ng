@@ -269,6 +269,7 @@ int parse_simple_options()
 	_disable_encryption = 0; // Encrypted by default
 	_port = DEFAULT_SERVER_PORT;
 	rpcap_init();
+	_ban_time_seconds = 600; // Default ban time (when a user is part of an attack): 10 minutes
 
 	// Note multiple definition of the same key can exist and thus the value in the end will be the one of the latest key
 	for (cur_key_value = _config; cur_key_value != NULL; cur_key_value = cur_key_value->next) {
