@@ -1,9 +1,13 @@
-* Manpages
-* Deauth attackers
+* Write documentation
+  * Website
+  * Manpages
+* Attack detection and plugins:
+  * Rewrite
+  * Deauth attackers
+  * Ban attacker for a specific time
 * OpenWIPS-ng sensor: convert server connection to new system
 * Common: Move logging system to common and use that for logging everything
-* Write documentation
-* Allow user connection
+* Allow user connection to manage the WIPS
 
 v0.2
 * Rewrite attack handling to handle better multiple attacks
