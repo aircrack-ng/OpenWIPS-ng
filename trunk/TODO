@@ -1,15 +1,19 @@
+v0.1:
 * Write documentation
   * Website
   * Manpages
 * Attack detection and plugins:
-  * Rewrite
   * Deauth attackers
   * Ban attacker for a specific time
 * OpenWIPS-ng sensor: convert server connection to new system
 * Common: Move logging system to common and use that for logging everything
+* Database for logging and management (or use the file system to do that)
 * Allow user connection to manage the WIPS
+* Replay detection attack
+
+v0.1.1:
+* Rewrite attack handling (and plugins) to handle better multiple attacks
+* Handle prism headers
 
 v0.2
-* Rewrite attack handling to handle better multiple attacks
-* Handle prism headers
 * Handle multiple sensor: frame reassembly
