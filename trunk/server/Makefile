@@ -1,6 +1,6 @@
 include			../common.mak
 
-LIBS			= -lpcap -lssl -lz
+LIBS			= -lpcap -lssl -lz -L/usr/local/lib -lsqlite3
 
 BIN_FILE		= openwips-ng-server
 CONF_FILE		= openwips-ng-server.conf

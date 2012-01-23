@@ -30,7 +30,7 @@ all: openwips-ng-server
 openwips-ng-server: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc  -o "openwips-ng-server" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -L/usr/local/lib -o "openwips-ng-server" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
