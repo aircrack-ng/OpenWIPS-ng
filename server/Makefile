@@ -1,3 +1,4 @@
+$(shell chmod 755 ../evalrev)
 include			../common.mak
 
 LIBS			= -lpcap -lssl -lz -L/usr/local/lib -lsqlite3

@@ -1,3 +1,4 @@
+$(shell chmod 755 ../evalrev)
 include		../common.mak
 
 LIBS		= -lpcap -lm -lpthread
