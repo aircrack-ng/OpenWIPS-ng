@@ -133,7 +133,7 @@ int packet_analysis_thread(void * data)
 			}
 
 			// Check FCS before processing frame (ignore if invalid but log it in DB).
-			if (cur->info->fcs_present) {
+			if (_enable_fcs_check && cur->info->fcs_present) {
 				fcs = crc32(0L, cur->info->frame_start, cur->header.cap_len - FCS_SIZE - cur->info->packet_header_len);
 				if (fcs != cur->info->fcs) {
 #ifdef EXTRA_DEBUG
