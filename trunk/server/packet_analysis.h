@@ -36,6 +36,7 @@ extern int _nb_macs; // config.h
 
 extern int _stop_threads;
 extern struct packet_list * _receive_packet_list;
+extern int _enable_fcs_check; // in config.h
 
 pthread_t _packet_analysis_thread;
 volatile int _stop_packet_analysis_thread;

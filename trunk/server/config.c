@@ -270,6 +270,7 @@ int parse_simple_options()
 	_port = DEFAULT_SERVER_PORT;
 	rpcap_init();
 	_ban_time_seconds = 600; // Default ban time (when a user is part of an attack): 10 minutes
+	_enable_fcs_check = 0; // FCS Check
 
 	// Note multiple definition of the same key can exist and thus the value in the end will be the one of the latest key
 	for (cur_key_value = _config; cur_key_value != NULL; cur_key_value = cur_key_value->next) {
@@ -304,6 +305,8 @@ int parse_simple_options()
 				fprintf(stderr, "Invalid ban time <%s> in configuration. It must be -1 or above.\n", cur_key_value->value);
 				return EXIT_FAILURE;
 			}
+		} else if (strcmp(cur_key_value->key, "enable_fcs_check") == 0) {
+			_enable_fcs_check = IS_TEXT_TRUE(cur_key_value->value);
 		}
 	}
 
@@ -311,6 +314,7 @@ int parse_simple_options()
 	printf("Simple configuration items:\n");
 	printf("Port: %d\n", _port);
 	printf("Disable encryption (sensor-server): %s\n", (_disable_encryption) ? "yes" : "no");
+	printf("Enable FCS check: %s\n", (_enable_fcs_check) ? "yes" : "no");
 	printf("RPCAP port range: %d to %d\n", _rpcap_port_min, _rpcap_port_max);
 	printf("Ban time (in seconds): %d\n", _ban_time_seconds);
 	printf("Logging facility: %s\n", (_log_facility == LOG_FACILITY_SYSLOG) ? "syslog" :
