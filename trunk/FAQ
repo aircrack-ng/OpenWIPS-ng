@@ -37,7 +37,7 @@ A: Not at this time but it is planned. You will need an Airpcap (it is an hardwa
 Q: Does it work on OSX (Mac)?
 A: Not at this time but it is planned. It will work on Snow Leopard (and higher) but Lion is recommended.
 
-Q: My wireless networks are very busy and the sensor is not on the same machine as the server and thus make my wired network very busy. What can you do?
+Q: My wireless networks are very busy and the sensor is not on the same machine as the server and thus makes my wired network very busy. What can you do?
 A: In a future version, the sensor will be able to compress and/or remove payload from data frame. That should reduce network traffic.
 
 Q: Can I connect my sensor to server via wireless?
