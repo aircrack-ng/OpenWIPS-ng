@@ -1,6 +1,6 @@
 include			../common.mak
 
-MP_FILES        = openwips-ng.1 openwips-ng-server.1 openwips-ng-sensor.1
+MP_FILES        = openwips-ng.1 openwips-ng-server.1
 
 default: all
 
