@@ -48,7 +48,6 @@ void help()
 	"      -p <plugin> : Check if a plugin is valid and exit\n"
 	"      -c <config> : Check if a configuration file is\n"
 	"                    valid and exit\n"
-	"      -i <pass>   : Hash password and exit\n"
 //	"      -d          : Deamonize\n"
 	"      -v          : Display version and exit\n"
 	"      -h          : Display help and exit\n"
@@ -92,12 +91,10 @@ void stop_threads()
 int parse_args(int nbarg, char * argv[])
 {
 	int option_index, option;
-	char * temp;
 	static struct option long_options[] = {
 		{"help",			0, 0, 'h'},
 		{"check-plugin",	1, 0, 'p'},
 		{"check-config",	1, 0, 'c'},
-		{"hash-password",	1, 0, 'i'},
 		{"version",			0, 0, 'v'},
 //		{"deamonize",		0, 0, 'd'},
 		{0,             	0, 0,  0 }
@@ -108,8 +105,8 @@ int parse_args(int nbarg, char * argv[])
 		option_index = 0;
 
 		option = getopt_long( nbarg, argv,
-//						"hp:vc:i:d",
-						"hp:vc:i:",
+//						"hp:vc:d",
+						"hp:vc:",
 				long_options, &option_index );
 
 		if( option < 0 ) break;
@@ -159,12 +156,6 @@ int parse_args(int nbarg, char * argv[])
 					fprintf(stderr, "[*] Configuration file <%s> is not correct.\n", optarg);
 				}
 				free_global_memory_config();
-				exit(EXIT_SUCCESS);
-				break;
-
-			case 'i' :
-				temp = get_printable_hash(optarg);
-				fprintf(stderr, "%s\n", temp);
 				exit(EXIT_SUCCESS);
 				break;
 
