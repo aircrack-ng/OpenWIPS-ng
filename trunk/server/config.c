@@ -261,8 +261,8 @@ int read_conf_file(char * path)
 
 int parse_simple_options()
 {
-	int port_min, port_max;
-	char * pos;
+	int port_min, port_max, len;
+	char * pos, *temp;
 	struct key_value * cur_key_value;
 
 	// Set default options
@@ -271,6 +271,8 @@ int parse_simple_options()
 	rpcap_init();
 	_ban_time_seconds = 600; // Default ban time (when a user is part of an attack): 10 minutes
 	_enable_fcs_check = 0; // FCS Check
+	_db_connection.database_type = DB_TYPE_INVALID;
+	_db_connection.database_connection_string = NULL;
 
 	// Note multiple definition of the same key can exist and thus the value in the end will be the one of the latest key
 	for (cur_key_value = _config; cur_key_value != NULL; cur_key_value = cur_key_value->next) {
@@ -307,6 +309,50 @@ int parse_simple_options()
 			}
 		} else if (strcmp(cur_key_value->key, "enable_fcs_check") == 0) {
 			_enable_fcs_check = IS_TEXT_TRUE(cur_key_value->value);
+		} else if (strcmp(cur_key_value->key, "database_type") == 0) {
+			// It should contains at least one space character
+			pos = strchr(cur_key_value->value, ' ');
+			if (pos == NULL) {
+				fprintf(stderr, "Invalid database string <%s> in configuration. It must be the type followed by a space and then the connection string.\n", cur_key_value->value);
+				return EXIT_FAILURE;
+			}
+
+			// Get Database type
+			len = pos - (cur_key_value->value);
+			if (strncmp(cur_key_value->value, "sqlite_disk", len)) {
+				_db_connection.database_type = DB_TYPE_SQLITE_DISK;
+			} else if (strncmp(cur_key_value->value, "sqlite_ram", len)) {
+				_db_connection.database_type = DB_TYPE_SQLITE_RAM;
+			} else if (strncmp(cur_key_value->value, "postgres", len)) {
+				_db_connection.database_type = DB_TYPE_POSTGRES;
+			} else if (strncmp(cur_key_value->value, "oracle", len)) {
+				_db_connection.database_type = DB_TYPE_ORACLE;
+			} else if (strncmp(cur_key_value->value, "mysql", len)) {
+				_db_connection.database_type = DB_TYPE_MYSQL;
+			} else {
+				temp = (char *)calloc(1, (len * sizeof(char)) + 1);
+				strncpy(temp, cur_key_value->value, len);
+				fprintf(stderr, "Invalid database type <%s> in configuration. It must be one of the following: sqlite_disk, sqlite_ram, postgres, oracle, mysql\n", temp);
+				free(temp);
+				return EXIT_FAILURE;
+			}
+
+			// We only support sqlite atm
+			if (_db_connection.database_type != DB_TYPE_SQLITE_DISK) {
+				fprintf(stderr, "OpenWIPS-ng only supports 'sqlite_disk' at the moment.\n");
+				return EXIT_FAILURE;
+			}
+
+			// Get connection string
+			++pos;
+			len = strlen(pos); // Length of connection string
+			if (len == 0) {
+				fprintf(stderr, "Can't connect to the DB without a connection string, edit the configuration and add it.\n");
+				return EXIT_FAILURE;
+			}
+
+			_db_connection.database_connection_string = (char *)calloc(1, len + 1);
+			strncpy(_db_connection.database_connection_string, pos, len);
 		}
 	}
 
@@ -320,6 +366,14 @@ int parse_simple_options()
 	printf("Logging facility: %s\n", (_log_facility == LOG_FACILITY_SYSLOG) ? "syslog" :
 									(_log_facility == LOG_FACILITY_NONE) ? "none" :
 									(_log_facility == LOG_FACILITY_FILE) ? _log_file : "Not set");
+	printf("Database type: %s\n",
+			(_db_connection.database_type == DB_TYPE_SQLITE_DISK) ? "SQLite (disk)" :
+			(_db_connection.database_type == DB_TYPE_SQLITE_RAM) ? "SQLite (RAM)" :
+			(_db_connection.database_type == DB_TYPE_POSTGRES) ? "PostgreSQL" :
+			(_db_connection.database_type == DB_TYPE_ORACLE) ? "Oracle" :
+			(_db_connection.database_type == DB_TYPE_MYSQL) ? "MySQL" : "Invalid");
+	printf("Database connection string: %s\n", _db_connection.database_connection_string);
+
 	printf("-----------------------\n");
 #endif
 

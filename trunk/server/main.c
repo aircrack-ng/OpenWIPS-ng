@@ -65,6 +65,7 @@ void free_global_memory()
 	free_global_memory_packet_assembly();
 	free_global_memory_packet_analysis();
 	free_global_memory_message();
+	free_global_memory_database();
 
 	// Free the rest of memory allocated by main.
 	free(_version);
@@ -81,6 +82,7 @@ void init()
 	init_sensor();
 	init_packet_analysis();
 	init_message_thread();
+	init_database_thread();
 }
 
 void stop_threads()
@@ -205,6 +207,14 @@ int main(int nbarg, char * argv[])
 	if (_deamonize) {
 		daemonize();
 	}
+
+	/*
+	if (start_database_thread() == EXIT_FAILURE) {
+		fprintf(stderr, "Failed to start database thread, exiting.\n");
+		free_global_memory();
+		return EXIT_FAILURE;
+	}
+	*/
 
 	temp = (char *)calloc(1, 100);
 	sprintf(temp, "%s starting", _version);

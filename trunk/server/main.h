@@ -43,17 +43,20 @@ extern void free_global_memory_rpcap_server();
 extern void free_global_memory_packet_assembly();
 extern void free_global_memory_packet_analysis();
 extern void free_global_memory_message();
+extern void free_global_memory_database();
 
 // Initialization
 extern void init_packet_assembly();
 extern void init_sensor();
 extern void init_packet_analysis();
 extern void init_message_thread();
+extern void init_database_thread();
 
 // Threads
 extern int start_sensor_socket();
 extern int start_packet_assembly_thread();
 extern int start_packet_analysis_thread();
 extern int start_message_thread();
+extern int start_database_thread();
 
 #endif /* MAIN_H_ */
