@@ -24,6 +24,7 @@
 
 #include "users.h"
 #include "common/config.h"
+#include "database/common.h"
 
 #define IS_TEXT_TRUE(text)	(strcasecmp((text), "y") == 0 || \
 							strcasecmp((text), "yes") == 0 || \
@@ -52,6 +53,9 @@ int _enable_fcs_check;
 // Mac addresses to protect
 unsigned char ** _our_macs;
 int _nb_macs;
+
+// Database connection (defined in database/common.h)
+//extern struct database_info _db_connection;
 
 // TODO: Add function to return a specific set of keys and use it: struct key_value * get_keys(char * key_name)
 

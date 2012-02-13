@@ -15,5 +15,6 @@ EXECUTABLES :=
 SUBDIRS := \
 . \
 sensor \
+database \
 common \
 
