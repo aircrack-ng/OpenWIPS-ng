@@ -16,6 +16,7 @@ Requirements
 	- libpcap
 	- libz
 	- m
+	- sqlite3 (development package)
 
 Compilation
 -----------
