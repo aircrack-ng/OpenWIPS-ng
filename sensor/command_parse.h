@@ -35,7 +35,7 @@ extern int start_rpcap(struct rpcap_link * link_info); // in rpcap.c
 
 int parse_rpcap_command(char * command, char * host);
 char * parse_command(char * command, int * state);
-char * get_supported_version(); // Return max supported version
+char * get_supported_version(unsigned int version); // Return max supported version
 char * get_command(char * ringbuffer, int ringbuffer_len);
 
 #endif /* COMMAND_PARSE_H_ */
