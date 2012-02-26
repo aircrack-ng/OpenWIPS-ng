@@ -319,15 +319,15 @@ int parse_simple_options()
 
 			// Get Database type
 			len = pos - (cur_key_value->value);
-			if (strncmp(cur_key_value->value, "sqlite_disk", len)) {
+			if (strncmp(cur_key_value->value, "sqlite_disk", len) == 0) {
 				_db_connection.database_type = DB_TYPE_SQLITE_DISK;
-			} else if (strncmp(cur_key_value->value, "sqlite_ram", len)) {
+			} else if (strncmp(cur_key_value->value, "sqlite_ram", len) == 0) {
 				_db_connection.database_type = DB_TYPE_SQLITE_RAM;
-			} else if (strncmp(cur_key_value->value, "postgres", len)) {
+			} else if (strncmp(cur_key_value->value, "postgres", len) == 0) {
 				_db_connection.database_type = DB_TYPE_POSTGRES;
-			} else if (strncmp(cur_key_value->value, "oracle", len)) {
+			} else if (strncmp(cur_key_value->value, "oracle", len) == 0) {
 				_db_connection.database_type = DB_TYPE_ORACLE;
-			} else if (strncmp(cur_key_value->value, "mysql", len)) {
+			} else if (strncmp(cur_key_value->value, "mysql", len) == 0) {
 				_db_connection.database_type = DB_TYPE_MYSQL;
 			} else {
 				temp = (char *)calloc(1, (len * sizeof(char)) + 1);
