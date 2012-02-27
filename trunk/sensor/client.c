@@ -64,6 +64,7 @@ int connect_thread(void * data)
 
 	// Make sure the compiler doesn't complain about it
 	if (data) { }
+	if (err_send) { }
 
 	// Connection loop
 	while (!_stop_threads) {

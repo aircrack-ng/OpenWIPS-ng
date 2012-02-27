@@ -51,6 +51,8 @@ int client_connect_thread(void * data)
 	// Initialize
 	err_send = disconnected = connect_err_shown = 0;
 
+	if (err_send) { }
+
 	params = (struct client_params *)data;
 	socket_param = (struct client_socket_params *)params->client->custom_data;
 	params->modify_thread_status = 0; // Do not allow function to handle socket communication to modify thread status
