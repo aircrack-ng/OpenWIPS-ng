@@ -80,7 +80,10 @@ int is_one_of_our_mac(unsigned char * mac)
 int packet_analysis_thread(void * data)
 {
 	int is_our_mac, plugin_potential_attack_in_progress;
-	char * attack_details, is_attacked, do_attacked_check, plugin_check, * temp_str, * new_details;
+	char * attack_details, is_attacked, do_attacked_check, * temp_str, * new_details;
+#ifdef DEBUG
+	char plugin_check;
+#endif
 	struct pcap_packet * cur;
 	struct packet_list * local_packet_list;
 	struct plugin_info * cur_plugin;
@@ -91,10 +94,10 @@ int packet_analysis_thread(void * data)
 
 	_packet_analysis_thread_stopped = 0;
 	local_packet_list = init_new_packet_list();
-	plugin_check = 0;
 	do_attacked_check = 0;
 
 #ifdef DEBUG
+	plugin_check = 0;
 	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "Packet analysis thread started", 1);
 #endif
 
