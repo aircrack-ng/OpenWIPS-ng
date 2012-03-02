@@ -24,7 +24,7 @@
 #ifndef COMMON_PCAP_H_
 #define COMMON_PCAP_H_
 
-#ifdef __APPLE__
+#if defined(__APPLE__) && defined(__MACH__)
 	#include <pcap/pcap.h>
 #else
 	#include <pcap.h>
