@@ -25,10 +25,6 @@ SUBTYPE_CHECK_O	= frame_subtype_check.o pcap.o
 prefix			= /usr/local
 plugin_dir		= $(prefix)/sbin/openwips-ng-plugins
 
-ifndef OSNAME
-OSNAME		= $(shell uname -s | sed -e 's/.*CYGWIN.*/cygwin/g' -e 's,/,-,g')
-endif
-
 ifeq ($(OSNAME), Darwin)
 	CC		= gcc
 endif
