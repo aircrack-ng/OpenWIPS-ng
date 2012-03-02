@@ -31,6 +31,7 @@ endif
 
 ifeq ($(OSNAME), Darwin)
 	CC		= gcc
+	SYS		= posix
 endif
 
 default: all
