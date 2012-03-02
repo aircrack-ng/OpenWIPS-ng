@@ -24,7 +24,11 @@
 #ifndef COMMON_PCAP_H_
 #define COMMON_PCAP_H_
 
-#include <pcap.h>
+#ifdef __APPLE__
+	#include <pcap/pcap.h>
+#else
+	#include <pcap.h>
+#endif
 #include <pthread.h>
 #include <stdint.h>
 
