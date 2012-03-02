@@ -692,7 +692,7 @@ int remove_packet_older_than(struct pcap_packet * packet, int time_ms, struct pa
 	if (time_ms != 0) {
 		remaining_ms = time_ms % 1000;
 		negative = (packet->header.ts_sec < time_ms / 1000)
-							|| ((packet->header.ts_sec - (time_ms/1000) == 0) &&
+							|| ((packet->header.ts_sec == time_ms / 1000) &&
 									(remaining_ms * 1000 > packet->header.ts_usec) );
 
 		if (negative) {
