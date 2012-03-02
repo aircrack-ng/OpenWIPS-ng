@@ -34,7 +34,13 @@
  */
 #include <stdlib.h>
 #include <string.h>
-#include <openssl/sha.h>
+#if defined(__APPLE__) && defined(__MACH__)
+	#define COMMON_DIGEST_FOR_OPENSSL
+	#include <CommonCrypto/CommonDigest.h>
+	#define SHA1 CC_SHA1
+#else
+	#include <openssl/sha.h>
+#endif
 #include <stdio.h>
 #include "users.h"
 #include "common/defines.h"
