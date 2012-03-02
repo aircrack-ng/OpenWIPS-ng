@@ -55,7 +55,7 @@ void free_global_memory_message()
 	pthread_mutex_destroy(&_message_list_mutex);
 }
 
-int add_message_to_queue(int message_type, unsigned char * data, unsigned char force_log, char * message, int copy)
+int add_message_to_queue(char message_type, unsigned char * data, unsigned char force_log, char * message, int copy)
 {
 	struct message_details * msg, * cur;
 	int ret = EXIT_SUCCESS;
