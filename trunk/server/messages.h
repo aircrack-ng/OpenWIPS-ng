@@ -28,7 +28,7 @@
 
 #define TIME_IN_SEC_BEFORE_MESSAGE_REDISPLAY	30
 
-#define MESSAGE_TYPE_NOT_SET	-1
+#define MESSAGE_TYPE_NOT_SET	99
 #define MESSAGE_TYPE_REG_LOG	0
 #define MESSAGE_TYPE_ALERT		1
 #define MESSAGE_TYPE_ANOMALY	2
@@ -61,7 +61,7 @@ pthread_t _message_thread;
 void init_message_thread();
 void free_global_memory_message();
 
-int add_message_to_queue(int message_type, unsigned char * data, unsigned char force_log, char * message, int copy);
+int add_message_to_queue(char message_type, unsigned char * data, unsigned char force_log, char * message, int copy);
 int start_message_thread();
 int has_message_been_displayed_already(struct message_details * msg);
 int message_thread(void * data);
