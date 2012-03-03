@@ -24,7 +24,6 @@
 #include <pthread.h>
 #include <string.h>
 #include <unistd.h>
-// OSX: <pcap/pcap.h>
 #include "common/pcap.h"
 #include "common/defines.h"
 #include "packet_capture.h"
