@@ -1,5 +1,12 @@
 CC				?= gcc
-CFLAGS			?= -Wall -fPIC -O0 -g3 
+CFLAGS			?= -Wall -O0 -g3 
+
+ifneq ($(OSNAME), cygwin)
+	CFLAGS		+= -fPIC
+else
+	CC		= gcc-4
+	INCLUDES	= -I/usr/include/pcap
+endif
 
 PROTO_CHECK_C	= protocol_check.c ../common/pcap.c
 PROTO_CHECK_O	= protocol_check.o pcap.o
@@ -30,31 +37,31 @@ default: all
 all: clean protocol_check ds_bits_check deauth_detect ie frame_subtype_check frag_detection
 
 frame_subtype_check:
-	$(CC) $(CFLAGS) -c $(SUBTYPE_CHECK_C)
+	$(CC) $(INCLUDES) $(CFLAGS) -c $(SUBTYPE_CHECK_C)
 	$(CC) -shared -Wl,-soname,frame_subtype_check.so.1 -o frame_subtype_check.so.1.0   $(SUBTYPE_CHECK_O)
 
 frag_detection:
-	$(CC) $(CFLAGS) -c $(FRAG_DETECT_C)
+	$(CC) $(INCLUDES) $(CFLAGS) -c $(FRAG_DETECT_C)
 	$(CC) -shared -Wl,-soname,frag_detection.so.1 -o frag_detection.so.1.0   $(FRAG_DETECT_O)
 
 ie:
-	$(CC) $(CFLAGS) -c $(IE_C)
+	$(CC) $(INCLUDES) $(CFLAGS) -c $(IE_C)
 	$(CC) -shared -Wl,-soname,ie.so.1 -o ie.so.1.0   $(IE_O)
 
 replay_detect:
-	$(CC) $(CFLAGS) -c $(REPLAY_DETECT_C)
+	$(CC) $(INCLUDES) $(CFLAGS) -c $(REPLAY_DETECT_C)
 	$(CC) -shared -Wl,-soname,replay_detect.so.1 -o replay_detect.so.1.0   $(REPLAY_DETECT_O)
 
 deauth_detect:
-	$(CC) $(CFLAGS) -c $(DEAUTH_DETECT_C)
+	$(CC) $(INCLUDES) $(CFLAGS) -c $(DEAUTH_DETECT_C)
 	$(CC) -shared -Wl,-soname,deauth_detect.so.1 -o deauth_detect.so.1.0   $(DEAUTH_DETECT_O)
 
 ds_bits_check:
-	$(CC) $(CFLAGS) -c $(DS_BITS_CHECK_C)
+	$(CC) $(INCLUDES) $(CFLAGS) -c $(DS_BITS_CHECK_C)
 	$(CC) -shared -Wl,-soname,ds_bits_check.so.1 -o ds_bits_check.so.1.0   $(DS_BITS_CHECK_O)
 	
 protocol_check:
-	$(CC) $(CFLAGS) -c $(PROTO_CHECK_C)
+	$(CC) $(INCLUDES) $(CFLAGS) -c $(PROTO_CHECK_C)
 	$(CC) -shared -Wl,-soname,protocol_check.so.1 -o protocol_check.so.1.0   $(PROTO_CHECK_O)
 
 clean:
