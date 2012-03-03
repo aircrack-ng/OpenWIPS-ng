@@ -24,8 +24,8 @@ Libpcap installation on cygwin
 1. Install Winpcap 4.1.1 or higher (http://winpcap.org)
 2. Close any cygwin shell opened
 3. Open a new cygwin shell and do the following to install it on cygwin
-	wget https://www.winpcap.org/archive/4.1.1-WpdPack.zip
-	unzip 4.1.1-WpdPack.zip
+	wget https://www.winpcap.org/install/bin/WpdPack_4_1_2.zip
+	unzip WpdPack_4_1_2.zip
 	cd WpdPack
 	cp Lib/*.a /lib
 	cp -R Include /usr/include/pcap
