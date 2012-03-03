@@ -31,6 +31,9 @@
 
 int is_valid_iface(const char * dev)
 {
+	if (dev == NULL) {
+		return 0;
+	}
 #ifndef __CYGWIN__
 	int ifaceLen = strlen(dev);
 	return ifaceLen >= 3 && isdigit(dev[ifaceLen - 1]);
