@@ -1,5 +1,5 @@
 CC			?= gcc
-CFLAGS		?= -O0 -g3 -pthread -Wall -Werror
+CFLAGS		?= -O0 -g3 -Wall -Werror
 
 prefix		= /usr/local
 sbindir		= $(prefix)/sbin
@@ -18,4 +18,11 @@ endif
 
 ifeq ($(OSNAME), Darwin)
 	CC		= gcc
+endif
+
+ifeq ($(OSNAME), cygwin)
+	CC		= gcc-4
+	LIBS	= -lwpcap -I/usr/include/pcap
+else
+	LIBS	= -pthread -lpcap
 endif

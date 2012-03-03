@@ -39,15 +39,15 @@ int is_mac_broadcast(unsigned char * mac)
 
 int get_hex_value(char c)
 {
-	if (!isxdigit(c)) {
+	if (!isxdigit((int)c)) {
 		return -1;
 	}
 
-	if (isdigit(c)) {
+	if (isdigit((int)c)) {
 		return c - '0';
 	}
 
-	return toupper(c) - 'A' + 10;
+	return toupper((int)c) - 'A' + 10;
 }
 
 unsigned char * parse_mac_from_string(char * mac)
@@ -65,11 +65,11 @@ unsigned char * parse_mac_from_string(char * mac)
 	len = strlen(mac);
 	new_pos = 0;
 	for (i = 0; i < len; i++) {
-		if (!isalnum(mac[i])) {
+		if (!isalnum((int)mac[i])) {
 			continue;
 		}
 
-		if (!isxdigit(mac[i])) {
+		if (!isxdigit((int)mac[i])) {
 			free(mac_no_separator);
 			return NULL;
 		}

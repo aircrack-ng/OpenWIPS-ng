@@ -319,7 +319,7 @@ struct plugin_info * load_plugin(char * name, char * path, char * config_line, i
 			sprintf(temp, "Warning, plugin <%s> type should be uppercase", path);
 			add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, temp, 0);
 
-			ret->plugin_type = (char)toupper(ret->plugin_type);
+			ret->plugin_type = (char)toupper((int)(ret->plugin_type));
 			break;
 		default:
 			break;

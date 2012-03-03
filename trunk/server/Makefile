@@ -1,7 +1,7 @@
 $(shell chmod 755 ../evalrev)
 include			../common.mak
 
-LIBS			= -lpcap -lssl -lz -L/usr/local/lib -L/usr/lib -lcrypto -ldl -lsqlite3
+LIBS			+= -lssl -lz -L/usr/local/lib -L/usr/lib -lcrypto -ldl -lsqlite3
 
 BIN_FILE		= openwips-ng-server
 CONF_FILE		= openwips-ng-server.conf
