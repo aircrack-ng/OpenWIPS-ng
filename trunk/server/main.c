@@ -85,7 +85,7 @@ void init()
 	init_database_thread();
 }
 
-void stop_threads()
+inline void stop_threads()
 {
 	_stop_threads = 1;
 }

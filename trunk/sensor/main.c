@@ -29,7 +29,7 @@
 #include "common/version.h"
 #include "global_var.h"
 
-void stop_threads()
+inline void stop_threads()
 {
 	_stop_threads = 1;
 }

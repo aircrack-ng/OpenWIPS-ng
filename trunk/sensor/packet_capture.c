@@ -42,7 +42,7 @@ int is_valid_iface(const char * dev)
 #endif
 }
 
-int inject(pcap_t * handle, const void * packet, size_t size)
+inline int inject(pcap_t * handle, const void * packet, size_t size)
 {
 	return pcap_inject(handle, packet, size);
 }

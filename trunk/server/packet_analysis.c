@@ -31,7 +31,7 @@
 #include "plugins.h"
 #include "messages.h"
 
-void init_packet_analysis()
+inline void init_packet_analysis()
 {
 	_packet_analysis_thread = PTHREAD_NULL;
 }
