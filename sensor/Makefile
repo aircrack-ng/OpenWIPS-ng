@@ -1,7 +1,7 @@
 $(shell chmod 755 ../evalrev)
 include		../common.mak
 
-LIBS		= -lpcap -lm -lpthread
+LIBS		+= -lm -lpthread
 
 SBIN_FILE	= openwips-ng
 
