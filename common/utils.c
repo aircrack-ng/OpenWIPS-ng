@@ -24,6 +24,9 @@
 #include <sys/time.h>
 #include <ctype.h>
 #include <pcap/pcap.h>
+#ifdef __CYGWIN__
+	#include <windows.h>
+#endif
 #include "defines.h"
 #include "utils.h"
 
@@ -140,6 +143,53 @@ int is_mac_equal(unsigned char *  from_packet, char * printed_mac)
 // Return 1 if interface exist
 int interface_exist(char * interface_name)
 {
+#ifdef __CYGWIN__
+	// Airpcap DLL license allows us to use that code
+	#define DEVICESTRING				"\\\\.\\Global\\airpcap%.2d"
+	const char * basename = "\\\\.\\airpcap";
+	int basename_length;
+	char DeviceName[256];
+	HANDLE AdHandle;
+	int device_id;
+
+	if (STRING_IS_NULL_OR_EMPTY(interface_name)) {
+		return 0;
+	}
+
+	// We don't use the interface 'airpcap_any'
+	basename_length = strlen(basename);
+	if (strstr(interface_name, basename) != interface_name
+		|| strlen(interface_name) != basename_length + 2) { // 2 characters for the interface id
+		return 0;
+	}
+
+	if (!isdigit((int)(*(interface_name + basename_length))) ||
+		!isdigit((int) (*(interface_name + basename_length + 1)))) {
+		return 0;
+	}
+
+	// Get device ID
+	device_id = ((*(interface_name + basename_length))- '0') * 10;
+	device_id = ((*(interface_name + basename_length + 1))- '0');
+
+	snprintf(DeviceName, sizeof(DeviceName), DEVICESTRING, device_id);
+	AdHandle = CreateFile(
+		DeviceName,
+		GENERIC_READ,
+		0,
+		NULL,
+		OPEN_EXISTING,
+		0,
+		0);
+
+	if(AdHandle == INVALID_HANDLE_VALUE)
+	{
+		// unable to open this device, it does not exist
+		return 0;
+	}
+
+	CloseHandle(AdHandle);
+#else
 	// Check if interface
 	pcap_t *handle;
 	char errbuf[PCAP_ERRBUF_SIZE];
@@ -155,6 +205,7 @@ int interface_exist(char * interface_name)
 
 	// Free
 	pcap_close(handle);
+#endif /* __CYGWIN__ */
 
 	return 1;
 }
