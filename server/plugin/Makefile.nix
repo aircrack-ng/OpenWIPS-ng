@@ -25,10 +25,6 @@ SUBTYPE_CHECK_O	= frame_subtype_check.o pcap.o
 prefix			= /usr/local
 plugin_dir		= $(prefix)/sbin/openwips-ng-plugins
 
-ifeq ($(OSNAME), Darwin)
-	CC		= gcc
-endif
-
 default: all
 
 all: clean protocol_check ds_bits_check deauth_detect ie frame_subtype_check frag_detection
