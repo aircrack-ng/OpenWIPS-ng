@@ -123,7 +123,7 @@ int monitor(void * data)
 
 #if defined(__APPLE__) && defined(__MACH__)
 	printf("Forcing Linktype to radiotap (DLT_IEEE802_11_RADIO) for OSX.\n");
-	if (pcap_set_datalink(LINKTYPE_RADIOTAP) == -1) {
+	if (pcap_set_datalink(handle, LINKTYPE_RADIOTAP) == -1) {
 		fprintf(stderr, "Failed to set link type to radiotap (DLT_IEEE802_11_RADIO).\n");
 		return EXIT_FAILURE;
 	}
