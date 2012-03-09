@@ -219,6 +219,7 @@ int parse_packet_basic_info_radiotap(struct pcap_packet * packet, struct packet_
 		if (radiotap_flags % 2) {
 			switch (i) {
 			case 1: // Flags
+				// TODO: Check if flags are parsed correctly
 				info->fcs_present = ((*(packet->data + pos)) & 0x10) == 0x10;
 				info->bad_fcs = ((*(packet->data + pos)) & 0x40) == 0x40;
 				break;
@@ -477,6 +478,7 @@ int print_pcap_packet_info(struct packet_info * pi)
 	if (pi->fcs_present) {
 		printf(" (0x%x)", pi->fcs);
 	}
+	printf("Bad Frame Check Sequence (FCS): %s", (pi->bad_fcs) ? "Yes" : "No");
 	printf("\nSignal/Noise: %d/%d\n", pi->signal, pi->noise);
 	printf("Rate: %.1fM\n", pi->rate);
 	printf("HT Information:\n");
