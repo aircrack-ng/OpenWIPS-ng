@@ -133,6 +133,7 @@ struct packet_info * copy_packet_info(struct pcap_packet * src, struct pcap_pack
 	ret->guard_interval = src->info->guard_interval;
 	ret->mcs_index = src->info->mcs_index;
 	ret->nb_spatial_stream = src->info->nb_spatial_stream;
+	ret->bad_fcs = src->info->bad_fcs;
 
 	return ret;
 }
@@ -164,6 +165,7 @@ struct packet_info * init_new_packet_info()
 	ret->noise = 0;
 	ret->rate = 0;
 	ret->fcs_present = 0;
+	ret->bad_fcs = 0;
 	ret->frequency = 0;
 	ret->channel = 0;
 	ret->frame_payload = NULL;
@@ -218,6 +220,7 @@ int parse_packet_basic_info_radiotap(struct pcap_packet * packet, struct packet_
 			switch (i) {
 			case 1: // Flags
 				info->fcs_present = ((*(packet->data + pos)) & 0x10) == 0x10;
+				info->bad_fcs = ((*(packet->data + pos)) & 0x40) == 0x40;
 				break;
 			case 2: // Rate
 				info->rate = (*((packet->data) + pos)) / 2.0;

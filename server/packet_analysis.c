@@ -135,6 +135,14 @@ int packet_analysis_thread(void * data)
 				continue;
 			}
 
+			// If we trust FCS and the FCS is bad, discard the frame and log it.
+			if (_trust_bad_fcs_field && cur->info->bad_fcs) {
+#ifdef EXTRA_DEBUG
+				add_message_to_queue(MESSAGE_TYPE_DEBUG, NULL, 1, "Invalid FCS flags set. Ignoring frame", 1);
+#endif
+				continue;
+			}
+
 			// Check FCS before processing frame (ignore if invalid but log it in DB).
 			if (_enable_fcs_check && cur->info->fcs_present) {
 				fcs = crc32(0L, cur->info->frame_start, cur->header.cap_len - FCS_SIZE - cur->info->packet_header_len);
