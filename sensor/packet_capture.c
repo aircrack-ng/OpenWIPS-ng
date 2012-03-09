@@ -77,7 +77,7 @@ int monitor(void * data)
 	struct pcap_pkthdr * packet_header;
 	struct pcap_packet * whole_packet, *to_inject;
 	const u_char * packet;
-	int capture_success;
+	int capture_success, can_set_monitor_mode;
 	struct client_params * params;
 	struct pcap_file_header pfh;
 
@@ -88,7 +88,25 @@ int monitor(void * data)
 		fprintf(stderr, "Monitor mode failure due to NULL param.\n");
 	}
 
-	printf("Starting monitoring on interface %s\n", _mon_iface);
+	handle = pcap_create(_mon_iface, errbuf);
+	if (handle == NULL) {
+		fprintf(stderr, "Failed to create live capture handle on %s: %s\n", _mon_iface, errbuf);
+		return EXIT_FAILURE;
+	}
+
+	// If we can set monitor mode, do it
+	can_set_monitor_mode = (pcap_can_set_rfmon(handle) == 1);
+	if (can_set_monitor_mode) {
+		printf("Enabling monitor mode on interface %s\n", _mon_iface);
+		if (pcap_set_rfmon(handle, 1)) {
+			fprintf(stderr, "Failed to start monitor mode on %s: %s\n", _mon_iface, errbuf);
+			return EXIT_FAILURE;
+		}
+	} else {
+		printf("Will not set monitor mode on %s.\n", _mon_iface);
+	}
+
+	printf("Starting live capture on interface %s\n", _mon_iface);
 
 	handle = pcap_open_live(_mon_iface, SNAP_LEN, 1, 1000, errbuf);
 	if (handle == NULL) {
@@ -99,8 +117,6 @@ int monitor(void * data)
 	// Get pcap file header
 	pfh = get_packet_file_header(pcap_datalink(handle));
 	_pcap_header = &pfh;
-
-	//pcap_set_rfmon()
 
 	#ifdef DEBUG
 		int debug_ret = createPcapFile(DUMP_FILENAME, pcap_datalink(handle));
