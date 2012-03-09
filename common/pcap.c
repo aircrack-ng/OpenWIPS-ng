@@ -879,3 +879,7 @@ int append_packet_tofile(const char * filename, const struct pcap_pkthdr * packe
 	return success;
 }
 
+inline int is_valid_linktype(bpf_u_int32 linktype)
+{
+	return (linktype == LINKTYPE_NOHEADERS || linktype == LINKTYPE_PRSIM || linktype == LINKTYPE_RADIOTAP || linktype == LINKTYPE_PPI);
+}

@@ -125,6 +125,13 @@ int monitor(void * data)
 	pfh = get_packet_file_header(pcap_datalink(handle));
 	_pcap_header = &pfh;
 
+	// Check if link type is supported
+	if (!is_valid_linktype(pfh.linktype)) {
+		fprintf(stderr, "Unsupported link type: %d\n", pfh.linktype);
+		pcap_close(handle);
+		return EXIT_FAILURE;
+	}
+
 	#ifdef DEBUG
 		int debug_ret = createPcapFile(DUMP_FILENAME, pcap_datalink(handle));
 	#endif
