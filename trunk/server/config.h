@@ -49,6 +49,7 @@ int _ban_time_seconds;
 
 // Enable FCS check (disabled by default)
 int _enable_fcs_check;
+int _trust_bad_fcs_field; // TODO: Use it in combination of enable_fcs_check
 
 // Mac addresses to protect
 unsigned char ** _our_macs;
