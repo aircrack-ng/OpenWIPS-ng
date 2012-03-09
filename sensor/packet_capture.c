@@ -121,6 +121,14 @@ int monitor(void * data)
 		return EXIT_FAILURE;
 	}
 
+#if defined(__APPLE__) && defined(__MACH__)
+	printf("Forcing Linktype to radiotap (DLT_IEEE802_11_RADIO) for OSX.\n")
+	if (pcap_set_datalink(LINKTYPE_RADIOTAP) == -1) {
+		fprintf(stderr, "Failed to set link type to radiotap (DLT_IEEE802_11_RADIO).\n");
+		return EXIT_FAILURE;
+	}
+#endif
+
 	// Get pcap file header
 	pfh = get_packet_file_header(pcap_datalink(handle));
 	_pcap_header = &pfh;
