@@ -99,11 +99,18 @@ int monitor(void * data)
 	if (can_set_monitor_mode) {
 		printf("Enabling monitor mode on interface %s\n", _mon_iface);
 		if (pcap_set_rfmon(handle, 1)) {
-			fprintf(stderr, "Failed to start monitor mode on %s: %s\n", _mon_iface, errbuf);
+			fprintf(stderr, "Failed to start monitor mode on %s\n", _mon_iface);
+			pcap_close(handle);
 			return EXIT_FAILURE;
 		}
 	} else {
 		printf("Will not set monitor mode on %s.\n", _mon_iface);
+	}
+
+	if (pcap_activate(handle)) {
+		fprintf(stderr, "Failed to activate interface %s\n", _mon_iface);
+		pcap_close(handle);
+		return EXIT_FAILURE;
 	}
 
 	printf("Starting live capture on interface %s\n", _mon_iface);
