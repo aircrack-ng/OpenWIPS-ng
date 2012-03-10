@@ -80,6 +80,9 @@ int monitor(void * data)
 	int capture_success, can_set_monitor_mode;
 	struct client_params * params;
 	struct pcap_file_header pfh;
+#ifdef DEBUG
+	int pcap_created = 1;
+#endif
 
 	_pcap_header = NULL;
 
@@ -140,9 +143,12 @@ int monitor(void * data)
 		return EXIT_FAILURE;
 	}
 
-	#ifdef DEBUG
-		int debug_ret = createPcapFile(DUMP_FILENAME, pcap_datalink(handle));
-	#endif
+#ifdef DEBUG
+	pcap_created = (createPcapFile(DUMP_FILENAME, pcap_datalink(handle)) == EXIT_SUCCESS);
+	if (!pcap_created) {
+		fprintf(stderr, "Failed to create pcap file.\n");
+	}
+#endif
 
 	while (params->client->connected && !params->client->stop_thread)
 	{
@@ -176,9 +182,11 @@ int monitor(void * data)
 			continue;
 		}
 
-		#ifdef DEBUG
-			debug_ret = append_packet_tofile(DUMP_FILENAME, packet_header, packet);
-		#endif
+#ifdef DEBUG
+		if (pcap_created && !append_packet_tofile(DUMP_FILENAME, packet_header, packet)) {
+			fprintf(stderr, "Failed to append frame to pcap file.\n");
+		}
+#endif
 
 		// Add packet to the queue of packets to send
 		whole_packet = init_new_pcap_packet();
