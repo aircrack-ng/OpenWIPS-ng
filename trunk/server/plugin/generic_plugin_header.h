@@ -10,12 +10,12 @@
 extern "C" {
 #endif
 
-void * init_plugin(char * config_line, int version);
-void free_memory_and_unload(void * data);
-char plugin_type(void);
-int min_supported_version();
-int max_supported_version();
-char * init_text(void * config);
+DLL_EXPORT void * init_plugin(char * config_line, int version);
+DLL_EXPORT void free_memory_and_unload(void * data);
+DLL_EXPORT char plugin_type(void);
+DLL_EXPORT int min_supported_version();
+DLL_EXPORT int max_supported_version();
+DLL_EXPORT char * init_text(void * config);
 
 #define PLUGIN_TYPE_FRAME					'F'
 #define PLUGIN_TYPE_DATABASE_CONNECTION		'D'

@@ -112,34 +112,34 @@ struct packet_info {
 	double rate;
 };
 
-DLL_HIDDEN struct packet_info * copy_packet_info(struct pcap_packet * src, struct pcap_packet * dst);
-DLL_HIDDEN struct packet_info * init_new_packet_info();
-DLL_HIDDEN int parse_packet_basic_info_radiotap(struct pcap_packet * packet, struct packet_info * info);
-DLL_HIDDEN struct packet_info * parse_packet_basic_info(struct pcap_packet * packet);
-DLL_HIDDEN int print_pcap_packet_info(struct packet_info * pi);
+struct packet_info * copy_packet_info(struct pcap_packet * src, struct pcap_packet * dst);
+struct packet_info * init_new_packet_info();
+int parse_packet_basic_info_radiotap(struct pcap_packet * packet, struct packet_info * info);
+struct packet_info * parse_packet_basic_info(struct pcap_packet * packet);
+int print_pcap_packet_info(struct packet_info * pi);
 
-DLL_HIDDEN int add_packet_to_list(struct pcap_packet * packet, struct packet_list ** list);
-DLL_HIDDEN int put_back_multiple_packets_to_list(struct pcap_packet * packets, struct packet_list ** list, int use_mutex);
-DLL_HIDDEN int add_multiple_packets_to_list(struct pcap_packet * packet, struct packet_list ** list, int use_mutex);
-DLL_HIDDEN struct pcap_packet * get_packets(int nb_max, struct packet_list ** list);
+int add_packet_to_list(struct pcap_packet * packet, struct packet_list ** list);
+int put_back_multiple_packets_to_list(struct pcap_packet * packets, struct packet_list ** list, int use_mutex);
+int add_multiple_packets_to_list(struct pcap_packet * packet, struct packet_list ** list, int use_mutex);
+struct pcap_packet * get_packets(int nb_max, struct packet_list ** list);
 
-DLL_HIDDEN struct packet_list * init_new_packet_list();
-DLL_HIDDEN int free_packet_list(struct packet_list ** ptr);
+struct packet_list * init_new_packet_list();
+int free_packet_list(struct packet_list ** ptr);
 
-DLL_HIDDEN int pcap_packet_len(struct pcap_packet * packets);
-DLL_HIDDEN struct pcap_packet * copy_packets(struct pcap_packet * packet, int recursive, int do_parse); // If recursive is 0, then copy only that packet. If do_parse is 1, then call parse_basic_info
-DLL_HIDDEN int remove_first_X_packets(int nb_packets, struct packet_list ** list, int use_mutex);
-DLL_HIDDEN int remove_packet_older_than(struct pcap_packet * packet, int time_ms, struct packet_list ** list, int use_mutex);
+int pcap_packet_len(struct pcap_packet * packets);
+struct pcap_packet * copy_packets(struct pcap_packet * packet, int recursive, int do_parse); // If recursive is 0, then copy only that packet. If do_parse is 1, then call parse_basic_info
+int remove_first_X_packets(int nb_packets, struct packet_list ** list, int use_mutex);
+int remove_packet_older_than(struct pcap_packet * packet, int time_ms, struct packet_list ** list, int use_mutex);
 
-DLL_HIDDEN struct pcap_packet * init_new_pcap_packet();
-DLL_HIDDEN int free_pcap_packet(struct pcap_packet ** ptr, int recursive);
+struct pcap_packet * init_new_pcap_packet();
+int free_pcap_packet(struct pcap_packet ** ptr, int recursive);
 
-DLL_HIDDEN struct pcap_file_header get_packet_file_header(const bpf_u_int32 linktype);
-DLL_HIDDEN int createPcapFile(const char * filename, const bpf_u_int32 linktype);
-DLL_HIDDEN int createPcapFile_with_header(const char * filename, struct pcap_file_header * header);
-DLL_HIDDEN int append_packet_tofile(const char * filename, const struct pcap_pkthdr * packet_header, const u_char * packet);
-DLL_HIDDEN int append_pcap_packet_tofile(const char * filename, struct pcap_packet * packet);
+struct pcap_file_header get_packet_file_header(const bpf_u_int32 linktype);
+int createPcapFile(const char * filename, const bpf_u_int32 linktype);
+int createPcapFile_with_header(const char * filename, struct pcap_file_header * header);
+int append_packet_tofile(const char * filename, const struct pcap_pkthdr * packet_header, const u_char * packet);
+int append_pcap_packet_tofile(const char * filename, struct pcap_packet * packet);
 
-DLL_HIDDEN int is_valid_linktype(bpf_u_int32 linktype);
+int is_valid_linktype(bpf_u_int32 linktype);
 
 #endif /* COMMON_PCAP_H_ */

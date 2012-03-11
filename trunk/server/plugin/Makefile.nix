@@ -1,5 +1,5 @@
 CC				?= gcc
-CFLAGS			?= -Wall -O0 -g3 
+CFLAGS			?= -Wall -O0 -g3 -fvisibility=hidden
 
 ifneq ($(OSNAME), cygwin)
 	CFLAGS		+= -fPIC
@@ -34,7 +34,7 @@ plugin_dir		= $(prefix)/sbin/openwips-ng-plugins
 
 default: all
 
-all: clean protocol_check ds_bits_check deauth_detect ie frame_subtype_check frag_detection strip
+all: clean protocol_check ds_bits_check deauth_detect ie frame_subtype_check frag_detection
 
 frame_subtype_check:
 	$(CC) $(INCLUDES) $(CFLAGS) -c $(SUBTYPE_CHECK_C)
@@ -74,6 +74,3 @@ install:
 uninstall:
 	rm $(plugin_dir)/*.so*
 	rmdir $(plugin_dir)
-
-strip:
-	strip --keep-symbol=init_plugin --keep-symbol=free_memory_and_unload --keep-symbol=plugin_type --keep-symbol=min_supported_version --keep-symbol=max_supported_version --keep-symbol=init_text --keep-symbol=static_frame_type --keep-symbol=static_frame_subtype --keep-symbol=need_all_frames --keep-symbol=is_single_frame_attack --keep-symbol=require_packet_parsed --keep-symbol=can_use_frame --keep-symbol=analyze --keep-symbol=nb_frames_before_analyzing --keep-symbol=time_ms_before_analyzing --keep-symbol=is_attacked --keep-symbol=attack_details --keep-symbol=get_attacker_macs --keep-symbol=clear_attack *.so*
