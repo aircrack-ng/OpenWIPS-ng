@@ -30,23 +30,23 @@ extern "C" {
 #define FRAME_TYPE_CONTROL		1
 #define FRAME_TYPE_DATA			2
 
-int static_frame_type();
-int static_frame_subtype();
-int need_all_frames();
-int is_single_frame_attack();
-int require_packet_parsed();
+DLL_EXPORT int static_frame_type();
+DLL_EXPORT int static_frame_subtype();
+DLL_EXPORT int need_all_frames();
+DLL_EXPORT int is_single_frame_attack();
+DLL_EXPORT int require_packet_parsed();
 
-int can_use_frame(struct pcap_packet * packet, void * config);
-int analyze(struct pcap_packet * packet, void * config);
-int nb_frames_before_analyzing(void * config);
-int time_ms_before_analyzing(void * config);
-int is_attacked(struct pcap_packet * packet_list, void * config);
-char * attack_details(void * config);
+DLL_EXPORT int can_use_frame(struct pcap_packet * packet, void * config);
+DLL_EXPORT int analyze(struct pcap_packet * packet, void * config);
+DLL_EXPORT int nb_frames_before_analyzing(void * config);
+DLL_EXPORT int time_ms_before_analyzing(void * config);
+DLL_EXPORT int is_attacked(struct pcap_packet * packet_list, void * config);
+DLL_EXPORT char * attack_details(void * config);
 
 // nb_mac indicates the amount of mac in the returned array
 // deauth indicates if the macs needs to be deauthenticated.
-unsigned char ** get_attacker_macs(void * config, int * nb_mac, int * deauth);
-void clear_attack(void * config); // Cleanup any data stored about the attack by the plugin
+DLL_EXPORT unsigned char ** get_attacker_macs(void * config, int * nb_mac, int * deauth);
+DLL_EXPORT void clear_attack(void * config); // Cleanup any data stored about the attack by the plugin
 
 #ifdef __cplusplus
 }
