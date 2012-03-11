@@ -10,6 +10,8 @@
 extern "C" {
 #endif
 
+#include "../../common/dll.h"
+
 DLL_EXPORT void * init_plugin(char * config_line, int version);
 DLL_EXPORT void free_memory_and_unload(void * data);
 DLL_EXPORT char plugin_type(void);
