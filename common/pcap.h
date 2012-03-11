@@ -31,7 +31,6 @@
 #endif
 #include <pthread.h>
 #include <stdint.h>
-#include "dll.h"
 
 #define TCPDUMP_MAGIC 0xA1B2C3D4
 
