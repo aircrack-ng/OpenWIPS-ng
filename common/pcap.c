@@ -25,8 +25,8 @@
  * 		or any other file linked to this one during compilation
  * 		ONLY if it is a plugin for OpenWIPS-ng.
  * Limitation:
- * 		Functions in this file MUST NOT be exposed in the plugin
- * 		(not visible when listing functions in the shared object/DLL).
+ * 		Functions (or variables) in this file MUST NOT be exposed in the plugin
+ * 		(not visible when listing functions/variables in the shared object/DLL).
  * Modifications:
  * 		Modifications to this file are allowed if the modifications
  * 		(or patch) has a GPLv2 license and are publicly available.
