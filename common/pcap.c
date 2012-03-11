@@ -18,6 +18,19 @@
  *
  *      Author: Thomas d'Otreppe de Bouvette
  */
+/*
+ * Linking exception:
+ * 		You are allowed to link you code (no matter what license
+ * 		 your code is, even if your code is closed source) to this file
+ * 		or any other file linked to this one during compilation
+ * 		ONLY if it is a plugin for OpenWIPS-ng.
+ * Limitation:
+ * 		Functions in this file MUST NOT be exposed in the plugin
+ * 		(not visible when listing functions in the shared object/DLL).
+ * Modifications:
+ * 		Modifications to this file are allowed if the modifications
+ * 		(or patch) has a GPLv2 license and are publicly available.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
