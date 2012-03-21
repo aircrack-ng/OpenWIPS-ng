@@ -111,7 +111,8 @@ int monitor(void * data)
 	}
 
 	if (pcap_activate(handle)) {
-		fprintf(stderr, "Failed to activate interface %s\n", _mon_iface);
+		fprintf(stderr, "Failed to activate interface %s: %s\n", _mon_iface, pcap_geterr(handle));
+		fprintf(stderr, "With mac80211 drivers, use a monitor mode interface created with 'iw' or 'airmon-ng'.\n");
 		pcap_close(handle);
 		return EXIT_FAILURE;
 	}
