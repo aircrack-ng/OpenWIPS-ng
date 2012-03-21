@@ -19,6 +19,9 @@ A: Check out svn for new plugins or plugins updates. You will just have to compi
 Q: Where is the subversion repository?
 A: http://svn.openwips-ng.org
 
+Q: Where is the bug tracker?
+A: http://bugtracker.openwips-ng.org
+
 Q: Can I run the server on another machine?
 A: Yes, you can. Just give the sensor the new IP address and make sure firewalls allow communication between those 2 devices.
 
