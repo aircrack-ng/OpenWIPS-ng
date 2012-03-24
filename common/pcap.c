@@ -37,6 +37,80 @@
 #include "pcap.h"
 #include "defines.h"
 
+pcap_t * enable_monitor_mode(char * interface, int first_call) {
+	// TODO: Handle lbnl80211
+
+	char errbuf[PCAP_ERRBUF_SIZE];
+	pcap_t * handle;
+	bpf_u_int32 link_type;
+	int can_set_monitor_mode;
+
+	if (STRING_IS_NULL_OR_EMPTY(interface)) {
+		fprintf(stderr, "enable_monitor_mode() - You must specify an interface.\n");
+		return NULL;
+	}
+
+	printf("Starting live capture on interface %s\n", interface);
+
+	handle = pcap_open_live(interface, SNAP_LEN, 1, 1000, errbuf);
+	if (handle == NULL) {
+		fprintf(stderr, "Failed to open %s: %s\n", interface, errbuf);
+		return NULL;
+	}
+
+#if defined(__APPLE__) && defined(__MACH__)
+	printf("Forcing Linktype to radiotap (DLT_IEEE802_11_RADIO) for OSX.\n");
+	if (pcap_set_datalink(handle, LINKTYPE_RADIOTAP) == -1) {
+		fprintf(stderr, "Failed to set link type to radiotap (DLT_IEEE802_11_RADIO).\n");
+		return NULL;
+	}
+#endif
+
+	// Get pcap file header
+	link_type = pcap_datalink(handle);
+
+	// Check if link type is supported
+	if (!is_valid_linktype(link_type)) {
+		fprintf(stderr, "Unsupported link type: %d\n", link_type);
+		pcap_close(handle);
+
+		// Try setting monitor mode and recall this
+		if (first_call) {
+			handle = pcap_create(interface, errbuf);
+			if (handle == NULL) {
+				fprintf(stderr, "Failed to create live capture handle on %s: %s\n", interface, errbuf);
+				return NULL;
+			}
+
+			// If we can set monitor mode, do it
+			can_set_monitor_mode = (pcap_can_set_rfmon(handle) == 1);
+			if (can_set_monitor_mode) {
+				printf("Enabling monitor mode on interface %s\n", interface);
+				if (pcap_set_rfmon(handle, 1)) {
+					fprintf(stderr, "Failed to start monitor mode on %s\n", interface);
+					pcap_close(handle);
+					return NULL;
+				}
+			} else {
+				printf("Will not set monitor mode on %s.\n", interface);
+			}
+
+			if (pcap_activate(handle)) {
+				fprintf(stderr, "Failed to activate interface %s: %s\n", interface, pcap_geterr(handle));
+				fprintf(stderr, "With mac80211 drivers, use a monitor mode interface created with 'iw' or 'airmon-ng'.\n");
+				pcap_close(handle);
+				return NULL;
+			}
+
+			// retry this
+			return enable_monitor_mode(interface, 0);
+		}
+		return NULL;
+	}
+
+	return handle;
+}
+
 struct packet_list * init_new_packet_list()
 {
 	struct packet_list * ret = (struct packet_list *)malloc(sizeof(struct packet_list));

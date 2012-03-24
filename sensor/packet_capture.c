@@ -72,12 +72,11 @@ int start_monitor_thread(struct client_params * params)
 // TODO: Only start capture when we start RPCAP (instead of doing it at startup)
 int monitor(void * data)
 {
-	char errbuf[PCAP_ERRBUF_SIZE];
 	pcap_t * handle;
 	struct pcap_pkthdr * packet_header;
 	struct pcap_packet * whole_packet, *to_inject;
 	const u_char * packet;
-	int capture_success, can_set_monitor_mode;
+	int capture_success;
 	struct client_params * params;
 	struct pcap_file_header pfh;
 #ifdef DEBUG
@@ -91,58 +90,17 @@ int monitor(void * data)
 		fprintf(stderr, "Monitor mode failure due to NULL param.\n");
 	}
 
-	handle = pcap_create(_mon_iface, errbuf);
+	// Enable monitor mode
+	handle = enable_monitor_mode(_mon_iface, 1);
 	if (handle == NULL) {
-		fprintf(stderr, "Failed to create live capture handle on %s: %s\n", _mon_iface, errbuf);
 		return EXIT_FAILURE;
 	}
-
-	// If we can set monitor mode, do it
-	can_set_monitor_mode = (pcap_can_set_rfmon(handle) == 1);
-	if (can_set_monitor_mode) {
-		printf("Enabling monitor mode on interface %s\n", _mon_iface);
-		if (pcap_set_rfmon(handle, 1)) {
-			fprintf(stderr, "Failed to start monitor mode on %s\n", _mon_iface);
-			pcap_close(handle);
-			return EXIT_FAILURE;
-		}
-	} else {
-		printf("Will not set monitor mode on %s.\n", _mon_iface);
-	}
-
-	if (pcap_activate(handle)) {
-		fprintf(stderr, "Failed to activate interface %s: %s\n", _mon_iface, pcap_geterr(handle));
-		fprintf(stderr, "With mac80211 drivers, use a monitor mode interface created with 'iw' or 'airmon-ng'.\n");
-		pcap_close(handle);
-		return EXIT_FAILURE;
-	}
-
-	printf("Starting live capture on interface %s\n", _mon_iface);
-
-	handle = pcap_open_live(_mon_iface, SNAP_LEN, 1, 1000, errbuf);
-	if (handle == NULL) {
-		fprintf(stderr, "Failed to open %s: %s\n", _mon_iface, errbuf);
-		return EXIT_FAILURE;
-	}
-
-#if defined(__APPLE__) && defined(__MACH__)
-	printf("Forcing Linktype to radiotap (DLT_IEEE802_11_RADIO) for OSX.\n");
-	if (pcap_set_datalink(handle, LINKTYPE_RADIOTAP) == -1) {
-		fprintf(stderr, "Failed to set link type to radiotap (DLT_IEEE802_11_RADIO).\n");
-		return EXIT_FAILURE;
-	}
-#endif
 
 	// Get pcap file header
 	pfh = get_packet_file_header(pcap_datalink(handle));
 	_pcap_header = &pfh;
 
-	// Check if link type is supported
-	if (!is_valid_linktype(pfh.linktype)) {
-		fprintf(stderr, "Unsupported link type: %d\n", pfh.linktype);
-		pcap_close(handle);
-		return EXIT_FAILURE;
-	}
+	// No need to verify link type, already check and it is supported
 
 #ifdef DEBUG
 	pcap_created = (createPcapFile(DUMP_FILENAME, pcap_datalink(handle)) == EXIT_SUCCESS);
