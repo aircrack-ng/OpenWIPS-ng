@@ -36,11 +36,43 @@
 #include <string.h>
 #include "pcap.h"
 #include "defines.h"
+#ifndef NO_LIBNL
+	#include <netlink/version.h>
+
+
+	#if LIBNL_VER_NUM >= LIBNL_VER(2,0)
+
+	#endif
+
+
+#endif
+
+int set_monitor_mode_nl80211(char * interface, char * new_iface_name) {
+#ifndef NO_LIBNL
+	if (STRING_IS_NULL_OR_EMPTY(interface)) {
+		fprintf(stderr, "set_monitor_mode_nl80211() - You must specify an interface.\n");
+		return NULL;
+	}
+
+	if (STRING_IS_NULL_OR_EMPTY(new_iface_name)) {
+		fprintf(stderr, "set_monitor_mode_nl80211() - You must specify an interface name for the monitor mode interface.\n");
+		return NULL;
+	}
+
+	// TODO: Check code from iw to see what airmon-ng do when creating monX interfaces
+
+	return EXIT_SUCCESS;
+#else
+	return EXIT_FAILURE;
+#endif
+}
 
 pcap_t * enable_monitor_mode(char * interface, int first_call) {
 	// TODO: Handle lbnl80211
 
 	char errbuf[PCAP_ERRBUF_SIZE];
+	char * new_iface;
+	const char * interface_name_pattern = "%smon%d"; // eg: wlan0mon0
 	pcap_t * handle;
 	bpf_u_int32 link_type;
 	int can_set_monitor_mode;
