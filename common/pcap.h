@@ -111,6 +111,7 @@ struct packet_info {
 	double rate;
 };
 
+int set_monitor_mode_nl80211(char * interface);
 pcap_t * enable_monitor_mode(char * interface, int first_call);
 
 struct packet_info * copy_packet_info(struct pcap_packet * src, struct pcap_packet * dst);
