@@ -141,6 +141,6 @@ int createPcapFile_with_header(const char * filename, struct pcap_file_header * 
 int append_packet_tofile(const char * filename, const struct pcap_pkthdr * packet_header, const u_char * packet);
 int append_pcap_packet_tofile(const char * filename, struct pcap_packet * packet);
 
-int is_valid_linktype(bpf_u_int32 linktype);
+inline int is_valid_linktype(bpf_u_int32 linktype);
 
 #endif /* COMMON_PCAP_H_ */
