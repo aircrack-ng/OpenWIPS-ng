@@ -111,7 +111,24 @@ struct packet_info {
 	double rate;
 };
 
-pcap_t * enable_monitor_mode(char * interface, int first_call);
+enum rfmon_action_enum {
+	FIRST_CALL,
+	TRY_RFMON_NL80211,
+	DONT_TRY_AGAIN
+};
+
+struct rfmon {
+	pcap_t * handle;
+	char * interface;
+	bpf_u_int32 link_type;
+};
+
+struct rfmon * init_struct_rfmon();
+int free_struct_rfmon(struct rfmon * elt);
+
+int set_monitor_mode_nl80211(char * interface, char * new_iface_name);
+int set_interface_up(char * interface);
+struct rfmon * enable_monitor_mode(char * interface, enum rfmon_action_enum action);
 
 struct packet_info * copy_packet_info(struct pcap_packet * src, struct pcap_packet * dst);
 struct packet_info * init_new_packet_info();

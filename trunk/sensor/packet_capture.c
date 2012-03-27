@@ -72,7 +72,7 @@ int start_monitor_thread(struct client_params * params)
 // TODO: Only start capture when we start RPCAP (instead of doing it at startup)
 int monitor(void * data)
 {
-	pcap_t * handle;
+	struct rfmon * rfmon_struct;
 	struct pcap_pkthdr * packet_header;
 	struct pcap_packet * whole_packet, *to_inject;
 	const u_char * packet;
@@ -91,18 +91,19 @@ int monitor(void * data)
 	}
 
 	// Enable monitor mode
-	handle = enable_monitor_mode(_mon_iface, 1);
-	if (handle == NULL) {
+	rfmon_struct = enable_monitor_mode(_mon_iface, 1);
+	if (rfmon_struct == NULL) {
 		return EXIT_FAILURE;
 	}
 
 	// Get pcap file header
-	pfh = get_packet_file_header(pcap_datalink(handle));
+	pfh = get_packet_file_header(pcap_datalink(rfmon_struct->handle));
 	_pcap_header = &pfh;
 
 	// No need to verify link type, already check and it is supported
 
 #ifdef DEBUG
+	// TODO: Create another thread to avoid blocking
 	pcap_created = (createPcapFile(DUMP_FILENAME, pcap_datalink(handle)) == EXIT_SUCCESS);
 	if (!pcap_created) {
 		fprintf(stderr, "Failed to create pcap file.\n");
@@ -115,12 +116,12 @@ int monitor(void * data)
 		if (params->received_packets->nb_packet > 0) {
 			to_inject = get_packets(1, &(params->received_packets));
 			if (to_inject) {
-				inject(handle, to_inject->data, to_inject->header.cap_len);
+				inject(rfmon_struct->handle, to_inject->data, to_inject->header.cap_len);
 				free_pcap_packet(&to_inject, 1);
 			}
 		}
 
-		capture_success = pcap_next_ex(handle, &packet_header, &packet);
+		capture_success = pcap_next_ex(rfmon_struct->handle, &packet_header, &packet);
 
 		// Handle errors
 		if (capture_success != 1) {
@@ -129,7 +130,7 @@ int monitor(void * data)
 				break; // End capture
 			}
 			if (capture_success == ERROR_PCAP_PACKET_READ_ERROR) {
-				fprintf(stderr, "Error occurred while reading the packet: %s\n", pcap_geterr(handle));
+				fprintf(stderr, "Error occurred while reading the packet: %s\n", pcap_geterr(rfmon_struct->handle));
 			} if (capture_success == ERROR_PCAP_TIMEOUT) {
 				fprintf(stderr, "Timeout occurred while reading the packet\n");
 			} else {
@@ -164,9 +165,10 @@ int monitor(void * data)
 	fprintf(stderr, "monitor() thread finished.\n");
 #endif
 
-	pcap_close(handle);
+	pcap_close(rfmon_struct->handle);
 	_pcap_header = NULL; // Don't free
 	_pcap_thread = PTHREAD_NULL;
+	free_struct_rfmon(rfmon_struct);
 
 	return EXIT_SUCCESS;
 }

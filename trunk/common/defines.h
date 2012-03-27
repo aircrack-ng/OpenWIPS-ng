@@ -22,6 +22,10 @@
 #ifndef COMMON_DEFINES_H_
 #define COMMON_DEFINES_H_
 
+#if defined(__APPLE__) && defined(__MACH__)
+	#define OSX
+#endif
+
 #define FREE_AND_NULLIFY(item) if ((item) != NULL) free(item); (item) = NULL
 #define PTHREAD_NULL 0
 #define STRING_IS_NULL_OR_EMPTY(s) ((s) == NULL || strlen(s) == 0)
