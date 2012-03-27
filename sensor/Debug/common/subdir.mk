@@ -7,6 +7,7 @@ C_SRCS += \
 ../common/client.c \
 ../common/config.c \
 ../common/deamonize.c \
+../common/interface_control.c \
 ../common/pcap.c \
 ../common/protocol.c \
 ../common/rpcap.c \
@@ -20,6 +21,7 @@ OBJS += \
 ./common/client.o \
 ./common/config.o \
 ./common/deamonize.o \
+./common/interface_control.o \
 ./common/pcap.o \
 ./common/protocol.o \
 ./common/rpcap.o \
@@ -33,6 +35,7 @@ C_DEPS += \
 ./common/client.d \
 ./common/config.d \
 ./common/deamonize.d \
+./common/interface_control.d \
 ./common/pcap.d \
 ./common/protocol.d \
 ./common/rpcap.d \
