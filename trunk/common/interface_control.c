@@ -21,6 +21,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "pcap.h"
 #include "interface_control.h"
 #include "defines.h"
@@ -34,7 +35,6 @@
 		#endif
 	#else
 		#include <sys/types.h>
-		#include <unistd.h>
 		#include <sys/wait.h>
 	#endif
 #endif
