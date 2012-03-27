@@ -25,6 +25,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "common/pcap.h"
+#include "common/interface_control.h"
 #include "common/defines.h"
 #include "packet_capture.h"
 #include "global_var.h"
@@ -104,7 +105,7 @@ int monitor(void * data)
 
 #ifdef DEBUG
 	// TODO: Create another thread to avoid blocking
-	pcap_created = (createPcapFile(DUMP_FILENAME, pcap_datalink(handle)) == EXIT_SUCCESS);
+	pcap_created = (createPcapFile(DUMP_FILENAME, pcap_datalink(rfmon_struct->handle)) == EXIT_SUCCESS);
 	if (!pcap_created) {
 		fprintf(stderr, "Failed to create pcap file.\n");
 	}
