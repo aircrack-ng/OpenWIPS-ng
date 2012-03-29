@@ -154,6 +154,7 @@ struct rfmon * enable_monitor_mode(char * interface, enum rfmon_action_enum acti
 	printf("Starting live capture on interface %s\n", interface);
 
 	// Try opening
+	memset(errbuf, 0, PCAP_ERRBUF_SIZE);
 	ret->handle = pcap_open_live(interface, SNAP_LEN, 1, 1000, errbuf);
 	if (ret->handle == NULL) {
 		fprintf(stderr, "Failed to open %s: %s\n", interface, errbuf);
