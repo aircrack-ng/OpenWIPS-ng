@@ -34,7 +34,7 @@ plugins:
 	make -C plugin
 
 openwips-ng-server:
-	$(CC) $(CFLAGS) $(LIBS) $(REV_DEFINE) -o $(BIN_FILE) $(C_FILES)
+	$(CC) $(CFLAGS) $(REV_DEFINE) -o $(BIN_FILE) $(C_FILES) $(LIBS)
 
 strip:
 	strip $(BIN_FILE)

@@ -26,7 +26,7 @@ default: all
 all: openwips-ng
 
 openwips-ng:
-	$(CC) $(CFLAGS) $(LIBS) $(REV_DEFINE) -o $(SBIN_FILE) main.c client.c structures.c packet_capture.c command_parse.c rpcap.c common/pcap.c common/client.c common/server-client.c common/sockets.c global_var.c common/rpcap.c common/utils.c common/version.c common/interface_control.c
+	$(CC) $(CFLAGS) $(REV_DEFINE) -o $(SBIN_FILE) main.c client.c structures.c packet_capture.c command_parse.c rpcap.c common/pcap.c common/client.c common/server-client.c common/sockets.c global_var.c common/rpcap.c common/utils.c common/version.c common/interface_control.c $(LIBS)
 
 strip:
 	strip $(SBIN_FILE)
