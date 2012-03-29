@@ -198,6 +198,7 @@ int interface_exist(char * interface_name)
 		return 0;
 	}
 
+	memset(errbuf, 0, PCAP_ERRBUF_SIZE);
 	handle = pcap_open_live(interface_name, BUFSIZ, 1, 65535, errbuf);
 	if (handle == NULL) {
 		return 0;
