@@ -29,7 +29,7 @@ default: all
 all: openwips-ng
 
 openwips-ng:
-	$(CC) $(CFLAGS) $(REV_DEFINE) -o $(SBIN_FILE)  $(C_FILES)  $(LIBS)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(REV_DEFINE) -o $(SBIN_FILE)  $(C_FILES)  $(LIBS)
 
 strip:
 	strip $(SBIN_FILE)
