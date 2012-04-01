@@ -17,8 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  *      Author: Thomas d'Otreppe de Bouvette
- *
- * Note: pcap_record_header, pcap_packet and packet_info structures are dual licensed: GPLv2/BSD
  */
 
 #ifndef COMMON_DLL_H_
