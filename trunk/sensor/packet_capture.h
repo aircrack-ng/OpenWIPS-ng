@@ -25,16 +25,18 @@
 #include "common/server-client.h"
 //#include "common/pcap.h"
 
-// Libpcap read error
-#define ERROR_PCAP_OEF -2
-#define ERROR_PCAP_PACKET_READ_ERROR -1
-#define ERROR_PCAP_TIMEOUT 0
-
 #define DUMP_FILENAME "openwips-ng_sensor.pcap"
 
 int is_valid_iface(const char * dev);
 int inject(pcap_t * handle, const void * packet, size_t size);
 int start_monitor_thread(struct client_params * params);
 int monitor(void * data);
+
+void global_memory_free_packet_capture();
+void init_packet_capture();
+
+#ifdef __CYGWIN__
+
+#endif /* __CYGWIN__ */
 
 #endif /* PACKET_CAPTURE_H_ */

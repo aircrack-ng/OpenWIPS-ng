@@ -22,12 +22,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "pcap.h"
+#include <ctype.h>
 #include "interface_control.h"
 #include "defines.h"
-#ifdef __CYGWIN__
-	#include <windows.h>
-#elif !defined(OSX)
+#if !defined(OSX) && !defined(__CYGWIN__)
 	#ifdef USE_LIBNL
 		#include <netlink/version.h>
 		#include <net/if.h>
@@ -43,6 +41,7 @@
 
 struct rfmon * init_struct_rfmon() {
 	struct rfmon * ret = (struct rfmon *)malloc(sizeof(struct rfmon));
+
 	ret->handle = NULL;
 	ret->interface = NULL;
 	ret->link_type = 0;
@@ -52,7 +51,7 @@ struct rfmon * init_struct_rfmon() {
 
 int free_struct_rfmon(struct rfmon * elt) {
 	if (elt->handle != NULL) {
-		pcap_close(elt->handle);
+		close_pcap_handle(elt->handle);
 	}
 	FREE_AND_NULLIFY(elt->interface);
 	free(elt);
@@ -183,7 +182,7 @@ struct rfmon * enable_monitor_mode(char * interface, enum rfmon_action_enum acti
 #endif /* OSX */
 
 	// Get pcap file header
-	ret->link_type = pcap_datalink(ret->handle);
+	ret->link_type = get_pcap_datalink(ret->handle); // Use local function
 
 	// Check if link type is supported
 	if (!is_valid_linktype(ret->link_type)) {
@@ -250,8 +249,7 @@ struct rfmon * enable_monitor_mode(char * interface, enum rfmon_action_enum acti
 	}
 
 	// Copy interface used
-	ret->interface = (char *)calloc(1, strlen(interface) + 1);
-	strcpy(ret->interface, interface);
+	ALLOC_COPY_STRING(interface, ret->interface);
 
 	return ret;
 #endif /* __CYGWIN__ */
@@ -326,4 +324,117 @@ int interface_exist(char * interface_name)
 #endif /* __CYGWIN__ */
 
 	return 1;
+}
+
+int close_pcap_handle(pcap_interface_ptr handle) {
+	if (handle == NULL) {
+		return EXIT_FAILURE;
+	}
+
+	#ifdef __CYGWIN__
+		AirpcapClose(handle);
+	#else
+		pcap_close(handle);
+	#endif
+
+	return EXIT_SUCCESS;
+}
+
+int inject_frame(pcap_interface_ptr handle, unsigned char * frame, unsigned int length) {
+	if (handle == NULL) {
+		return EXIT_FAILURE;
+	}
+	if (frame == NULL) {
+			return EXIT_FAILURE;
+	}
+
+	#ifdef __CYGWIN__
+		AirpcapWrite(handle, (PCHAR)frame, length);
+	#else
+		pcap_inject(handle, frame, length);
+	#endif
+
+	return EXIT_SUCCESS;
+}
+
+int get_pcap_datalink(pcap_interface_ptr handle) {
+
+	if (handle == NULL) {
+		return -1;
+	}
+
+	#ifdef __CYGWIN__
+		// AirpcapGetLinkType returns a structure with different values for link types, so we have to convert those
+		PAirpcapLinkType lt = (PAirpcapLinkType)malloc(sizeof(AirpcapLinkType));
+		int ret = -1;
+		if (AirpcapGetLinkType(handle, lt) == TRUE) {
+
+			if (*lt == AIRPCAP_LT_802_11) {
+				ret = LINKTYPE_NOHEADERS;
+			} else if (*lt == AIRPCAP_LT_802_11_PLUS_RADIO) {
+				ret = LINKTYPE_RADIOTAP;
+			} else if (*lt == AIRPCAP_LT_802_11_PLUS_PPI) {
+				ret = LINKTYPE_PPI;
+			} // else : AIRPCAP_LT_UNKNOWN
+		}
+
+		free(lt);
+		return ret;
+	#else
+		return pcap_datalink(handle);
+	#endif
+}
+
+char * get_pcap_last_error(pcap_interface_ptr handle) {
+
+	if (handle == NULL) {
+		return NULL;
+	}
+
+	#ifdef __CYGWIN__
+		return AirpcapGetLastError(handle);
+	#else
+		return pcap_geterr(handle);
+	#endif
+}
+
+int get_pcap_next_packet(pcap_interface_ptr handle, struct pcap_pkthdr ** packet_header, const u_char ** packet, unsigned char * buffer, unsigned int buffer_size, int linktype) {
+
+	if (handle == NULL) {
+		return ERROR_PCAP_INVALID_PARAM;
+	}
+
+	if (packet_header == NULL) {
+			return ERROR_PCAP_INVALID_PARAM;
+	}
+
+	if (packet == NULL) {
+			return ERROR_PCAP_INVALID_PARAM;
+	}
+
+	#ifdef __CYGWIN__
+
+		if (packet == NULL) {
+			return ERROR_PCAP_INVALID_PARAM;
+		}
+
+		if (buffer_size <= 0) {
+			return ERROR_PCAP_INVALID_PARAM;
+		}
+
+		// TODO: Implement (and see airpcap docs) - temporary halted
+		return ERROR_PCAP_INVALID_PARAM;
+
+		// Split buffer into header and packet
+		unsigned int recv_bytes = 0;
+		if (AirpcapRead(handle, buffer, buffer_size, &recv_bytes) == FALSE) {
+			return ERROR_PCAP_TIMEOUT;
+		}
+
+		if (recv_bytes <= 0) {
+			return ERROR_PCAP_PACKET_READ_ERROR;
+		}
+	#else
+		return pcap_next_ex(handle, packet_header, packet);
+	#endif
 }

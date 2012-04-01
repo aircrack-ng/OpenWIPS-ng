@@ -31,7 +31,7 @@ enum rfmon_action_enum {
 };
 
 struct rfmon {
-	pcap_t * handle;
+	pcap_interface_ptr handle; // See local pcap.h
 	char * interface;
 	bpf_u_int32 link_type;
 };
@@ -43,5 +43,11 @@ int set_monitor_mode_nl80211(char * interface, char * new_iface_name);
 int set_interface_up(char * interface);
 struct rfmon * enable_monitor_mode(char * interface, enum rfmon_action_enum action);
 int interface_exist(char * interface_name);
+
+int close_pcap_handle(pcap_interface_ptr handle);
+int inject_frame(pcap_interface_ptr handle, unsigned char * frame, unsigned length);
+int get_pcap_datalink(pcap_interface_ptr handle);
+char * get_pcap_last_error(pcap_interface_ptr handle);
+int get_pcap_next_packet(pcap_interface_ptr handle, struct pcap_pkthdr ** packet_header, const u_char ** packet, unsigned char * buffer, unsigned int buffer_size, int linktype);
 
 #endif /* COMMON_INTERFACE_CONTROL_H_ */
