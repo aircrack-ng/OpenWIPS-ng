@@ -25,7 +25,6 @@
 #include "pcap.h"
 
 int is_mac_broadcast(unsigned char * mac);
-int interface_exist(char * interface_name);
 struct timeval * get_time_difference_between_packet(struct pcap_packet * packet1, struct pcap_packet * packet2);
 int is_mac_equal(unsigned char *  from_packet, char * printed_mac);
 unsigned char * parse_mac_from_string(char * mac);

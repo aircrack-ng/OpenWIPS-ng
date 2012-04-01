@@ -25,7 +25,9 @@
 #include "pcap.h"
 #include "interface_control.h"
 #include "defines.h"
-#ifndef OSX
+#ifdef __CYGWIN__
+	#include <windows.h>
+#elif !defined(OSX)
 	#ifdef USE_LIBNL
 		#include <netlink/version.h>
 		#include <net/if.h>
@@ -243,4 +245,75 @@ struct rfmon * enable_monitor_mode(char * interface, enum rfmon_action_enum acti
 	strcpy(ret->interface, interface);
 
 	return ret;
+}
+
+// Return 1 if interface exist
+int interface_exist(char * interface_name)
+{
+#ifdef __CYGWIN__
+	// Airpcap DLL license allows us to use that code
+	#define DEVICESTRING				"\\\\.\\Global\\airpcap%.2d"
+	const char * basename = "\\\\.\\airpcap";
+	int basename_length;
+	char DeviceName[256];
+	HANDLE AdHandle;
+	int device_id;
+
+	if (STRING_IS_NULL_OR_EMPTY(interface_name)) {
+		return 0;
+	}
+
+	// We don't use the interface 'airpcap_any'
+	basename_length = strlen(basename);
+	if (strstr(interface_name, basename) != interface_name
+		|| strlen(interface_name) != basename_length + 2) { // 2 characters for the interface id
+		return 0;
+	}
+
+	if (!isdigit((int)(*(interface_name + basename_length))) ||
+		!isdigit((int) (*(interface_name + basename_length + 1)))) {
+		return 0;
+	}
+
+	// Get device ID
+	device_id = ((*(interface_name + basename_length))- '0') * 10;
+	device_id = ((*(interface_name + basename_length + 1))- '0');
+
+	snprintf(DeviceName, sizeof(DeviceName), DEVICESTRING, device_id);
+	AdHandle = CreateFile(
+		DeviceName,
+		GENERIC_READ,
+		0,
+		NULL,
+		OPEN_EXISTING,
+		0,
+		0);
+
+	if(AdHandle == INVALID_HANDLE_VALUE)
+	{
+		// unable to open this device, it does not exist
+		return 0;
+	}
+
+	CloseHandle(AdHandle);
+#else
+	// Check if interface
+	pcap_t *handle;
+	char errbuf[PCAP_ERRBUF_SIZE];
+
+	if (STRING_IS_NULL_OR_EMPTY(interface_name)) {
+		return 0;
+	}
+
+	memset(errbuf, 0, PCAP_ERRBUF_SIZE);
+	handle = pcap_open_live(interface_name, BUFSIZ, 1, 65535, errbuf);
+	if (handle == NULL) {
+		return 0;
+	}
+
+	// Free
+	pcap_close(handle);
+#endif /* __CYGWIN__ */
+
+	return 1;
 }
