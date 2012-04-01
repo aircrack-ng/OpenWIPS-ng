@@ -71,7 +71,7 @@ int set_monitor_mode_nl80211(char * interface, char * new_iface_name) {
 		return EXIT_FAILURE;
 	}
 
-#ifdef OSX
+#if defined(OSX) || defined(__CYGWIN__)
 	return EXIT_FAILURE;
 #elif defined(USE_LIBNL)
 	struct nl80211_state nlstate;
@@ -121,6 +121,10 @@ int set_interface_up(char * interface) {
 		return EXIT_FAILURE;
 	}
 
+#ifdef __CYGWIN__
+	// TODO: Implement
+	return EXIT_FAILURE;
+#else /* __CYGWIN__ */
 	pid_t pid = fork();
 	if (pid == 0) {
 		close( 0 ); close( 1 ); close( 2 );
@@ -132,16 +136,21 @@ int set_interface_up(char * interface) {
 	}
 
 	return EXIT_SUCCESS;
+#endif /* __CYGWIN__ */
 }
 
 struct rfmon * enable_monitor_mode(char * interface, enum rfmon_action_enum action) {
+#ifdef __CYGWIN__
+	// TODO: Implement
+	return EXIT_FAILURE;
+#else  /* __CYGWIN__ */
 	int can_set_monitor_mode;
 
 	char errbuf[PCAP_ERRBUF_SIZE];
 #ifndef OSX
 	char * new_iface;
 	const char * interface_name_pattern = "%smon"; // eg: wlan0mon
-#endif
+#endif /* !OSX */
 	struct rfmon * ret = init_struct_rfmon();
 
 	if (STRING_IS_NULL_OR_EMPTY(interface)) {
@@ -164,14 +173,14 @@ struct rfmon * enable_monitor_mode(char * interface, enum rfmon_action_enum acti
 		return NULL;
 	}
 
-#if defined(__APPLE__) && defined(__MACH__)
+#ifdef OSX
 	printf("Forcing Linktype to radiotap (DLT_IEEE802_11_RADIO) for OSX.\n");
 	if (pcap_set_datalink(ret->handle, LINKTYPE_RADIOTAP) == -1) {
 		fprintf(stderr, "Failed to set link type to radiotap (DLT_IEEE802_11_RADIO).\n");
 		free_struct_rfmon(ret);
 		return NULL;
 	}
-#endif
+#endif /* OSX */
 
 	// Get pcap file header
 	ret->link_type = pcap_datalink(ret->handle);
@@ -235,7 +244,7 @@ struct rfmon * enable_monitor_mode(char * interface, enum rfmon_action_enum acti
 
 			free(new_iface);
 		}
-#endif
+#endif /* !OSX */
 		free_struct_rfmon(ret);
 		return NULL;
 	}
@@ -245,6 +254,7 @@ struct rfmon * enable_monitor_mode(char * interface, enum rfmon_action_enum acti
 	strcpy(ret->interface, interface);
 
 	return ret;
+#endif /* __CYGWIN__ */
 }
 
 // Return 1 if interface exist
@@ -296,7 +306,7 @@ int interface_exist(char * interface_name)
 	}
 
 	CloseHandle(AdHandle);
-#else
+#else  /* __CYGWIN__ */
 	// Check if interface
 	pcap_t *handle;
 	char errbuf[PCAP_ERRBUF_SIZE];
