@@ -25,7 +25,7 @@
 #include <unistd.h>
 #include "main.h"
 #include "common/defines.h"
-#include "common/utils.h"
+#include "common/interface_control.h"
 #include "common/version.h"
 #include "global_var.h"
 

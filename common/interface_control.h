@@ -22,6 +22,7 @@
 #ifndef COMMON_INTERFACE_CONTROL_H_
 #define COMMON_INTERFACE_CONTROL_H_
 
+#include "pcap.h"
 
 enum rfmon_action_enum {
 	FIRST_CALL,
@@ -41,5 +42,6 @@ int free_struct_rfmon(struct rfmon * elt);
 int set_monitor_mode_nl80211(char * interface, char * new_iface_name);
 int set_interface_up(char * interface);
 struct rfmon * enable_monitor_mode(char * interface, enum rfmon_action_enum action);
+int interface_exist(char * interface_name);
 
 #endif /* COMMON_INTERFACE_CONTROL_H_ */
