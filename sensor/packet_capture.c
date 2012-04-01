@@ -30,6 +30,20 @@
 #include "packet_capture.h"
 #include "global_var.h"
 
+void init_packet_capture()
+{
+#ifdef __CYGWIN__
+	// Load DLL functions
+#endif
+}
+
+void global_memory_free_packet_capture()
+{
+#ifdef __CYGWIN__
+	// Unload DLL functions
+#endif
+}
+
 int is_valid_iface(const char * dev)
 {
 	if (dev == NULL) {
@@ -41,11 +55,6 @@ int is_valid_iface(const char * dev)
 #else
 	return strstr(dev, "airpcap") != NULL;
 #endif
-}
-
-inline int inject(pcap_t * handle, const void * packet, size_t size)
-{
-	return pcap_inject(handle, packet, size);
 }
 
 // Also call this function when starting remote pcap (only is _pcap_thread == PTHREAD_NULL)
@@ -80,11 +89,16 @@ int monitor(void * data)
 	int capture_success;
 	struct client_params * params;
 	struct pcap_file_header pfh;
+	int link_type;
+#define PACKET_CAPTURE_BUFFER_SIZE 4096
+	unsigned char * buffer;
+
 #ifdef DEBUG
 	int pcap_created = 1;
 #endif
 
 	_pcap_header = NULL;
+	buffer = (unsigned char *)calloc(1, PACKET_CAPTURE_BUFFER_SIZE * sizeof(unsigned char));
 
 	params =  (struct client_params *)data;
 	if (data == NULL) {
@@ -92,13 +106,14 @@ int monitor(void * data)
 	}
 
 	// Enable monitor mode
-	rfmon_struct = enable_monitor_mode(_mon_iface, 1);
+	rfmon_struct = enable_monitor_mode(_mon_iface, FIRST_CALL);
 	if (rfmon_struct == NULL) {
 		return EXIT_FAILURE;
 	}
 
 	// Get pcap file header
-	pfh = get_packet_file_header(pcap_datalink(rfmon_struct->handle));
+	link_type = get_pcap_datalink(rfmon_struct->handle);
+	pfh = get_packet_file_header(link_type);
 	_pcap_header = &pfh;
 
 	// No need to verify link type, already check and it is supported
@@ -117,12 +132,17 @@ int monitor(void * data)
 		if (params->received_packets->nb_packet > 0) {
 			to_inject = get_packets(1, &(params->received_packets));
 			if (to_inject) {
-				inject(rfmon_struct->handle, to_inject->data, to_inject->header.cap_len);
+				inject_frame(rfmon_struct->handle, to_inject->data, to_inject->header.cap_len);
 				free_pcap_packet(&to_inject, 1);
 			}
 		}
 
-		capture_success = pcap_next_ex(rfmon_struct->handle, &packet_header, &packet);
+		capture_success = get_pcap_next_packet(rfmon_struct->handle,
+												&packet_header,
+												&packet,
+												buffer,
+												PACKET_CAPTURE_BUFFER_SIZE,
+												rfmon_struct->link_type);
 
 		// Handle errors
 		if (capture_success != 1) {
@@ -131,7 +151,7 @@ int monitor(void * data)
 				break; // End capture
 			}
 			if (capture_success == ERROR_PCAP_PACKET_READ_ERROR) {
-				fprintf(stderr, "Error occurred while reading the packet: %s\n", pcap_geterr(rfmon_struct->handle));
+				fprintf(stderr, "Error occurred while reading the packet: %s\n", get_pcap_last_error(rfmon_struct->handle));
 			} if (capture_success == ERROR_PCAP_TIMEOUT) {
 				fprintf(stderr, "Timeout occurred while reading the packet\n");
 			} else {
@@ -166,10 +186,10 @@ int monitor(void * data)
 	fprintf(stderr, "monitor() thread finished.\n");
 #endif
 
-	pcap_close(rfmon_struct->handle);
 	_pcap_header = NULL; // Don't free
 	_pcap_thread = PTHREAD_NULL;
-	free_struct_rfmon(rfmon_struct);
+	free_struct_rfmon(rfmon_struct); // Takes care of closing the handle
+	free(buffer);
 
 	return EXIT_SUCCESS;
 }

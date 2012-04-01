@@ -22,7 +22,7 @@ endif
 
 ifeq ($(OSNAME), cygwin)
 	CC		= gcc-4
-	LIBS	= -lwpcap -I/usr/include/pcap
+	LIBS	= -lwpcap -I/usr/include/pcap -I/usr/include -I ~/airpcap_dev/Airpcap_Devpack/include -L~/airpcap_dev/Airpcap_Devpack/lib  -I ~/airpcap_dev/WinPcap_Devpack/include -L~/airpcap_dev/WinPcap_Devpack/lib
 else
 	LIBS	= -pthread -lpcap
 endif
