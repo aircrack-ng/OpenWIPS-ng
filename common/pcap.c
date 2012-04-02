@@ -491,7 +491,7 @@ int print_pcap_packet_info(struct packet_info * pi)
 	if (pi->fcs_present) {
 		printf(" (0x%x)", pi->fcs);
 	}
-	printf("Bad Frame Check Sequence (FCS): %s", (pi->bad_fcs) ? "Yes" : "No");
+	printf("Bad Frame Check Sequence (FCS): %s\n", (pi->bad_fcs) ? "Yes" : "No");
 	printf("\nSignal/Noise: %d/%d\n", pi->signal, pi->noise);
 	printf("Rate: %.1fM\n", pi->rate);
 	printf("HT Information:\n");
