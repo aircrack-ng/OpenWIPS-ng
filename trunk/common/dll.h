@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  *      Author: Thomas d'Otreppe de Bouvette
+ *
+ * Dual license: BSD/GPLv2
  */
 
 #ifndef COMMON_DLL_H_
