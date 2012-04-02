@@ -24,6 +24,22 @@
 
 #include "pcap.h"
 
+#ifdef __CYGWIN__
+	#include <windows.h>
+	#include <airpcap.h>
+
+	#define pcap_interface_ptr PAirpcapHandle
+#else
+	#define pcap_interface_ptr pcap_t *
+#endif
+
+// Libpcap read error
+#define ERROR_PCAP_INVALID_PARAM -8
+// The previous one is a custom one
+#define ERROR_PCAP_OEF -2
+#define ERROR_PCAP_PACKET_READ_ERROR -1
+#define ERROR_PCAP_TIMEOUT 0
+
 enum rfmon_action_enum {
 	FIRST_CALL,
 	TRY_RFMON_NL80211,
