@@ -29,10 +29,6 @@
 #else
 	#include <pcap.h>
 #endif
-#ifdef __CYGWIN__
-	#include <windows.h>
-	#include <airpcap.h>
-#endif
 #include <pthread.h>
 #include <stdint.h>
 
@@ -54,19 +50,6 @@
 // DLT_IEEE802_11_RADIO
 #define LINKTYPE_PPI		192
 // DLT_PPI
-
-// Libpcap read error
-#define ERROR_PCAP_INVALID_PARAM -8
-// The previous one is a custom one
-#define ERROR_PCAP_OEF -2
-#define ERROR_PCAP_PACKET_READ_ERROR -1
-#define ERROR_PCAP_TIMEOUT 0
-
-#ifdef __CYGWIN__
-	#define pcap_interface_ptr PAirpcapHandle
-#else
-	#define pcap_interface_ptr pcap_t *
-#endif
 
 
 struct pcap_record_header
