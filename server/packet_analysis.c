@@ -24,7 +24,6 @@
 #include <limits.h>
 #include <string.h>
 #include <sys/time.h>
-#include <zlib.h>
 #include "packet_analysis.h"
 #include "common/defines.h"
 #include "common/utils.h"
@@ -89,7 +88,6 @@ int packet_analysis_thread(void * data)
 	struct plugin_info * cur_plugin;
 	struct frame_plugin_functions * cur_frame_plugin_fct;
 	struct timeval * timediff;
-	uint32_t fcs;
 	unsigned char message_type;
 
 	_packet_analysis_thread_stopped = 0;
@@ -119,43 +117,6 @@ int packet_analysis_thread(void * data)
 
 		for (cur = local_packet_list->packets; cur != NULL; cur = cur->next) {
 			// TODO: Think how to handle fragmentated packet (I mean reassembly)
-
-			// TODO: Add a message telling we got invalid packet
-			if (cur->header.cap_len < MIN_PACKET_SIZE + FCS_SIZE) {
-				temp_str = (char *)calloc(1, 200 * sizeof(char));
-				sprintf(temp_str, "Received invalid packet - frame too short to be analyzed. Expected %d bytes, received %u.", MIN_PACKET_SIZE + FCS_SIZE, cur->header.cap_len);
-				add_message_to_queue(MESSAGE_TYPE_ANOMALY, NULL, 1, temp_str, 0);
-				continue;
-			}
-
-			// Get packet information
-			cur->info = parse_packet_basic_info(cur);
-
-			if (cur->info == NULL) {
-				continue;
-			}
-
-			// If FCS is bad, discard the frame and log it.
-			if (cur->info->bad_fcs) {
-#ifdef EXTRA_DEBUG
-				add_message_to_queue(MESSAGE_TYPE_DEBUG, NULL, 1, "Invalid FCS flags set. Ignoring frame", 1);
-#endif
-				continue;
-			}
-
-			// Check FCS before processing frame (ignore if invalid but log it in DB).
-			if (_enable_fcs_check && cur->info->fcs_present && !_trust_bad_fcs_field) {
-				fcs = crc32(0L, cur->info->frame_start, cur->header.cap_len - FCS_SIZE - cur->info->packet_header_len);
-				if (fcs != cur->info->fcs) {
-#ifdef EXTRA_DEBUG
-					temp_str = (char *)calloc(1, 80);
-					fprintf(stderr, "Invalid FCS: Got 0x%x, expected 0x%x. Ignoring frame", cur->info->fcs, fcs);
-					add_message_to_queue(MESSAGE_TYPE_DEBUG, NULL, 1, temp_str, 0);
-#endif
-
-					continue;
-				}
-			}
 
 			// This is where the data will be analyzed and passed to plugins
 			// Do basic analysis of the values

@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <limits.h>
+#include <zlib.h>
 #include "packet_assembly.h"
 #include "../common/defines.h"
 #include "../common/server-client.h"
@@ -71,9 +72,12 @@ int kill_packet_assembly_thread()
 int packet_assembly_thread(void * data)
 {
 	struct client_params * cur;
-	struct pcap_packet * packets, *local_list, *cur_packet_list;
+	struct pcap_packet * packets, *local_list, *cur_packet_list, *prev, *cur2;
 	_packet_assembly_thread_stopped = 0;
 	local_list = NULL;
+	uint32_t fcs;
+	char * temp_str;
+	int bad_frame;
 
 #ifdef DEBUG
 	add_message_to_queue(MESSAGE_TYPE_REG_LOG, NULL, 1, "Packet assembly thread started", 1);
@@ -134,13 +138,67 @@ int packet_assembly_thread(void * data)
 			continue;
 		}
 
-		// 2. TODO: Remove duplicates (within 1 second of the last received packet) within several sources
+		// 2. Remove bad CRC/FCS
+		prev = NULL;
+		cur_packet_list = local_list;
+		while (cur_packet_list != NULL) {
+			bad_frame = 1;
+			if (cur_packet_list->header.cap_len < MIN_PACKET_SIZE + FCS_SIZE) {
+				temp_str = (char *)calloc(1, 200 * sizeof(char));
+				sprintf(temp_str, "Received invalid packet - frame too short to be analyzed. Expected %d bytes, received %u.", MIN_PACKET_SIZE + FCS_SIZE, cur_packet_list->header.cap_len);
+				add_message_to_queue(MESSAGE_TYPE_ANOMALY, NULL, 1, temp_str, 0);
+			} else {
+
+				// Get packet information
+				cur_packet_list->info = parse_packet_basic_info(cur_packet_list);
+
+				if (cur_packet_list->info != NULL) {
+					// If FCS is bad, discard the frame and log it.
+					if (cur_packet_list->info->bad_fcs) {
+#ifdef EXTRA_DEBUG
+						add_message_to_queue(MESSAGE_TYPE_DEBUG, NULL, 1, "Invalid FCS flags set. Ignoring frame", 1);
+#endif
+					} else if (_enable_fcs_check && cur_packet_list->info->fcs_present && !_trust_bad_fcs_field) {
+						// Check FCS before processing frame (ignore if invalid but log it in DB).
+						fcs = crc32(0L, cur_packet_list->info->frame_start, cur_packet_list->header.cap_len - FCS_SIZE - cur_packet_list->info->packet_header_len);
+						if (fcs != cur_packet_list->info->fcs) {
+#ifdef EXTRA_DEBUG
+							temp_str = (char *)calloc(1, 80);
+							fprintf(stderr, "Invalid FCS: Got 0x%x, expected 0x%x. Ignoring frame", cur->info->fcs, fcs);
+							add_message_to_queue(MESSAGE_TYPE_DEBUG, NULL, 1, temp_str, 0);
+#endif
+						} else bad_frame = 0;
+					} else bad_frame = 0;
+				}
+			}
+
+			if (!bad_frame) {
+				prev = cur_packet_list;
+				cur_packet_list = cur_packet_list->next;
+				continue;
+			}
+
+			// Remove frame from list
+			if (prev == NULL) {
+				// First frame of the list
+				local_list =  cur_packet_list->next;
+				free_pcap_packet(&cur_packet_list, 0); // Free
+				cur_packet_list = local_list;
+			} else {
+				cur2 = cur_packet_list;
+				prev->next = cur_packet_list->next;
+				cur_packet_list = cur_packet_list->next;
+				free_pcap_packet(&cur2, 0); // Free
+			}
+		}
+
+		// 3. TODO: Remove duplicates (within 1 second of the last received packet) within several sources
 		//			Easy in most cases thanks to the Sequence Number (or FCS if it present)
 		//			More problematic with Control packets (can use FCS if present) but also need to check time difference more accurately)
 
-		// 3. TODO: Re-order (if needed)
+		// 4. TODO: Re-order (if needed)
 
-		// 4. Put it on the list
+		// 5. Put it on the list
 		add_multiple_packets_to_list(local_list, &_receive_packet_list, 1);
 
 		local_list = NULL;
