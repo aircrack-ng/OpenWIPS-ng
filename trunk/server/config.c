@@ -361,7 +361,6 @@ int parse_simple_options()
 	printf("Port: %d\n", _port);
 	printf("Disable encryption (sensor-server): %s\n", (_disable_encryption) ? "yes" : "no");
 	printf("Force FCS check: %s\n", (_force_fcs_check) ? "yes" : "no");
-	printf("Trust Bad FCS field in radiotap header: %s\n", (_trust_bad_fcs_field) ? "yes" : "no");
 	printf("RPCAP port range: %d to %d\n", _rpcap_port_min, _rpcap_port_max);
 	printf("Ban time (in seconds): %d\n", _ban_time_seconds);
 	printf("Logging facility: %s\n", (_log_facility == LOG_FACILITY_SYSLOG) ? "syslog" :
