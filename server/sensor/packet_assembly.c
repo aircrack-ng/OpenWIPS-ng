@@ -158,7 +158,7 @@ int packet_assembly_thread(void * data)
 #ifdef EXTRA_DEBUG
 						add_message_to_queue(MESSAGE_TYPE_DEBUG, NULL, 1, "Invalid FCS flags set. Ignoring frame", 1);
 #endif
-					} else if (_enable_fcs_check && cur_packet_list->info->fcs_present && !_trust_bad_fcs_field) {
+					} else if (_force_fcs_check && cur_packet_list->info->fcs_present) {
 						// Check FCS before processing frame (ignore if invalid but log it in DB).
 						fcs = crc32(0L, cur_packet_list->info->frame_start, cur_packet_list->header.cap_len - FCS_SIZE - cur_packet_list->info->packet_header_len);
 						if (fcs != cur_packet_list->info->fcs) {

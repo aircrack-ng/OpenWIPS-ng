@@ -26,8 +26,7 @@
 
 extern int _stop_threads;
 extern struct server_params * _sensor_server_params;
-extern int _enable_fcs_check; // in config.h
-extern int _trust_bad_fcs_field; // in config.h
+extern int _force_fcs_check; // in config.h
 
 pthread_t _packet_assembly_thread;
 
