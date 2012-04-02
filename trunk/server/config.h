@@ -47,9 +47,8 @@ struct key_value * _config;
 // Time a user is banned when it is part of an attack
 int _ban_time_seconds;
 
-// Enable FCS check (disabled by default)
-int _enable_fcs_check;
-int _trust_bad_fcs_field; // TODO: Use it in combination of enable_fcs_check
+// Force FCS check (enabled by default)
+int _force_fcs_check;
 
 // Mac addresses to protect
 unsigned char ** _our_macs;

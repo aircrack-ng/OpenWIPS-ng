@@ -270,8 +270,7 @@ int parse_simple_options()
 	_port = DEFAULT_SERVER_PORT;
 	rpcap_init();
 	_ban_time_seconds = 600; // Default ban time (when a user is part of an attack): 10 minutes
-	_enable_fcs_check = 0; // FCS Check
-	_trust_bad_fcs_field = 1; // Trust Bad FCS field if present in radiotap frames
+	_force_fcs_check = 1; // Force FCS check by default
 	_db_connection.database_type = DB_TYPE_INVALID;
 	_db_connection.database_connection_string = NULL;
 
@@ -308,8 +307,8 @@ int parse_simple_options()
 				fprintf(stderr, "Invalid ban time <%s> in configuration. It must be -1 or above.\n", cur_key_value->value);
 				return EXIT_FAILURE;
 			}
-		} else if (strcmp(cur_key_value->key, "enable_fcs_check") == 0) {
-			_enable_fcs_check = IS_TEXT_TRUE(cur_key_value->value);
+		} else if (strcmp(cur_key_value->key, "force_fcs_check") == 0) {
+			_force_fcs_check = IS_TEXT_TRUE(cur_key_value->value);
 		} else if (strcmp(cur_key_value->key, "database_type") == 0) {
 			// It should contains at least one space character
 			pos = strchr(cur_key_value->value, ' ');
@@ -354,8 +353,6 @@ int parse_simple_options()
 
 			_db_connection.database_connection_string = (char *)calloc(1, len + 1);
 			strncpy(_db_connection.database_connection_string, pos, len);
-		} else if (strcmp(cur_key_value->key, "trust_bad_fcs_field") == 0) {
-			_trust_bad_fcs_field = IS_TEXT_TRUE(cur_key_value->value);
 		}
 	}
 
@@ -363,7 +360,7 @@ int parse_simple_options()
 	printf("Simple configuration items:\n");
 	printf("Port: %d\n", _port);
 	printf("Disable encryption (sensor-server): %s\n", (_disable_encryption) ? "yes" : "no");
-	printf("Enable FCS check: %s\n", (_enable_fcs_check) ? "yes" : "no");
+	printf("Force FCS check: %s\n", (_force_fcs_check) ? "yes" : "no");
 	printf("Trust Bad FCS field in radiotap header: %s\n", (_trust_bad_fcs_field) ? "yes" : "no");
 	printf("RPCAP port range: %d to %d\n", _rpcap_port_min, _rpcap_port_max);
 	printf("Ban time (in seconds): %d\n", _ban_time_seconds);
