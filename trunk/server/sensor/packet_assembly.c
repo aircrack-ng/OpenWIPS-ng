@@ -164,7 +164,7 @@ int packet_assembly_thread(void * data)
 						if (fcs != cur_packet_list->info->fcs) {
 #ifdef EXTRA_DEBUG
 							temp_str = (char *)calloc(1, 80);
-							fprintf(stderr, "Invalid FCS: Got 0x%x, expected 0x%x. Ignoring frame", cur->info->fcs, fcs);
+							fprintf(stderr, "Invalid FCS: Got 0x%x, expected 0x%x. Ignoring frame", cur_packet_list->info->fcs, fcs);
 							add_message_to_queue(MESSAGE_TYPE_DEBUG, NULL, 1, temp_str, 0);
 #endif
 						} else bad_frame = 0;
