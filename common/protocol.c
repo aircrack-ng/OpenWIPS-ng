@@ -75,9 +75,9 @@ char * encode_simple(char * format, ...)
 }
 
 inline char * decode_simple(char * input_string) { return decode_dup(input_string, 1); }
-inline char * decode_dup(char * input_string, int duplicate) { return decode(input_string, duplicate, NULL); }
+inline char * decode_dup(char * input_string, int duplicate) { return decode(input_string, duplicate, NULL, NULL); }
 
-char * decode(char * input_string, int duplicate, CommandEndEnum * command_end)
+char * decode(char * input_string, int duplicate, CommandEndEnum * command_end, int * length)
 {
 	int str_len;
 	char * new_string;
@@ -88,6 +88,7 @@ char * decode(char * input_string, int duplicate, CommandEndEnum * command_end)
 	str_len = strlen(input_string);
 
 	// Decode both \n and \r\n
+	// TODO: Handle buffer
 	if (input_string[str_len -1] != '\n') {
 		return NULL;
 	}
@@ -105,14 +106,45 @@ char * decode(char * input_string, int duplicate, CommandEndEnum * command_end)
 
 	new_string[--str_len] = '\0';
 
-	if (new_string[str_len -1] != '\r') {
+	if (new_string[str_len -1] == '\r') {
 		new_string[--str_len] = '\0';
 		if (command_end != NULL) {
 			*command_end = CarriageReturnNewline;
 		}
 	}
 
+	if (length != NULL) {
+		*length = str_len;
+	}
+
 	return new_string;
 }
+
+char * get_ack_nack(int success)
+{
+	char * ret = NULL;
+	if (success == -1) {
+		return NULL;
+	}
+
+	if (success) {
+		ret = (char *)calloc(1, (strlen(ACK) + 1)*sizeof(char));
+		strcpy(ret, ACK);
+	} else {
+		ret = (char *)calloc(1, (strlen(NACK) + 1)*sizeof(char));
+		strcpy(ret, NACK);
+	}
+
+	return ret;
+}
+
+inline int is_command_ack(char * command) {
+	return command != NULL && strncmp(command, ACK, 3) == 0;
+}
+
+inline int is_command_nack(char * command) {
+	return command != NULL && strncmp(command, NACK, 4) == 0;
+}
+
 
 // Add a function get_string_from_buffer()

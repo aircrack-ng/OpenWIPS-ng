@@ -24,6 +24,7 @@
 #include "command_parse.h"
 #include "state_machine.h"
 #include "../common/defines.h"
+#include "../common/protocol.h"
 
 /*
 Sensor		Server
@@ -109,18 +110,17 @@ char * parse_command(char * command, struct client_params * cp)
 			port = rpcap_get_port();
 			cp->rpcap_server = rpcap_start_socket(port);
 			if (cp->rpcap_server) {
-				ret = (char *)calloc(1, 256 * sizeof(char));
-				sprintf(ret, "RPCAP EVERYTHING ACTIVE %d;", port);
+				ret = encode(Newline, "RPCAP EVERYTHING ACTIVE %d;", port);
 			} else {
 				rpcap_free_port(port);
 			}
 			return ret;
-		} else if (cmd_len == 3 && strncmp(command, ACK, 3) == 0) {
+		} else if (cmd_len == 3 && is_command_ack(command)) {
 			// RPCAP successful
 #ifdef DEBUG
 			fprintf(stderr, "[*] Sensor accepted RPCAP.\n");
 #endif
-		} else if (cmd_len == 4 && strncmp(command, NACK, 4) == 0) {
+		} else if (cmd_len == 4 && is_command_nack(command)) {
 			// RPCAP failed: close port
 			fprintf(stderr, "[*] Sensor failed to do RPCAP, killing thread <%s>.\n", SHOW_TEXT_OR_NULL(cp->rpcap_server->identifier));
 			kill_server(cp->rpcap_server, 1);
@@ -138,41 +138,7 @@ char * parse_command(char * command, struct client_params * cp)
 	}
 #endif
 
-	return format_response(get_ack_nack(success));
-}
-
-char * get_ack_nack(int success)
-{
-	char * ret = NULL;
-	if (success == -1) {
-		return NULL;
-	}
-
-	if (success) {
-		ret = (char *)calloc(1, (strlen(ACK) + 1)*sizeof(char));
-		strcpy(ret, ACK);
-	} else {
-		ret = (char *)calloc(1, (strlen(NACK) + 1)*sizeof(char));
-		strcpy(ret, NACK);
-	}
-
-	return ret;
-}
-
-// TODO: Make it common for both sensor and server and take into account the slash
-char * format_response(char * response)
-{
-	int len;
-	if (response == NULL) {
-		return NULL;
-	}
-
-	len = strlen(response);
-
-	response = (char *) realloc(response, (len + 2) * sizeof(char));
-	response[len] = ';';
-	response[len + 1] = '\0';
-	return response;
+	return encode(Newline, get_ack_nack(success));
 }
 
 // TODO: Make it common for both sensor and server and take into account the slash
@@ -184,6 +150,8 @@ char * get_command(char * ringbuffer, int * ringbuffer_len)
 	char * newpos;
 	int pos = 0;
 	size_t length;
+	CommandEndEnum cmdEnd;
+	int cmdEndLen;
 
 	if (ringbuffer_len == NULL || (*ringbuffer_len) == 0 || ringbuffer == NULL) {
 		return NULL;
@@ -197,28 +165,26 @@ char * get_command(char * ringbuffer, int * ringbuffer_len)
 	for (pos = 0;
 			pos < (*ringbuffer_len) &&
 			ringbuffer[pos] != 0 &&
-			ringbuffer[pos] != ';'
+			ringbuffer[pos] != '\n'
 			; pos++);
 
 	// If found, then parse it
-	if (pos < (*ringbuffer_len) && ringbuffer[pos] == ';') {
+	if (pos < (*ringbuffer_len) && (ringbuffer[pos] == '\n' || ringbuffer[pos] == '\r')) {
 
 		// Copy content of the command
-		command = (char*) malloc(sizeof(char) * (pos + 1));
-		strncpy(command, ringbuffer, pos);
-		command[pos] = 0;
+		command = decode(ringbuffer, 1, &cmdEnd, &pos);
+		cmdEndLen = (cmdEnd == CarriageReturnNewline) ? 2 : 1;
 
 		// Remove that from the ringbuffer
-		if (pos + 1 == (*ringbuffer_len)) { // The whole ringbuffer has been used
+		if (pos + cmdEndLen == (*ringbuffer_len)) { // The whole ringbuffer has been used
 			memset(ringbuffer, 0, *ringbuffer_len);
 			*ringbuffer_len = 0;
 		} else { // Only a part of it has been used
-			newpos = ringbuffer + pos + 1;
-			length =  (*ringbuffer_len) - pos - 1;
+			newpos = ringbuffer + pos + cmdEndLen;
+			length =  (*ringbuffer_len) - pos - cmdEndLen;
 			memmove(ringbuffer, newpos, length);
 			memset(ringbuffer + length, 0, (*ringbuffer_len) - length);
-			(*ringbuffer) = length;
-			// TODO: Test this
+			*ringbuffer_len = length;
 		}
 	}
 
