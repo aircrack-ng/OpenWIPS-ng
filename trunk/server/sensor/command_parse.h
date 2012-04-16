@@ -25,19 +25,11 @@
 #include "../users.h"
 #include "../common/server.h" // struct client_params
 
-#define MAX_SUPPORTED_PROTOCOL_VERSION 1
-
 extern int rpcap_get_port(); // in rpcap_server.c
 extern void rpcap_free_port(int port); // in rpcap_server.c
 extern struct server_params * rpcap_start_socket(int port); // in rpcap_server.c
 
-// Commands
-#define ACK "ACK"
-#define NACK "NACK"
-
 char * parse_command(char * command, struct client_params * cp);
 char * get_command(char * ringbuffer, int * ringbuffer_len);
-char * get_ack_nack(int success);
-char * format_response(char * response);
 
 #endif /* COMMAND_PARSE_H_ */

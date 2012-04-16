@@ -3,7 +3,7 @@ include		../common.mak
 
 LIBS		+= -lm -lpthread
 
-COMMON_C_FILES	= common/pcap.c common/client.c common/server-client.c common/sockets.c global_var.c common/rpcap.c common/utils.c common/version.c common/interface_control.c
+COMMON_C_FILES	= common/pcap.c common/client.c common/server-client.c common/sockets.c global_var.c common/rpcap.c common/utils.c common/version.c common/protocol.c common/interface_control.c
 C_FILES			= main.c client.c structures.c packet_capture.c command_parse.c rpcap.c $(COMMON_C_FILES)
 
 SBIN_FILE	= openwips-ng

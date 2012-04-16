@@ -27,13 +27,24 @@ typedef enum {
 	CarriageReturnNewline
 } CommandEndEnum;
 
+// Commands
+#define ACK "ACK"
+#define NACK "NACK"
+
 #define DEFAULT_PROTOCOL_ENCODE		Newline
+
+#define MIN_SUPPORTED_PROTOCOL_VERSION 1
+#define MAX_SUPPORTED_PROTOCOL_VERSION 1
 
 char * encode(CommandEndEnum encoding_type, char * format, ...);
 char * encode_simple(char * format, ...);
 
-char * decode(char * input_string, int duplicate, CommandEndEnum * encoding_type);
+char * decode(char * input_string, int duplicate, CommandEndEnum * command_end, int * length);
 char * decode_simple(char * input_string);
 inline char * decode_dup(char * input_string, int duplicate);
+
+char * get_ack_nack(int success);
+inline int is_command_ack(char * command);
+inline int is_command_nack(char * command);
 
 #endif /* COMMON_PROTOCOL_H_ */

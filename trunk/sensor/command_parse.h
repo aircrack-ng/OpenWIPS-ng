@@ -24,9 +24,6 @@
 
 #include "structures.h"
 
-#define MIN_SUPPORTED_PROTOCOL_VERSION 1
-#define MAX_SUPPORTED_PROTOCOL_VERSION 1
-
 extern int start_rpcap(struct rpcap_link * link_info); // in rpcap.c
 
 #define DATA_TYPE_EVERYTHING 0

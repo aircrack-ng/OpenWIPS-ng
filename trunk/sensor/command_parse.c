@@ -26,6 +26,7 @@
 #include "command_parse.h"
 #include "state_machine.h"
 #include "common/defines.h"
+#include "common/protocol.h"
 #include "global_var.h"
 
 #define IS_ACK(command)		((command) != NULL && \
@@ -45,20 +46,22 @@ char * get_command(char * ringbuffer, int ringbuffer_len)
 	char * newpos;
 	int pos = 0;
 	size_t length;
+	CommandEndEnum cmdEndChars;
 
-	for (pos = 0 ; ringbuffer[pos] != 0 && ringbuffer[pos] != ';'; pos++ ) {
+	for (pos = 0 ; ringbuffer[pos] != 0 && ringbuffer[pos] != '\n'; pos++ ) {
 
 	}
 
-	if (ringbuffer[pos] == ';') {
+	if (ringbuffer[pos] == '\n' || ringbuffer[pos] == '\r') {
 
-		// Copy content of the command
-		command = (char*) malloc(sizeof(char) * (pos + 1));
-		strncpy(command, ringbuffer, pos);
-		command[pos] = 0;
+		// Get the command
+		command = decode(ringbuffer, 1, &cmdEndChars, NULL);
 
 		// Remove that from the ringbuffer
 		newpos = ringbuffer + pos + 1;
+		if (cmdEndChars == CarriageReturnNewline) {
+			++newpos;
+		}
 		length =  strlen(newpos);
 		memmove(ringbuffer, newpos, length);
 		memset(ringbuffer + length, 0, ringbuffer_len - length);
@@ -189,29 +192,26 @@ char * parse_command(char * command, int * state)
 		switch(*state) {
 			case STATE_CONNECTED:
 				// Version sent and approved, send login
-				ret = (char *)calloc(1, (5 + 1 + strlen(_login) + 1 + 1)* sizeof(char));
 #ifdef DEBUG
 	fprintf(stderr, "[*] Sending login.\n");
 #endif
-				sprintf(ret, "LOGIN %s;", _login);
+				ret = encode(Newline, "LOGIN %s", _login);
 				*state = STATE_VERSION;
 				break;
 			case STATE_VERSION:
 				// Login sent, send PASS
-				ret = (char *)calloc(1, (4 + 1 + strlen(_pass) + 1 + 1)* sizeof(char));
 #ifdef DEBUG
 	fprintf(stderr, "[*] Sending password.\n");
 #endif
-				sprintf(ret, "PASS %s;", _pass);
+				ret = encode(Newline, "PASS %s", _pass);
 				*state = STATE_LOGIN;
 				break;
 			case STATE_LOGIN:
 				// pass sent, send GET_CONFIG
-				ret = (char *)calloc(1, (11 + 1 )* sizeof(char));
 #ifdef DEBUG
 	fprintf(stderr, "[*] Sending GET_CONFIG.\n");
 #endif
-				strcpy(ret, "GET_CONFIG;");
+				ret = encode(Newline, "GET_CONFIG");
 				*state = STATE_LOGGED_IN;
 				break;
 			default:
@@ -257,23 +257,20 @@ char * parse_command(char * command, int * state)
 		// TODO: Fix that shit (I mean use common/client)
 		if (parse_rpcap_command(command, _host) == EXIT_SUCCESS) {
 			unknown_command = 0;
-			ret = (char *)calloc(1, (3 + 1 + 1)* sizeof(char));
-			strcpy(ret, "ACK;");
+			ret = encode(Newline, "ACK");
 		}
 	}
 
 	if (unknown_command) {
 		fprintf(stderr, "No freakin' idea what the command <%s> means.\n", command);
-		ret = (char *)calloc(1, (4 + 1 + 1)* sizeof(char));
-		strcpy(ret, "NACK;");
+		ret = encode(Newline, "NACK");
 	}
 
 	return ret;
 }
 
-char * get_supported_version(unsigned int version)
+
+inline char * get_supported_version(unsigned int version)
 {
-	char * ret = (char *)calloc(1, (11 + (int)log(version)) * sizeof(char));
-	sprintf(ret, "VERSION %u;", version);
-	return ret;
+	return encode(Newline, "VERSION %u", version);
 }
