@@ -27,10 +27,11 @@ struct rpcap_link * init_new_rpcap_link()
 	struct rpcap_link * ret = (struct rpcap_link *)malloc(sizeof(struct rpcap_link));
 	ret->encrypted = -1;
 	ret->compressed = -1;
-	ret->data_type = -1;
 	ret->pasv = -1;
 	ret->port = -1;
 	ret->host = NULL;
+	ret->send_payload = -1;
+	ret->send_data_frames = -1;
 
 	return ret;
 }

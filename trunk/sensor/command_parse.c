@@ -118,13 +118,15 @@ int parse_rpcap_command(char * command, char * host, struct rpcap_link * rlp)
 			case 1: // Kind of data to receive
 
 				if (COMPARE_PCH_LEN("EVERYTHING", 10)) {
-					rlp->data_type = DATA_TYPE_EVERYTHING;
+					rlp->send_payload = rlp->send_data_frames = 1;
 				} else if (COMPARE_PCH_LEN("NOPAYLOAD", 9)) {
-					rlp->data_type = DATA_TYPE_NOPAYLOAD;
+					rlp->send_payload = 0;
+					rlp->send_data_frames = 1;
 				} else if (COMPARE_PCH_LEN("NODATA", 6)) {
-					rlp->data_type = DATA_TYPE_NODATA;
+					rlp->send_payload = 1;
+					rlp->send_data_frames = 0;
 				} else if (COMPARE_PCH_LEN("NODATA_NOPAYLOAD", 6)) {
-					rlp->data_type = DATA_TYPE_NODATA_NOPAYLOAD;
+					rlp->send_payload = rlp->send_data_frames = 0;
 				} else {
 					free_rpcap_link(&rlp);
 					return EXIT_FAILURE;
