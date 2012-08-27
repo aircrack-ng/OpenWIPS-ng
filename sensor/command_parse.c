@@ -113,7 +113,6 @@ int parse_rpcap_command(char * command, char * host, struct rpcap_link * rlp)
 					rlp->compressed = 1;
 				} else if (!COMPARE_PCH_LEN("RPCAP", 5)) {
 					// Invalid command, NACK
-					free_rpcap_link(&rlp);
 					return EXIT_FAILURE;
 				}
 				break;
@@ -130,27 +129,23 @@ int parse_rpcap_command(char * command, char * host, struct rpcap_link * rlp)
 				} else if (COMPARE_PCH_LEN("NODATA_NOPAYLOAD", 16)) {
 					rlp->send_payload = rlp->send_data_frames = 0;
 				} else {
-					free_rpcap_link(&rlp);
 					return EXIT_FAILURE;
 				}
 				break;
 			case 2: // Active/Passive
 				rlp->pasv = COMPARE_PCH_LEN("PASV", 4);
 				if (!rlp->pasv && !COMPARE_PCH_LEN("ACTIVE", 6)) {
-					free_rpcap_link(&rlp);
 					return EXIT_FAILURE;
 				}
 				break;
 			case 3: // Port (if active)
 				if (rlp->pasv) {
-					free_rpcap_link(&rlp);
 					return EXIT_FAILURE;
 				}
 				rlp->port = atoi(pch);
 
 				break;
 			default: // If there is anymore arguments, there is something wrong
-				free_rpcap_link(&rlp);
 				return EXIT_FAILURE;
 				break;
 		}
