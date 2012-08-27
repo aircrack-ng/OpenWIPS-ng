@@ -81,18 +81,18 @@ int start_rpcap(struct rpcap_link * link_info)
 		fprintf(stderr, "[*] RPCAP: Ignoring port in passive mode.\n");
 	}
 
-	if (link_info->data_type == DATA_TYPE_NOPAYLOAD) {
+	if (link_info->send_payload == 0 && link_info->send_payload == 0) {
+		fprintf(stderr, "[*] RPCAP: Frames without payload (and no data frames) not supported yet.\n");
+		return EXIT_FAILURE;
+	}
+
+	if (link_info->send_payload == 0) {
 		fprintf(stderr, "[*] RPCAP: Frames without payload not supported yet.\n");
 		return EXIT_FAILURE;
 	}
 
-	if (link_info->data_type == DATA_TYPE_NODATA) {
+	if (link_info->send_data_frames == 0) {
 		fprintf(stderr, "[*] RPCAP: Everything except data frames not supported yet.\n");
-		return EXIT_FAILURE;
-	}
-
-	if (link_info->data_type == DATA_TYPE_NODATA_NOPAYLOAD) {
-		fprintf(stderr, "[*] RPCAP: Frames without payload (and no data frames) not supported yet.\n");
 		return EXIT_FAILURE;
 	}
 

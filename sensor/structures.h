@@ -23,22 +23,14 @@
 #define STRUCTURES_H_
 
 struct rpcap_link {
-	int encrypted, compressed;
-	int data_type; // Type of data to send
-	int pasv; // Passive?
-	int port;
 	char * host;
+	char encrypted, compressed;
+	char pasv; // Passive?
+	char port;
+	// The following 2 parameters allow to decrease the amount of data sent on the network
+	char send_payload; // 0 means that only the header of the wireless frame is sent
+	char send_data_frames; // 1 means the data frames will be sent
 };
-
-// Data type from the rpcap_link structure
-// Send every single frame
-#define DATA_TYPE_EVERYTHING 0
-// Frames without payload (only the headers of the wireless frames)
-#define DATA_TYPE_NOPAYLOAD 1
-// Everything except data frames
-#define DATA_TYPE_NODATA 2
-// Frames without payload and no data frames
-#define DATA_TYPE_NODATA_NOPAYLOAD 3
 
 struct rpcap_link * init_new_rpcap_link();
 int free_rpcap_link(struct rpcap_link ** link);
