@@ -125,7 +125,7 @@ int parse_rpcap_command(char * command, char * host, struct rpcap_link * rlp)
 				} else if (COMPARE_PCH_LEN("NODATA", 6)) {
 					rlp->send_payload = 1;
 					rlp->send_data_frames = 0;
-				} else if (COMPARE_PCH_LEN("NODATA_NOPAYLOAD", 6)) {
+				} else if (COMPARE_PCH_LEN("NODATA_NOPAYLOAD", 16)) {
 					rlp->send_payload = rlp->send_data_frames = 0;
 				} else {
 					free_rpcap_link(&rlp);
