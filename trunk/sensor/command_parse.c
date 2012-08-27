@@ -78,17 +78,14 @@ char * get_command(char * ringbuffer, int ringbuffer_len)
 	return command;
 }
 
-int parse_rpcap_command(char * command, char * host)
+int parse_rpcap_command(char * command, char * host, struct rpcap_link * rlp)
 {
-	int item, pch_len, ret;
+	int item, pch_len;
 	char * pch;
-	struct rpcap_link * rlp;
 
-	if (host == NULL || command == NULL) {
+	if (host == NULL || command == NULL || rlp == NULL) {
 		return EXIT_FAILURE;
 	}
-
-	rlp = init_new_rpcap_link();
 
 	// TODO: Give host
 	rlp->host = (char *)calloc(1, (strlen(host) + 1) * sizeof(char));
@@ -160,15 +157,12 @@ int parse_rpcap_command(char * command, char * host)
 	}
 #undef COMPARE_PCH_LEN
 
-	// Connect to the server (in the background)
-	ret = start_rpcap(rlp);
-	free_rpcap_link(&rlp);
-
-	return ret;
+	return EXIT_SUCCESS;
 }
 
 char * parse_command(char * command, int * state)
 {
+	struct rpcap_link * rlp;
 	int unknown_command = 1;
 	char * ret = NULL;
 
@@ -254,11 +248,14 @@ char * parse_command(char * command, int * state)
 		}
 	} else if (strlen(command) > 5 && strstr(command, "RPCAP ")) {
 
-		// TODO: Fix that shit (I mean use common/client)
-		if (parse_rpcap_command(command, _host) == EXIT_SUCCESS) {
+		// TODO: Fix that stuff (I mean use common/client)
+		rlp = init_new_rpcap_link();
+		if (parse_rpcap_command(command, _host, rlp) == EXIT_SUCCESS
+				&& start_rpcap(rlp) == EXIT_SUCCESS) { // Connect to the server (in the background)
 			unknown_command = 0;
 			ret = encode(Newline, "ACK");
 		}
+		free_rpcap_link(&rlp);
 	}
 
 	if (unknown_command) {
