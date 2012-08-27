@@ -37,6 +37,8 @@ struct rpcap_link {
 #define DATA_TYPE_NOPAYLOAD 1
 // Everything except data frames
 #define DATA_TYPE_NODATA 2
+// Frames without payload and no data frames
+#define DATA_TYPE_NODATA_NOPAYLOAD 3
 
 struct rpcap_link * init_new_rpcap_link();
 int free_rpcap_link(struct rpcap_link ** link);
