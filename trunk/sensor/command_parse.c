@@ -81,7 +81,7 @@ char * get_command(char * ringbuffer, int ringbuffer_len)
 int parse_rpcap_command(char * command, char * host, struct rpcap_link * rlp)
 {
 	int item, pch_len;
-	char * pch;
+	char * pch, * save_ptr;
 
 	if (host == NULL || command == NULL || rlp == NULL) {
 		return EXIT_FAILURE;
@@ -91,7 +91,7 @@ int parse_rpcap_command(char * command, char * host, struct rpcap_link * rlp)
 	rlp->host = (char *)calloc(1, (strlen(host) + 1) * sizeof(char));
 	strcpy(rlp->host, host);
 
-	pch = strtok(command, " ");
+	pch = strtok_r(command, " ", &save_ptr);
 	for (item = 0; pch != NULL; item++) {
 		// Make sure it is not empty because it cannot
 		pch_len = strlen(pch);
@@ -150,7 +150,7 @@ int parse_rpcap_command(char * command, char * host, struct rpcap_link * rlp)
 				break;
 		}
 
-		pch = strtok (NULL, " ");
+		pch = strtok_r(command, " ", &save_ptr);
 	}
 #undef COMPARE_PCH_LEN
 
