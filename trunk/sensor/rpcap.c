@@ -91,6 +91,11 @@ int start_rpcap(struct rpcap_link * link_info)
 		return EXIT_FAILURE;
 	}
 
+	if (link_info->data_type == DATA_TYPE_NODATA_NOPAYLOAD) {
+		fprintf(stderr, "[*] RPCAP: Frames without payload (and no data frames) not supported yet.\n");
+		return EXIT_FAILURE;
+	}
+
 	_rpcap_client_params = init_new_client_params();
 	_rpcap_client_params->modify_thread_status = 0;
 

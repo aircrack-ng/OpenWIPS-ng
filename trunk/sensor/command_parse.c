@@ -123,6 +123,8 @@ int parse_rpcap_command(char * command, char * host, struct rpcap_link * rlp)
 					rlp->data_type = DATA_TYPE_NOPAYLOAD;
 				} else if (COMPARE_PCH_LEN("NODATA", 6)) {
 					rlp->data_type = DATA_TYPE_NODATA;
+				} else if (COMPARE_PCH_LEN("NODATA_NOPAYLOAD", 6)) {
+					rlp->data_type = DATA_TYPE_NODATA_NOPAYLOAD;
 				} else {
 					free_rpcap_link(&rlp);
 					return EXIT_FAILURE;
