@@ -30,7 +30,7 @@ extern int start_rpcap(struct rpcap_link * link_info); // in rpcap.c
 #define DATA_TYPE_NOPAYLOAD 1
 #define DATA_TYPE_NODATA 2
 
-int parse_rpcap_command(char * command, char * host);
+int parse_rpcap_command(char * command, char * host, struct rpcap_link * rlp);
 char * parse_command(char * command, int * state);
 char * get_supported_version(unsigned int version); // Return max supported version
 char * get_command(char * ringbuffer, int ringbuffer_len);
