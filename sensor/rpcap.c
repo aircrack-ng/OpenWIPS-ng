@@ -53,7 +53,8 @@ int start_rpcap(struct rpcap_link * link_info)
 
 	RETURN_FAILURE_IF_INVALID(link_info->encrypted);
 	RETURN_FAILURE_IF_INVALID(link_info->compressed);
-	RETURN_FAILURE_IF_INVALID(link_info->data_type);
+	RETURN_FAILURE_IF_INVALID(link_info->send_payload);
+	RETURN_FAILURE_IF_INVALID(link_info->send_data_frames);
 	RETURN_FAILURE_IF_INVALID(link_info->pasv);
 #undef RETURN_FAILURE_IF_INVALID
 
