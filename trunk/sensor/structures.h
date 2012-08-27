@@ -30,6 +30,14 @@ struct rpcap_link {
 	char * host;
 };
 
+// Data type from the rpcap_link structure
+// Send every single frame
+#define DATA_TYPE_EVERYTHING 0
+// Frames without payload (only the headers of the wireless frames)
+#define DATA_TYPE_NOPAYLOAD 1
+// Everything except data frames
+#define DATA_TYPE_NODATA 2
+
 struct rpcap_link * init_new_rpcap_link();
 int free_rpcap_link(struct rpcap_link ** link);
 

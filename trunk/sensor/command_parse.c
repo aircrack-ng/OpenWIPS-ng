@@ -147,7 +147,7 @@ int parse_rpcap_command(char * command, char * host, struct rpcap_link * rlp)
 					return EXIT_FAILURE;
 				}
 				break;
-			default:
+			default: // If there is anymore arguments, there is something wrong
 				free_rpcap_link(&rlp);
 				return EXIT_FAILURE;
 				break;
