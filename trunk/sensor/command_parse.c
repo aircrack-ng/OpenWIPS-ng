@@ -109,6 +109,8 @@ int parse_rpcap_command(char * command, char * host, struct rpcap_link * rlp)
 					rlp->encrypted = rlp->compressed = 1;
 				} else if (COMPARE_PCH_LEN("ERPCAP", 6)) {
 					rlp->encrypted = 1;
+				} else if (COMPARE_PCH_LEN("CRPCAP", 6)) {
+					rlp->compressed = 1;
 				} else if (!COMPARE_PCH_LEN("RPCAP", 5)) {
 					// Invalid command, NACK
 					free_rpcap_link(&rlp);
