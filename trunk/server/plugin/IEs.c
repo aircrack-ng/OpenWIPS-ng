@@ -144,7 +144,7 @@ int is_attacked(struct pcap_packet * packet_list, void * config)
 	iec = (struct IE_Check *)config;
 
 	// Check the ESSID IE. If length above 32, then invalid.
-	if (iec->frame == NULL || iec->frame->info == NULL || iec->frame->info->frame_payload == NULL || iec->frame->data == NULL) {
+	if (iec == NULL || iec->frame == NULL || iec->frame->info == NULL || iec->frame->info->frame_payload == NULL || iec->frame->data == NULL) {
 		return 0;
 	}
 
