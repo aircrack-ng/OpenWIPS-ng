@@ -108,6 +108,7 @@ int monitor(void * data)
 	// Enable monitor mode
 	rfmon_struct = enable_monitor_mode(_mon_iface, FIRST_CALL);
 	if (rfmon_struct == NULL) {
+		free(buffer);
 		return EXIT_FAILURE;
 	}
 
