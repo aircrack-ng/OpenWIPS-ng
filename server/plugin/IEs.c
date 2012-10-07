@@ -40,7 +40,7 @@ void * init_plugin(char * config_line, int version)
 		}
 	}
 
-	return NULL;
+	return iec;
 }
 
 void free_memory_and_unload(void * data)
