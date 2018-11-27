@@ -28,13 +28,13 @@
 char * encode(CommandEndEnum command_end, char * format, ...)
 {
 	va_list args;
-	int str_len;
+//	int str_len;
 	int required_length;
 	int protocol_length = (command_end == Newline) ? 1 : 2;
 	char * ret = calloc(1, protocol_length + 1);
 
 	if (!STRING_IS_NULL_OR_EMPTY(format)) {
-		str_len = strlen(format);
+//		str_len = strlen(format);
 
 		// First, get the amount of bytes needed to store the string
 		va_start(args, format);
